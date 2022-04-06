@@ -1,0 +1,12 @@
+telethon
+redis
+googletrans==3.1.0a0
+captcha
+speedtest-cli
+instaloader
+requests
+qrcode
+python-whois
+instaloader
+apscheduler
+phonenumbers
