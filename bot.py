@@ -853,7 +853,7 @@ async def SetManageR(event: events.NewMessage.Event):
                         await msg.reply('- Don# ! profile SetED !')
                         os.remove(Fil3)
             elif cmd[2] == 'group':
-                if event.is_reply and event.is_group:
+                if event.is_reply and (event.is_group or event.is_channel):
                     msg = await event.get_reply_message()
                     if msg.media:
                         pic_name = pl.create_rend_name(10)
