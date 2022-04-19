@@ -207,6 +207,13 @@ class Counter:
     def clear(self):
         self.number = 0
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+def is_ASCII(msg: str) -> bool:
+    for ch in msg:
+        c = ord(ch)
+        if c >= 97 and c <= 122:
+            return True
+    return False
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 def jdmonthname(month: int) -> str:
     return ['Farvardin', 'Ordibehesht', 'Khordad', 'Tir', 'Mordad', 'Shahrivar', 'Mehr', 'Aban', 'Azar', 'Dey', 'Bahman','Esfand'][month-1]
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
