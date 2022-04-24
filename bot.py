@@ -70,7 +70,6 @@ async def GetMsGServic3InGP(event: events.Raw):
                 await result[0].click() 
     if ('-100'+str(event.message.peer_id.channel_id) in list(clir.hgetall('plAddGroPSettinGZ').keys()) and js.loads(clir.hget('plAddGroPSettinGZ', '-100'+str(event.message.peer_id.channel_id)))['lock_tg']) and'action' in event.message.to_dict() and type(event.message.action) is types.MessageActionChatAddUser:
         pass
-        
     if '-100'+str(event.message.peer_id.channel_id) in clir.lrange('plMuteAllGP', 0, -1) or ('-100'+str(event.message.peer_id.channel_id) in list(clir.hgetall('plAddGroPSettinGZ').keys()) and js.loads(clir.hget('plAddGroPSettinGZ', '-100'+str(event.message.peer_id.channel_id)))['lock_tg']):
         await Client.delete_messages(event.message.peer_id.channel_id, event.message.id)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
@@ -254,10 +253,13 @@ async def IdProcessing(event: events.NewMessage.Event):
     elif (event.is_group or event.is_channel) and event.raw_text.lower() == 'id':
         if event.is_reply:
             msg = await event.get_reply_message()
-            if 'from_id' in msg.to_dict() and msg.from_id != None and 'channel_id' in msg.from_id.to_dict():
-                await event.edit('`-100{}`'.format(msg.from_id.channel_id)) if event.sender_id in Account else await event.reply('`-100{}`'.format(msg.from_id.channel_id))                    
-            elif 'from_id' in msg.to_dict() and msg.from_id == None and 'peer_id' in msg.to_dict() and 'channel_id' in msg.peer_id.to_dict():
-                await event.edit('`-100{}`'.format(msg.peer_id.channel_id)) if event.sender_id in Account else await event.reply('`-100{}`'.format(msg.peer_id.channel_id))        
+            user = msg.from_id
+            if user:
+                await event.edit('`{}`'.format(user)) if event.sender_id in Account else await event.reply('`{}`'.format(user))
+            #if 'from_id' in msg.to_dict() and msg.from_id != None and 'channel_id' in msg.from_id.to_dict():
+            #    await event.edit('`-100{}`'.format(msg.from_id.channel_id)) if event.sender_id in Account else await event.reply('`-100{}`'.format(msg.from_id.channel_id))                    
+            #elif 'from_id' in msg.to_dict() and msg.from_id == None and 'peer_id' in msg.to_dict() and 'channel_id' in msg.peer_id.to_dict():
+            #    await event.edit('`-100{}`'.format(msg.peer_id.channel_id)) if event.sender_id in Account else await event.reply('`-100{}`'.format(msg.peer_id.channel_id))        
             else:
                 await event.edit('`{}`'.format(msg.from_id.user_id)) if event.sender_id in Account else await event.reply('`{}`'.format(msg.from_id.user_id))                    
         else:
@@ -669,8 +671,10 @@ async def MuteAllGP(event: events.NewMessage.Event):
             user = None
             if len(event.raw_text.split()) == 1 and event.is_reply:
                 user = await event.get_reply_message()
-                if not user.from_id: return
-                user = '-100{}'.format(user.from_id.channel_id) if 'channel_id' in user.from_id.to_dict() else str(user.from_id.user_id)
+                user = str(user.from_id)
+                # this -F code 4 telethon 1.4, not now ...
+                #if not user.from_id: return
+                #user = '-100{}'.format(user.from_id.channel_id) if 'channel_id' in user.from_id.to_dict() else str(user.from_id.user_id)
             elif len(event.raw_text.split()) > 1:
                 if event.raw_text.split()[1][0] == '@':
                     user = await Client.get_input_entity(event.raw_text.split()[1])
@@ -713,9 +717,9 @@ async def UnMuteAllGP(event: events.NewMessage.Event):
         elif event.raw_text.split()[0].lower() == 'unmute':
             user = None
             if len(event.raw_text.split()) == 1 and event.is_reply:
-                user = await event.get_reply_message()
-                if not user.from_id: return
-                user = '-100{}'.format(user.from_id.channel_id) if 'channel_id' in user.from_id.to_dict() else str(user.from_id.user_id)
+                user = str((await event.get_reply_message()).from_id)
+                #if not user.from_id: return
+                #user = '-100{}'.format(user.from_id.channel_id) if 'channel_id' in user.from_id.to_dict() else str(user.from_id.user_id)
             elif len(event.raw_text.split()) > 1:
                 if event.raw_text.split()[1][0] == '@':
                     user = await Client.get_input_entity(event.raw_text.split()[1])
