@@ -28,6 +28,7 @@ import requests as req
 from redis import StrictRedis
 # - - - - - - - - - - - ValueS - - - - - - - - - - - - #
 Account = botc.acc_sudo 
+acc_sudo =botc.main_sudo
 sudo = botc.sudoS
 #phone = '+989360145942'
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
@@ -325,7 +326,7 @@ async def ReMorsE(event: events.NewMessage.Event):
         await event.edit(''.join([pl.switch(morse, pl.CoDMORsE, ' ')+' ' for morse in event.raw_text[6:]])) if event.sender_id in Account else await event.reply(''.join([pl.switch(morse, pl.CoDMORsE, ' ')+' ' for morse in event.raw_text[6:]]))
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» ReStarT Th3 ProGraM:
-@Client.on(events.NewMessage(pattern = '(R|r)eload', from_users = Account, func=lambda e:e.raw_text.lower() == 'reload'))
+@Client.on(events.NewMessage(pattern = '(R|r)eload', from_users = acc_sudo, func=lambda e:e.raw_text.lower() == 'reload'))
 async def RestartProGraM(event: events.NewMessage.Event):
     await event.edit('- bot reloaded !') if event.sender_id in Account else await event.reply('- bot reloaded !')
     os.execl(sys.executable, sys.executable, *sys.argv)
@@ -503,7 +504,7 @@ async def DonTSaveMsgInChannel(event: events.NewMessage.Event):
     await event.delete()
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» JoiN In GrouP:
-@Client.on(events.NewMessage(pattern = '(J|j)oin', from_users = Account))
+@Client.on(events.NewMessage(pattern = '(J|j)oin', from_users = acc_sudo))
 async def joinchat(event: events.NewMessage.Event):
     if len(event.raw_text.split()) > 1 and event.raw_text.split()[1][0] == '@':
         try:
@@ -528,7 +529,7 @@ async def joinchat(event: events.NewMessage.Event):
             await event.edit('- ErroR ! =|') if event.sender_id in Account else await event.reply('- ErroR ! =|')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» InFO BOT:
-@Client.on(events.NewMessage(pattern = '(I|i)nfo', from_users = Account))
+@Client.on(events.NewMessage(pattern = '(I|i)nfo', from_users = acc_sudo))
 async def SeYInFO(event: events.NewMessage.Event):
     if event.raw_text.lower() == 'info':
         await event.edit(f'- InFO PLSelF v.{pl.version} :\n\n- sudoS = {len(sudo)}\n- PV UseR = {len(clir.lrange("plAcUserInPV",0 ,-1))}\n- user = {getpwuid(os.getuid())[0]}\n- python3 version = {sys.version.split()[0]}\n- telethon version = {tver}\n') if event.sender_id in Account else await event.reply(f'- InFO PLSelF v.{pl.version} :\n\n- sudoS = {len(sudo)}\n- PV UseR = {len(clir.lrange("plAcUserInPV",0 ,-1))}\n- user = {getpwuid(os.getuid())[0]}\n- python3 version = {sys.version.split()[0]}\n- telethon version = {tver}\n')
@@ -538,7 +539,7 @@ async def SeYInFO(event: events.NewMessage.Event):
         await event.edit(users) if event.sender_id in Account else await event.reply(users)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Send && SaV# Voice:
-@Client.on(events.NewMessage(pattern = '(V|v)oice', from_users = Account))
+@Client.on(events.NewMessage(pattern = '(V|v)oice', from_users = acc_sudo))
 async def SenDSaVOicE(event: events.NewMessage.Event):
     cmd = event.raw_text.split()
     if len(cmd) >= 2 and cmd[0].lower() == 'voice':
@@ -575,7 +576,7 @@ async def SenDSaVOicE(event: events.NewMessage.Event):
                     await Client.send_file(event.chat_id, os.getcwd()+'/data/voice/'+pl.findfile(clir.hget('plVoiCESaVE', voice_name), os.getcwd()+'/data/voice/'))
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» FilE ManageR:
-@Client.on(events.NewMessage(pattern = '(F|f)ile', from_users = Account))
+@Client.on(events.NewMessage(pattern = '(F|f)ile', from_users = acc_sudo))
 async def SenDFuCKinGFilE(event: events.NewMessage.Event):
     cmd = event.raw_text.split()
     if len(cmd) >= 2 and cmd[0].lower() == 'file':
@@ -633,7 +634,7 @@ async def KirToKosMary(event: events.NewMessage.Event):
         await event.delete()
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» LefT In GrouP:
-@Client.on(events.NewMessage(pattern = '(L|l)eft', from_users = Account))
+@Client.on(events.NewMessage(pattern = '(L|l)eft', from_users = acc_sudo))
 async def leftchat(event: events.NewMessage.Event):
     if len(event.raw_text) == 4 and event.is_group:
         try:
@@ -1046,7 +1047,7 @@ async def MaiNMessageEdited(event: events.MessageEdited.Event):
     elif cmd == 'panel':await PANELAPI(event)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» There is nothing to say here:
-@Client.on(events.NewMessage(pattern='(T|t)urn off', from_users=Account, func=lambda e:e.raw_text.lower()=='turn off'))
+@Client.on(events.NewMessage(pattern='(T|t)urn off', from_users=acc_sudo, func=lambda e:e.raw_text.lower()=='turn off'))
 async def TurNFuckinGOff(event: events.NewMessage.Event):
     await event.edit('- bot went offline !') if event.sender_id in Account else await event.reply('- bot went offline !')
     await bot.disconnect()
