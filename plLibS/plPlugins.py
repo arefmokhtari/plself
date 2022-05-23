@@ -207,6 +207,13 @@ class Counter:
     def clear(self):
         self.number = 0
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+async def user_in_channel(bot, chat, user, UserNotParticipantError):
+    try:
+        await bot.get_permissions(chat, user)
+        return True
+    except UserNotParticipantError:
+        return False
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 def is_ASCII(msg: str) -> bool:
     for ch in msg:
         c = ord(ch)
