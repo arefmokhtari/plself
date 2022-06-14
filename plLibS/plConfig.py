@@ -15,5 +15,6 @@ INSTAGRAM = ('', '', '') # session, username, password
 REDIS_NUMBER = 1
 SESSION_AC_NAME = ''
 SESSION_API_NAME = ''
+SESSION_DIR ='data/SeSioNS/' # The route of the sessions
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 
