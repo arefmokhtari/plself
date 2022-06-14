@@ -1,4 +1,4 @@
-telethon
+telethon-mod
 redis
 googletrans==3.1.0a0
 captcha
@@ -10,3 +10,4 @@ python-whois
 instaloader
 apscheduler
 phonenumbers
+shazamio
