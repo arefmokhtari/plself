@@ -1,6 +1,6 @@
 #                   [   Plague Dr.  ]
 # - - - - - - - - - - -LIBRarYS- - - - - - - - - - - - #
-from telethon import TelegramClient, events, Button, types, __version__ as tver
+from telethon import TelegramClient, events, Button, types, __version__ as tver, connection
 from telethon.tl.functions.messages import ImportChatInviteRequest, CheckChatInviteRequest
 from telethon.tl.functions.channels import JoinChannelRequest, LeaveChannelRequest, EditBannedRequest, InviteToChannelRequest, EditPhotoRequest
 from telethon.tl.functions.contacts import BlockRequest, UnblockRequest
@@ -12,6 +12,7 @@ from telethon.errors.rpcerrorlist import MessageNotModifiedError
 from telethon.utils import pack_bot_file_id
 from googletrans import Translator
 import instaloader
+from shazamio import Shazam
 from speedtest import Speedtest
 import qrcode 
 from phonenumbers import geocoder, carrier, parse as FuckingPhone
@@ -33,7 +34,7 @@ sudo = botc.sudoS
 #phone = '+989360145942'
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 print(f'{pl.Color.BLACK}\n{pl.Color.BACKGROUND_RED}# ------------- [   Plague Dr.  ] ------------- #{pl.Color.RESET}\n'+pl.Color.DARK_GRAY) 
-bot = TelegramClient('data/SeSioNS/'+botc.SESSION_API_NAME, botc.API_ID, botc.API_HASH).start(bot_token=botc.BOT_TOKEN)
+bot = TelegramClient(botc.SESSION_DIR+botc.SESSION_API_NAME, botc.API_ID, botc.API_HASH)
 clir = pl.bot_redis(StrictRedis, botc.REDIS_NUMBER)
 insta = instaloader.Instaloader()
 pl.check_insta(insta, session = botc.INSTAGRAM[0], username = botc.INSTAGRAM[1], passwd = botc.INSTAGRAM[2])
@@ -280,7 +281,7 @@ async def FuckinGInvalidUseR(event: events.NewMessage.Event):
             await event.edit(f'- User `{user.user_id}` added 2 gorup !') if event.sender_id in Account else await event.reply(f'- User `{user.user_id}` added 2 gorup !')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» FucK Off =| :
-@Client.on(events.NewMessage(pattern = '(W|w)ow', from_users = Account))
+@Client.on(events.NewMessage(pattern = '(W|w)ow', from_users = acc_sudo))
 async def GetFuckinGNuD3(event: events.NewMessage.Event):
     if event.is_reply:
         msg = await event.get_reply_message()
@@ -288,6 +289,28 @@ async def GetFuckinGNuD3(event: events.NewMessage.Event):
             cr_file = pl.create_rend_name(10)
             await Client.download_media(msg.media, os.getcwd()+'/data/photos/'+cr_file)
             await Client.send_file(botc.CHANNEL_FOR_FWD, os.getcwd()+'/data/photos/'+pl.findfile(cr_file, os.getcwd()+'/data/photos'))
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+#   -» find ManageR:
+@Client.on(events.NewMessage(pattern='(F|f)ind', from_users=sudo))
+async def FinDManageR(event: events.NewMessage.Event):
+    cmd = event.raw_text.split()
+    if len(cmd) == 2:
+        if cmd[1] == 'music' and event.is_reply:
+            msg = await event.get_reply_message()
+            if msg.media:
+                filename = pl.create_rend_name(6)
+                await Client.download_media(msg, filename)
+                shazam = Shazam()
+                if event.sender_id in Account:
+                    await event.delete()
+                _sending_msg = await msg.reply('- wait')
+                out = await shazam.recognize_song(filename+'.oga')
+                if out.get('track',None):
+                    msg4send = out['track']['title']+' - '+ out['track']['subtitle']+' - '+ out['track']['genres']['primary']
+                    await _sending_msg.edit(msg4send)
+                else:
+                    await _sending_msg.edit('- not found !')
+                os.remove(filename+'.oga')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» AnTI TabCHI - CaptchA: 
 @Client.on(events.NewMessage(pattern = '(A|a)ntitabchi', from_users = sudo))
