@@ -1,6 +1,6 @@
 #                   [   Plague Dr.  ]
 # - - - - - - - - - - -LIBRarYS- - - - - - - - - - - - #
-from telethon import TelegramClient, events, Button, types, __version__ as tver, connection
+from telethon import TelegramClient, events, Button, types, __version__ as tver
 from telethon.tl.functions.messages import ImportChatInviteRequest, CheckChatInviteRequest
 from telethon.tl.functions.channels import JoinChannelRequest, LeaveChannelRequest, EditBannedRequest, InviteToChannelRequest, EditPhotoRequest
 from telethon.tl.functions.contacts import BlockRequest, UnblockRequest
@@ -881,18 +881,40 @@ async def SetManageR(event: events.NewMessage.Event):
                         await msg.reply('- Don# ! profile SetED !')
                         os.remove(Fil3)
             elif cmd[2] == 'group':
-                if event.is_reply and (event.is_group or event.is_channel):
+                if event.is_reply:
                     msg = await event.get_reply_message()
                     if msg.media:
-                        pic_name = pl.create_rend_name(10)
-                        await Client.download_media(msg.media, file=pic_name)
-                        Fil3 = pl.findfile(pic_name, os.getcwd())
-                        pic = await Client.upload_file(os.getcwd()+'/'+Fil3)
-                        await Client(EditPhotoRequest(event.chat_id, pic))
-                        if event.sender_id in Account:
-                            await event.delete()
-                        await msg.reply('- Don# ! profile SetED !')
-                        os.remove(Fil3)
+                        if len(cmd) > 3:
+                            if cmd[3][0] == '@':
+                                pic_name = pl.create_rend_name(10)
+                                await Client.download_media(msg.media, file=pic_name)
+                                Fil3 = pl.findfile(pic_name, os.getcwd())
+                                pic = await Client.upload_file(os.getcwd()+'/'+Fil3)
+                                await Client(EditPhotoRequest(cmd[3][1:], pic))
+                                if event.sender_id in Account:
+                                    await event.delete()
+                                await msg.reply('- Don# ! profile SetED !')
+                                os.remove(Fil3)
+                            elif cmd[3][0]=='-' and cmd[3][1:].isdigit():
+                                pic_name = pl.create_rend_name(10)
+                                await Client.download_media(msg.media, file=pic_name)
+                                Fil3 = pl.findfile(pic_name, os.getcwd())
+                                pic = await Client.upload_file(os.getcwd()+'/'+Fil3)
+                                await Client(EditPhotoRequest(await Client.get_input_entity(int(cmd[3])), pic))
+                                if event.sender_id in Account:
+                                    await event.delete()
+                                await msg.reply('- Don# ! profile SetED !')
+                                os.remove(Fil3)
+                        elif event.is_reply and (event.is_group or event.is_channel):
+                            pic_name = pl.create_rend_name(10)
+                            await Client.download_media(msg.media, file=pic_name)
+                            Fil3 = pl.findfile(pic_name, os.getcwd())
+                            pic = await Client.upload_file(os.getcwd()+'/'+Fil3)
+                            await Client(EditPhotoRequest(event.chat_id, pic))
+                            if event.sender_id in Account:
+                                await event.delete()
+                            await msg.reply('- Don# ! profile SetED !')
+                            os.remove(Fil3)
             elif cmd[2] == 'delete':
                 await Client(DeletePhotosRequest([(await Client.get_profile_photos('me'))[0]]))
                 await event.edit(f'- Don# ! a Profile DeleTeD !') if event.sender_id in Account else await event.reply(f'- Don# ! a Profile DeleTeD !')
