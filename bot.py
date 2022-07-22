@@ -34,11 +34,11 @@ sudo = botc.sudoS
 #phone = '+989360145942'
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 print(f'{pl.Color.BLACK}\n{pl.Color.BACKGROUND_RED}# ------------- [   Plague Dr.  ] ------------- #{pl.Color.RESET}\n'+pl.Color.DARK_GRAY) 
-bot = TelegramClient(botc.SESSION_DIR+botc.SESSION_API_NAME, botc.API_ID, botc.API_HASH)#, connection=connection.ConnectionTcpMTProxyRandomizedIntermediate, proxy=botc.Mtproto).start(bot_token=botc.BOT_TOKEN)
+bot = TelegramClient(botc.SESSION_DIR+botc.SESSION_API_NAME, botc.API_ID, botc.API_HASH).start(bot_token=botc.BOT_TOKEN)
 clir = pl.bot_redis(StrictRedis, botc.REDIS_NUMBER)
 insta = instaloader.Instaloader()
 pl.check_insta(insta, session = botc.INSTAGRAM[0], username = botc.INSTAGRAM[1], passwd = botc.INSTAGRAM[2])
-Client = TelegramClient('data/SeSioNS/'+botc.SESSION_AC_NAME, botc.API_ID, botc.API_HASH)#, connection=connection.ConnectionTcpMTProxyRandomizedIntermediate, proxy=botc.Mtproto)
+Client = TelegramClient('data/SeSioNS/'+botc.SESSION_AC_NAME, botc.API_ID, botc.API_HASH)
 Client.start()
 print('\t- Client && bot is runing ! go FucKyourSelf && Bye.', pl.Color.RESET)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
