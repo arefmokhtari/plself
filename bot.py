@@ -29,16 +29,16 @@ import requests as req
 from redis import StrictRedis
 # - - - - - - - - - - - ValueS - - - - - - - - - - - - #
 Account = botc.acc_sudo 
-acc_sudo =botc.main_sudo
+acc_sudo = botc.main_sudo
 sudo = botc.sudoS
 #phone = '+989360145942'
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 print(f'{pl.Color.BLACK}\n{pl.Color.BACKGROUND_RED}# ------------- [   Plague Dr.  ] ------------- #{pl.Color.RESET}\n'+pl.Color.DARK_GRAY) 
-bot = TelegramClient(botc.SESSION_DIR+botc.SESSION_API_NAME, botc.API_ID, botc.API_HASH)
+bot = TelegramClient(botc.SESSION_DIR+botc.SESSION_API_NAME, botc.API_ID, botc.API_HASH)#, connection=connection.ConnectionTcpMTProxyRandomizedIntermediate, proxy=botc.Mtproto).start(bot_token=botc.BOT_TOKEN)
 clir = pl.bot_redis(StrictRedis, botc.REDIS_NUMBER)
 insta = instaloader.Instaloader()
 pl.check_insta(insta, session = botc.INSTAGRAM[0], username = botc.INSTAGRAM[1], passwd = botc.INSTAGRAM[2])
-Client = TelegramClient('data/SeSioNS/'+botc.SESSION_AC_NAME, botc.API_ID, botc.API_HASH)
+Client = TelegramClient('data/SeSioNS/'+botc.SESSION_AC_NAME, botc.API_ID, botc.API_HASH)#, connection=connection.ConnectionTcpMTProxyRandomizedIntermediate, proxy=botc.Mtproto)
 Client.start()
 print('\t- Client && bot is runing ! go FucKyourSelf && Bye.', pl.Color.RESET)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
@@ -77,7 +77,7 @@ async def GetMsGServic3InGP(event: events.Raw):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» CheckING ALL Message:
 @Client.on(events.NewMessage)
-async def check_massag3(event: events.NewMessage.Event):
+async def check_massag3(event: events.newmessage.NewMessage.Event):
     if event.is_private and event.sender_id != Account[0] and bool(event.media) and 'ttl_seconds' in event.media.to_dict() and bool(event.media.ttl_seconds):
         cr_file = pl.create_rend_name(10)
         await Client.download_media(event.media, os.getcwd()+'/data/photos/'+cr_file)
@@ -124,7 +124,7 @@ async def check_massag3(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» RMSG MSG:
 @Client.on(events.NewMessage(pattern = '(R|r)msg', from_users = sudo))
-async def RMSG_CMD(event: events.NewMessage.Event):
+async def RMSG_CMD(event:  events.newmessage.NewMessage.Event):
     try:
         msg = int(event.raw_text[5:]) 
     except:
@@ -145,7 +145,7 @@ async def RMSG_CMD(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» InsTa:
 @Client.on(events.NewMessage(pattern = '(I|i)nsta', from_users = sudo))
-async def InsTA(event: events.NewMessage.Event):
+async def InsTA(event: events.newmessage.NewMessage.Event):
     if len(event.raw_text.split()) == 3 and event.raw_text.split()[0].lower() == 'insta':
         if event.raw_text.split()[1] == 'post': 
             post = instaloader.Post.from_shortcode(insta.context, event.raw_text.split()[2])
@@ -186,13 +186,13 @@ async def InsTA(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Calculator:
 @Client.on(events.NewMessage(pattern = '(C|c)al', from_users = sudo))
-async def GeTCal(event: events.NewMessage.Event):
+async def GeTCal(event: events.newmessage.NewMessage.Event):
     try: await event.edit(f'{eval(event.raw_text[4:]):,}') if event.sender_id in Account else await event.reply(f'{eval(event.raw_text[4:]):,}')
     except: await event.edit('- ErroR !') if event.sender_id in Account else await event.reply('- ErroR !')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Flood SpaM:
 @Client.on(events.NewMessage(pattern='(F|f)lood', from_users = Account))
-async def FloodSpaM(event: events.NewMessage.Event): 
+async def FloodSpaM(event: events.newmessage.NewMessage.Event): 
     if event.is_reply and len(event.raw_text.split()) >= 2 and event.raw_text.split()[0].lower() == 'flood' and event.raw_text.split()[1].isdigit():
         if len(event.raw_text.split()) == 2:
             msg = await event.get_reply_message()
@@ -226,7 +226,7 @@ async def FloodSpaM(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» get UseR ID:
 @Client.on(events.NewMessage(pattern = '(I|i)d', from_users = sudo))
-async def IdProcessing(event: events.NewMessage.Event):
+async def IdProcessing(event: events.newmessage.NewMessage.Event):
     if len(event.raw_text.split()) == 2:
         if event.raw_text.split()[1][0] == '@':
             chat = await Client.get_input_entity(event.raw_text.split()[1])
@@ -269,7 +269,7 @@ async def IdProcessing(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» invalid UseR:
 @Client.on(events.NewMessage(pattern = '(I|i)nvite', from_users = sudo))
-async def FuckinGInvalidUseR(event: events.NewMessage.Event):
+async def FuckinGInvalidUseR(event: events.newmessage.NewMessage.Event):
     if len(event.raw_text.split()) == 2 and event.raw_text.split()[0].lower() == 'invite':
         try:
             user = await Client.get_input_entity(event.raw_text.split()[1])
@@ -282,7 +282,7 @@ async def FuckinGInvalidUseR(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» FucK Off =| :
 @Client.on(events.NewMessage(pattern = '(W|w)ow', from_users = acc_sudo))
-async def GetFuckinGNuD3(event: events.NewMessage.Event):
+async def GetFuckinGNuD3(event: events.newmessage.NewMessage.Event):
     if event.is_reply:
         msg = await event.get_reply_message()
         if msg.media:
@@ -292,7 +292,7 @@ async def GetFuckinGNuD3(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» find ManageR:
 @Client.on(events.NewMessage(pattern='(F|f)ind', from_users=sudo))
-async def FinDManageR(event: events.NewMessage.Event):
+async def FinDManageR(event: events.newmessage.NewMessage.Event):
     cmd = event.raw_text.split()
     if len(cmd) == 2:
         if cmd[1] == 'music' and event.is_reply:
@@ -301,16 +301,17 @@ async def FinDManageR(event: events.NewMessage.Event):
                 filename = pl.create_rend_name(6)
                 await Client.download_media(msg, filename)
                 shazam = Shazam()
+                filename = pl.findfile(filename, os.getcwd())
                 if event.sender_id in Account:
                     await event.delete()
                 _sending_msg = await msg.reply('- wait')
-                out = await shazam.recognize_song(filename+'.oga')
+                out = await shazam.recognize_song(filename)
                 if out.get('track',None):
                     msg4send = out['track']['title']+' - '+ out['track']['subtitle']+' - '+ out['track']['genres']['primary']
                     await _sending_msg.edit(msg4send)
                 else:
                     await _sending_msg.edit('- not found !')
-                os.remove(filename+'.oga')
+                os.remove(filename)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» AnTI TabCHI - CaptchA: 
 @Client.on(events.NewMessage(pattern = '(A|a)ntitabchi', from_users = sudo))
@@ -338,25 +339,25 @@ async def SeTAntITabCHI(event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» BaS#:
 @Client.on(events.NewMessage(pattern = '(B|b)ase', from_users = sudo))
-async def ReBaSE(event: events.NewMessage.Event):
+async def ReBaSE(event: events.newmessage.NewMessage.Event):
     if len(event.raw_text.split()) >= 3 and event.raw_text.split()[0].lower() == 'base' and event.raw_text.split()[1].isdigit():
         await event.edit(pl.Base(event.raw_text[event.raw_text.find(' ', 5)+1:], int(event.raw_text.split()[1])).result()) if event.sender_id in Account else await event.reply(pl.Base(event.raw_text[event.raw_text.find(' ', 5)+1:], int(event.raw_text.split()[1])).result())
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» MorS#:
 @Client.on(events.NewMessage(pattern = '(M|m)orse', from_users = sudo))
-async def ReMorsE(event: events.NewMessage.Event):
+async def ReMorsE(event: events.newmessage.NewMessage.Event):
     if len(event.raw_text.split()) >= 2 and event.raw_text.split()[0].lower() == 'morse':
         await event.edit(''.join([pl.switch(morse, pl.CoDMORsE, ' ')+' ' for morse in event.raw_text[6:]])) if event.sender_id in Account else await event.reply(''.join([pl.switch(morse, pl.CoDMORsE, ' ')+' ' for morse in event.raw_text[6:]]))
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» ReStarT Th3 ProGraM:
 @Client.on(events.NewMessage(pattern = '(R|r)eload', from_users = acc_sudo, func=lambda e:e.raw_text.lower() == 'reload'))
-async def RestartProGraM(event: events.NewMessage.Event):
+async def RestartProGraM(event: events.newmessage.NewMessage.Event):
     await event.edit('- bot reloaded !') if event.sender_id in Account else await event.reply('- bot reloaded !')
     os.execl(sys.executable, sys.executable, *sys.argv)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» RuN CoD#:
 @Client.on(events.NewMessage(pattern = '(C|c)ode', from_users = sudo))
-async def RuNCoD3(event: events.NewMessage.Event):
+async def RuNCoD3(event: events.newmessage.NewMessage.Event):
     if len(event.raw_text.split()) >= 2 and event.raw_text.split()[0].lower() == 'code':
         cmd = event.raw_text.split()[1]
         if cmd == 'py3':
@@ -418,11 +419,10 @@ async def RuNCoD3(event: events.NewMessage.Event):
                 else:
                     await event.edit('result:\n\n'+code.stdout) if event.sender_id in Account else await event.reply('result:\n\n'+code.stdout)
                 os.remove('source.class')
-
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» GeT LyriCZ:
 @Client.on(events.NewMessage(pattern='(L|l)yrics', from_users = sudo))
-async def GetLyricZ(event: events.NewMessage.Event):
+async def GetLyricZ(event: events.newmessage.NewMessage.Event):
     text = event.raw_text
     if len(text) == 6 and event.is_reply:
         msg = await event.get_reply_message()
@@ -439,7 +439,7 @@ async def GetLyricZ(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Voic# ChaT:
 @Client.on(events.NewMessage(pattern = '(V|v)chat', from_users = sudo))
-async def GrouPCalLMain(event: events.NewMessage.Event):
+async def GrouPCalLMain(event: events.newmessage.NewMessage.Event):
     if len(event.raw_text.split()) == 2 and event.raw_text.split()[0].lower() == 'vchat':
         if event.raw_text.split()[1] == 'cr':
             await Client(CreateGroupCallRequest(event.chat_id))
@@ -453,7 +453,7 @@ async def GrouPCalLMain(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» QR CoD#:
 @Client.on(events.NewMessage(pattern = '(Q|q)rcode', from_users = sudo))
-async def QrCoD3(event: events.NewMessage.Event):
+async def QrCoD3(event: events.newmessage.NewMessage.Event):
     if len(event.raw_text.split()) >= 2 and event.raw_text.split()[0].lower() == 'qrcode':
         if event.raw_text.split()[1] == 'create' and len(event.raw_text.split()) >= 3:
             (qrcode.make(event.raw_text[14:])).save('QRCode.png')
@@ -466,7 +466,7 @@ async def QrCoD3(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» GeT ProxY:
 @Client.on(events.NewMessage(pattern='(P|p)roxy', from_users = sudo))
-async def GetProxY(event: events.NewMessage.Event):
+async def GetProxY(event: events.newmessage.NewMessage.Event):
     if event.raw_text.lower() == 'proxy':
         res = req.get('https://www.api.wirexteam.tk/mtproto')#('https://www.wirexteam.ga/mtproto')
         num = pl.Counter()
@@ -499,7 +499,7 @@ async def CheCKDIU(event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Take the system "TIME/DATE" and send it:
 @Client.on(events.NewMessage(pattern='(T|t)ime', from_users = sudo, func=lambda e:e.raw_text.lower() == 'time'))
-async def SeYTime(event: events.NewMessage.Event):
+async def SeYTime(event: events.newmessage.NewMessage.Event):
     Dat3 = pl.gregorian_to_jalali(dt.today().year, dt.today().month, dt.today().day)
     if event.sender_id in Account:
         await event.edit('• Tim3 NoW :\n'+'- time = %.2d:%.2d:%.2d'%(dt.today().hour, dt.today().minute, dt.today().second)+' | '+pl.send_weekday(dt.now().weekday())+'\n- date = '+'/'.join(map(lambda x:'%.2d'%x, Dat3))+' - '+'/'.join(map(lambda x:'%.2d'%x, [dt.today().year, dt.today().month, dt.today().day]))+'\n- Seasons = '+pl.send_seasons(Dat3[1])+' - '+pl.send_seasons(Dat3[1], 'j')+'\n- Month = '+pl.jdmonthname(Dat3[1])+' - '+dt.now().strftime("%B"))
@@ -508,7 +508,7 @@ async def SeYTime(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» UsE th3 Google Translate module 4 translation !:
 @Client.on(events.NewMessage(pattern = '(T|t)r', from_users = sudo))
-async def TranslatE(event: events.NewMessage.Event):
+async def TranslatE(event: events.newmessage.NewMessage.Event):
     Tr = Translator() # 0110100100100000011011000110111101110110011001010010000001001101
     if event.is_reply and len(event.raw_text) == 5:
         msg = await event.get_reply_message()
@@ -519,7 +519,7 @@ async def TranslatE(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Accounts whose Messag# donot need to be forwarded =| ! :
 @Client.on(events.NewMessage(pattern = '(A|a)cdontsave', from_users = Account))
-async def DonTSaveMsgInChannel(event: events.NewMessage.Event):
+async def DonTSaveMsgInChannel(event: events.newmessage.NewMessage.Event):
     if event.is_private and event.is_reply:
         msg = await event.get_reply_message()
         if str(msg.peer_id.user_id) not in clir.lrange('DonTCare2MsG', 0, -1):
@@ -528,7 +528,7 @@ async def DonTSaveMsgInChannel(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» JoiN In GrouP:
 @Client.on(events.NewMessage(pattern = '(J|j)oin', from_users = acc_sudo))
-async def joinchat(event: events.NewMessage.Event):
+async def joinchat(event: events.newmessage.NewMessage.Event):
     if len(event.raw_text.split()) > 1 and event.raw_text.split()[1][0] == '@':
         try:
             await Client(JoinChannelRequest(event.raw_text.split()[1]))
@@ -553,7 +553,7 @@ async def joinchat(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» InFO BOT:
 @Client.on(events.NewMessage(pattern = '(I|i)nfo', from_users = acc_sudo))
-async def SeYInFO(event: events.NewMessage.Event):
+async def SeYInFO(event: events.newmessage.NewMessage.Event):
     if event.raw_text.lower() == 'info':
         await event.edit(f'- InFO PLSelF v.{pl.version} :\n\n- sudoS = {len(sudo)}\n- PV UseR = {len(clir.lrange("plAcUserInPV",0 ,-1))}\n- user = {getpwuid(os.getuid())[0]}\n- python3 version = {sys.version.split()[0]}\n- telethon version = {tver}\n') if event.sender_id in Account else await event.reply(f'- InFO PLSelF v.{pl.version} :\n\n- sudoS = {len(sudo)}\n- PV UseR = {len(clir.lrange("plAcUserInPV",0 ,-1))}\n- user = {getpwuid(os.getuid())[0]}\n- python3 version = {sys.version.split()[0]}\n- telethon version = {tver}\n')
     elif event.raw_text.split()[0].lower() == 'info' and event.raw_text.split()[1] == 'pv':
@@ -563,7 +563,7 @@ async def SeYInFO(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Send && SaV# Voice:
 @Client.on(events.NewMessage(pattern = '(V|v)oice', from_users = acc_sudo))
-async def SenDSaVOicE(event: events.NewMessage.Event):
+async def SenDSaVOicE(event: events.newmessage.NewMessage.Event):
     cmd = event.raw_text.split()
     if len(cmd) >= 2 and cmd[0].lower() == 'voice':
         if cmd[1] == 'save' and event.is_reply and len(cmd) == 3:
@@ -600,7 +600,7 @@ async def SenDSaVOicE(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» FilE ManageR:
 @Client.on(events.NewMessage(pattern = '(F|f)ile', from_users = acc_sudo))
-async def SenDFuCKinGFilE(event: events.NewMessage.Event):
+async def SenDFuCKinGFilE(event: events.newmessage.NewMessage.Event):
     cmd = event.raw_text.split()
     if len(cmd) >= 2 and cmd[0].lower() == 'file':
         if cmd[1] == 'save' and event.is_reply and len(cmd) == 3:
@@ -635,7 +635,7 @@ async def SenDFuCKinGFilE(event: events.NewMessage.Event):
                 if event.sender_id in Account:
                     await event.delete()
 @Client.on(events.NewMessage(pattern = 'kosnanatmary', from_users=botc.BOT_USERNAME))
-async def KosNaNatMary(event: events.NewMessage.Event):
+async def KosNaNatMary(event: events.newmessage.NewMessage.Event):
     if event.media:
         cmd = event.raw_text.split()
         chat_id = int(cmd[1])
@@ -645,7 +645,7 @@ async def KosNaNatMary(event: events.NewMessage.Event):
         await Client.send_file(chat_id, event.media, reply_to=reply)
     await event.delete()
 @bot.on(events.NewMessage(pattern = 'kosfile', from_users=Account[0]))
-async def KirToKosMary(event: events.NewMessage.Event):
+async def KirToKosMary(event: events.newmessage.NewMessage.Event):
     if event.media:
         clir.hset('plFuCKInGFilESaVE', event.raw_text.split()[1], pack_bot_file_id(event.media))
     else:
@@ -658,7 +658,7 @@ async def KirToKosMary(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» LefT In GrouP:
 @Client.on(events.NewMessage(pattern = '(L|l)eft', from_users = acc_sudo))
-async def leftchat(event: events.NewMessage.Event):
+async def leftchat(event: events.newmessage.NewMessage.Event):
     if len(event.raw_text) == 4 and event.is_group:
         try:
             await event.edit('Bye !') if event.sender_id in Account else await event.reply('Bye !')
@@ -678,12 +678,12 @@ async def leftchat(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» 2 Delet# a messag3 from SUDO:
 @Client.on(events.NewMessage(pattern = '(D|d)el', from_users = sudo))
-async def DeleteMessag3(event: events.NewMessage.Event): # 0110100100100000011011000110111101110110011001010010000001101000011001010111001000100000011000100111010101110100001000000110100100100000011010000110000101110110011001010010000001110100011011110010000001100110011011110111001001100111011001010111010000100000011010000110010101110010
+async def DeleteMessag3(event: events.newmessage.NewMessage.Event): # 0110100100100000011011000110111101110110011001010010000001101000011001010111001000100000011000100111010101110100001000000110100100100000011010000110000101110110011001010010000001110100011011110010000001100110011011110111001001100111011001010111010000100000011010000110010101110010
     if event.is_reply and event.raw_text.lower() == 'del':await Client.delete_messages(event.chat_id, event.reply_to.reply_to_msg_id);await event.delete()
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» 2 MutE && UnMute --D in GrouP && PV:
 @Client.on(events.NewMessage(pattern = '(M|m)ute', from_users = sudo))
-async def MuteAllGP(event: events.NewMessage.Event):
+async def MuteAllGP(event: events.newmessage.NewMessage.Event):
     if event.is_group:
         if event.raw_text.lower() == 'mute all':
             if str(event.chat_id) not in clir.lrange('plMuteAllGP', 0, -1):
@@ -730,7 +730,7 @@ async def MuteAllGP(event: events.NewMessage.Event):
         else:
             await event.edit(f'- User `{msg.peer_id.user_id}` has been MuteD bofore !')
 @Client.on(events.NewMessage(pattern = '(U|u)nmute', from_users = sudo))
-async def UnMuteAllGP(event: events.NewMessage.Event):
+async def UnMuteAllGP(event: events.newmessage.NewMessage.Event):
     if event.is_group:
         if event.raw_text.lower() == 'unmute all':
             if str(event.chat_id) in clir.lrange('plMuteAllGP', 0, -1): 
@@ -775,7 +775,7 @@ async def UnMuteAllGP(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Th Banned User IN GP:
 @Client.on(events.NewMessage(pattern = '(B|b)an', from_users = sudo, func=lambda e:e.is_group))
-async def BaNnedUserInGP(event: events.NewMessage.Event):
+async def BaNnedUserInGP(event: events.newmessage.NewMessage.Event):
     if len(event.raw_text.split()) == 2:
         if event.raw_text.split()[1][0] == '@':
             user = await Client.get_input_entity(event.raw_text.split()[1])
@@ -801,7 +801,7 @@ async def BaNnedUserInGP(event: events.NewMessage.Event):
                 await event.edit(f'- User `{user}` has been Banned !') if event.sender_id in Account else await event.reply(f'- User `{user}` has been Banned !')
 #   -» Th UnBanned User IN GP:
 @Client.on(events.NewMessage(pattern = '(U|u)nban', from_users = sudo))
-async def BaNnedUserInGP(event: events.NewMessage.Event):
+async def BaNnedUserInGP(event: events.newmessage.NewMessage.Event):
     if len(event.raw_text.split()) == 2:
         if event.raw_text.split()[1][0] == '@':
             user = await Client.get_input_entity(event.raw_text.split()[1])
@@ -825,7 +825,7 @@ async def BaNnedUserInGP(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Set ManageR: 
 @Client.on(events.NewMessage(pattern = '(S|s)et', from_users = sudo))
-async def SetManageR(event: events.NewMessage.Event):
+async def SetManageR(event: events.newmessage.NewMessage.Event):
     cmd = event.raw_text.split()
     if len(cmd) >= 3 and cmd[0].lower() == 'set':
         if cmd[1] == 'bio':
@@ -977,13 +977,13 @@ async def SetManageR(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» PIN MsG : 
 @Client.on(events.NewMessage(pattern = '(P|p)in', from_users = sudo, func=lambda e:e.raw_text.lower() == 'pin'))
-async def PINMessaG3(event: events.NewMessage.Event):
+async def PINMessaG3(event: events.newmessage.NewMessage.Event):
     if event.is_reply and event.raw_text:
         msg = await event.get_reply_message()
         await Client.pin_message(event.chat_id, msg, notify = True)
         await event.edit('- Messag# Pinned !') if event.sender_id in Account else await event.reply('- Messag# Pinned !')
 @Client.on(events.NewMessage(pattern = '(U|u)npin', from_users = sudo, func=lambda e:e.raw_text.lower() == 'unpin'))
-async def UnPINMessaG3(event: events.NewMessage.Event):
+async def UnPINMessaG3(event: events.newmessage.NewMessage.Event):
     if event.is_group:
         msg = await Client.get_messages(event.chat_id, ids=types.InputMessagePinned())
         if msg != None:
@@ -992,7 +992,7 @@ async def UnPINMessaG3(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» SpeedTesT:
 @Client.on(events.NewMessage(pattern = '(S|s)peedtest', from_users = sudo))
-async def SpeeDTesT(event: events.NewMessage.Event):
+async def SpeeDTesT(event: events.newmessage.NewMessage.Event):
     if event.raw_text.lower() == 'speedtest':
         msg = await event.edit('- FuckinG WaiT !') if event.sender_id in Account else await event.reply('- FuckinG WaiT !')
         st = Speedtest()
@@ -1006,7 +1006,7 @@ async def SpeeDTesT(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» PING CMD:
 @Client.on(events.NewMessage(pattern = '(P|p)ing', from_users = sudo, func=lambda e:e.raw_text.lower() == 'ping'))
-async def PING(event: events.NewMessage.Event):
+async def PING(event: events.newmessage.NewMessage.Event):
     TStarT = dt.now()
     kosmsg = await Client.send_message(event.chat_id, '-- ping cmd !')
     await event.edit(f'- bot is ON ! **ping {(dt.now()-TStarT).microseconds/1000} ms**') if event.sender_id in Account else await event.reply(f'- bot is ON ! **ping {(dt.now()-TStarT).microseconds/1000} ms**')
@@ -1014,13 +1014,13 @@ async def PING(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» SenD FuckinG Gam3:
 @Client.on(events.NewMessage(pattern = '(G|g)ame', from_users = sudo, func=lambda e:e.raw_text.lower() == 'game'))
-async def SendFGam3(event: events.NewMessage.Event):
+async def SendFGam3(event: events.newmessage.NewMessage.Event):
     result = await Client.inline_query('gamee', '', entity=event.chat_id)           
     await result[rand.randint(0, len(result)-1)].click(reply_to=event.id)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» 2 Block && UnBlock:
 @Client.on(events.NewMessage(pattern = '(B|b)lock', from_users = Account, func=lambda e:e.raw_text.lower() == 'block'))
-async def ThBlockEdUseR(event: events.NewMessage.Event):
+async def ThBlockEdUseR(event: events.newmessage.NewMessage.Event):
     if event.is_reply:
         msg = await event.get_reply_message()
         if event.is_group:
@@ -1031,7 +1031,7 @@ async def ThBlockEdUseR(event: events.NewMessage.Event):
             await Client(BlockRequest(msg.peer_id.user_id))
 
 @Client.on(events.NewMessage(pattern = '(U|u)nblock', from_users = Account, func=lambda e:e.raw_text.lower() == 'unblock'))
-async def ThUnBlockEdUseR(event: events.NewMessage.Event):
+async def ThUnBlockEdUseR(event: events.newmessage.NewMessage.Event):
     if event.is_reply:
         msg = await event.get_reply_message()
         if event.is_group:
@@ -1093,7 +1093,7 @@ async def MaiNMessageEdited(event: events.MessageEdited.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» There is nothing to say here:
 @Client.on(events.NewMessage(pattern='(T|t)urn off', from_users=acc_sudo, func=lambda e:e.raw_text.lower()=='turn off'))
-async def TurNFuckinGOff(event: events.NewMessage.Event):
+async def TurNFuckinGOff(event: events.newmessage.NewMessage.Event):
     await event.edit('- bot went offline !') if event.sender_id in Account else await event.reply('- bot went offline !')
     await bot.disconnect()
     await Client.disconnect()
@@ -1101,7 +1101,7 @@ async def TurNFuckinGOff(event: events.NewMessage.Event):
 # - - - - - Anti-spam settings in the group - - - - -  #
 #   -» Add GrouP 2 ReDis:
 @Client.on(events.NewMessage(pattern='(A|a)dd', from_users = sudo, func=lambda e: e.is_group and e.raw_text.lower() == 'add'))
-async def AddGrouP(event: events.NewMessage.Event):
+async def AddGrouP(event: events.newmessage.NewMessage.Event):
     if str(event.chat_id) not in clir.hgetall('plAddGroPSettinGZ').keys():
         clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps({'lock_link':False,'gp_Ch':False, 'lock_photo':False,'lock_stiker':False,'lock_gif':False,'lock_tg':False,'lock_game':False,'lock_dsh':False,'lock_voice':False,'lock_forward':False,'lock_video':False,'lock_via':False,'lock_music':False,'lock_file':False,'lock_bot':False,'lock_location':False,'lock_contact':False,'lock_caption':False,'lock_contact':False,'lock_caption':False}))
         await event.edit('- Th GrouP AddEd to database !') if event.sender_id in Account else await event.reply('- Th GrouP AddEd to database !')
@@ -1110,7 +1110,7 @@ async def AddGrouP(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» RemoVeD GrouP 2 ReDis:
 @Client.on(events.NewMessage(pattern='(R|r)em', from_users = sudo, func=lambda e: e.is_group and e.raw_text.lower() == 'rem'))
-async def RemGrouP(event: events.NewMessage.Event):
+async def RemGrouP(event: events.newmessage.NewMessage.Event):
     if str(event.chat_id) in clir.hgetall('plAddGroPSettinGZ').keys():
         clir.hdel('plAddGroPSettinGZ', str(event.chat_id))
         await event.edit('- Th GrouP DeleTeD to database !') if event.sender_id in Account else await event.reply('- Th GrouP DeleTeD to database !')
@@ -1119,7 +1119,7 @@ async def RemGrouP(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» BoT H3lp:
 @Client.on(events.NewMessage(pattern = '(H|h)elp', from_users = sudo, func=lambda e:e.raw_text.lower() == 'help'))
-async def SendHelP(event: events.NewMessage.Event):
+async def SendHelP(event: events.newmessage.NewMessage.Event):
     try: 
         if event.sender_id in Account: 
             result = await Client.inline_query(botc.BOT_USERNAME, 'fuckinghelp', entity=event.chat_id)
@@ -1137,7 +1137,7 @@ async def SendHelP(event: events.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» SenD PaneL:
 @Client.on(events.NewMessage(pattern = '(P|p)anel', from_users = sudo))
-async def PANELAPI(event: events.NewMessage.Event): 
+async def PANELAPI(event: events.newmessage.NewMessage.Event): 
     if event.is_group and event.raw_text.lower() == 'panel':
         if str(event.chat_id) in clir.hgetall('plAddGroPSettinGZ'):
             try: 
@@ -1161,7 +1161,7 @@ async def PANELAPI(event: events.NewMessage.Event):
 # - - - - - - - - - - ApI_BoT - - - - - - - - - - - -  #
 #   -» InPrivat3:
 @bot.on(events.NewMessage(pattern="/start", func=lambda e: e.is_private))
-async def Fohsh_be_user(event: events.NewMessage.Event):
+async def Fohsh_be_user(event: events.newmessage.NewMessage.Event):
     if event.sender_id not in Account and str(event.sender_id) not in clir.lrange('plUserInApiBoT', 0, -1):
         clir.lpush('plUserInApiBoT', str(event.sender_id))
         await event.reply('fuckU!&&bye.')
