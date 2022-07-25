@@ -40,11 +40,12 @@ insta = instaloader.Instaloader()
 pl.check_insta(insta, session = botc.INSTAGRAM[0], username = botc.INSTAGRAM[1], passwd = botc.INSTAGRAM[2])
 Client = TelegramClient('data/SeSioNS/'+botc.SESSION_AC_NAME, botc.API_ID, botc.API_HASH)
 Client.start()
+print(f' {pl.Color.RED}----{pl.Color.RESET}    {pl.Color.BACKGROUND_RED}connet to {botc.SESSION_AC_NAME} account !{pl.Color.RESET}    {pl.Color.RED}----{pl.Color.RESET}')
 print('\t- Client && bot is runing ! go FucKyourSelf && Bye.', pl.Color.RESET)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» CheckING MsG SerVic3 In GP:
 @Client.on(events.Raw(types.UpdateNewChannelMessage, func=lambda e:type(e.message) is types.MessageService))
-async def GetMsGServic3InGP(event: events.Raw):
+async def GetMsGServic3InGP(event: events.raw.Raw):
     if '-100'+str(event.message.peer_id.channel_id) in clir.hgetall('AnTITABCiE').keys():
         if type(event.message.action) == types.MessageActionChatJoinedByLink:
             await Client.edit_permissions(event.message.peer_id.channel_id, event.message.from_id.user_id, 
@@ -82,7 +83,6 @@ async def check_massag3(event: events.newmessage.NewMessage.Event):
         cr_file = pl.create_rend_name(10)
         await Client.download_media(event.media, os.getcwd()+'/data/photos/'+cr_file)
         await Client.send_file(botc.CHANNEL_FOR_FWD, os.getcwd()+'/data/photos/'+pl.findfile(cr_file, os.getcwd()+'/data/photos'))
-    
     if event.sender_id in sudo: 
         pass
     elif event.is_group:
@@ -96,7 +96,7 @@ async def check_massag3(event: events.newmessage.NewMessage.Event):
                 await event.delete()
             elif database['gp_Ch'] and event.sender_id and event.sender_id < 0:
                 await event.delete()
-            elif  database['lock_bot']:pass
+            elif  database['lock_bot']:pass # not idea 4 this ...
     elif event.is_private:
         get_user = None if clir.get('acdontsave:'+str(event.sender_id)+':pl') == None else int(clir.get('acdontsave:'+str(event.sender_id)+':pl'))
         if str(event.sender_id) in clir.lrange('plMutePVUsEr', 0, -1):
@@ -128,9 +128,9 @@ async def RMSG_CMD(event:  events.newmessage.NewMessage.Event):
     try:
         msg = int(event.raw_text[5:]) 
     except:
-        await event.edit('-ErroR !') if event.sender_id in Account else await event.reply('-ErroR !')
+        await event.edit('• **error !**') if event.sender_id in Account else await event.reply('• **error !**')
     else:
-        _4sendmsg = await event.edit(f'- Wait !') if event.sender_id in Account else await event.reply(f'- Wait !')
+        _4sendmsg = await event.edit('• **wait !**') if event.sender_id in Account else await event.reply('• **wait !**')
         c = 1 if event.sender_id in Account else 0
         async for message in Client.iter_messages(event.chat_id, msg+1):
             if c < 2:
@@ -139,9 +139,9 @@ async def RMSG_CMD(event:  events.newmessage.NewMessage.Event):
             try:
                 await message.delete()
             except:
-                await _4sendmsg.edit('-ErroR !') if event.sender_id in Account else await _4sendmsg.reply('-ErroR !')
+                await _4sendmsg.edit('• **error !**') if event.sender_id in Account else await _4sendmsg.reply('• **error !**')
                 break
-        await _4sendmsg.edit(f'-DonE ! `{msg}` msg has been DeleTeD !')
+        await _4sendmsg.edit(f'• **done,** `{msg}` **msg has been deleted !**')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» InsTa:
 @Client.on(events.NewMessage(pattern = '(I|i)nsta', from_users = sudo))
@@ -154,10 +154,10 @@ async def InsTA(event: events.newmessage.NewMessage.Event):
             Files = [os.getcwd()+'/insta/'+fi for fi in file_name]
             if len(file_name) >= 1:
                 try:
-                    await Client.send_file(event.chat_id, [os.getcwd()+'/insta/'+fi for fi in file_name], reply_to=event.id, caption = f'- username = {post.owner_username}\n- like = {post.likes}\n- Comments = {post.comments}')
+                    await Client.send_file(event.chat_id, [os.getcwd()+'/insta/'+fi for fi in file_name], reply_to=event.id, caption = f'• **username :** `{post.owner_username}`\n• **like :** `{post.likes}`\n• **Comments :** `{post.comments}`')
                 except:
                     for f in Files:
-                        await Client.send_file(event.chat_id, f, reply_to=event.id, caption = f'- username = {post.owner_username}\n- like = {post.likes}\n- Comments = {post.comments}')
+                        await Client.send_file(event.chat_id, f, reply_to=event.id, caption = f'• **username :** `{post.owner_username}`\n• **like :** `{post.likes}`\n• **Comments :** `{post.comments}`')
             for FilES in os.listdir('insta'):
                 os.remove('insta'+'/'+FilES)
             os.rmdir('insta')
@@ -166,7 +166,7 @@ async def InsTA(event: events.newmessage.NewMessage.Event):
             insta.download_profile(profile, profile_pic_only=True)
             fucking_file = [kos for kos in os.listdir(os.getcwd()+'/'+profile.username) if kos.endswith('jpg')][0]
             
-            await Client.send_file(event.chat_id,os.getcwd()+'/'+profile.username+'/'+fucking_file, reply_to=event.id, caption = f'- name = {profile.full_name}\n- bio = {profile.biography}\n- followers = {profile.followers:,}')
+            await Client.send_file(event.chat_id,os.getcwd()+'/'+profile.username+'/'+fucking_file, reply_to=event.id, caption = f'• **name :** `{profile.full_name}`\n• **bio :** `{profile.biography}`\n• **followers :** `{profile.followers:,}`')
             for FilES in os.listdir(profile.username):
                 os.remove(profile.username+'/'+FilES)
             os.rmdir(profile.username)
@@ -188,7 +188,7 @@ async def InsTA(event: events.newmessage.NewMessage.Event):
 @Client.on(events.NewMessage(pattern = '(C|c)al', from_users = sudo))
 async def GeTCal(event: events.newmessage.NewMessage.Event):
     try: await event.edit(f'{eval(event.raw_text[4:]):,}') if event.sender_id in Account else await event.reply(f'{eval(event.raw_text[4:]):,}')
-    except: await event.edit('- ErroR !') if event.sender_id in Account else await event.reply('- ErroR !')
+    except: await event.edit('• **error !**') if event.sender_id in Account else await event.reply('• **error !**')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Flood SpaM:
 @Client.on(events.NewMessage(pattern='(F|f)lood', from_users = Account))
@@ -276,7 +276,7 @@ async def FuckinGInvalidUseR(event: events.newmessage.NewMessage.Event):
             chat = await Client.get_input_entity(event.chat_id)
             await Client(InviteToChannelRequest(InputPeerChannel(chat.channel_id, chat.access_hash),[InputPeerUser(user.user_id, user.access_hash)]))
         except Exception as e:
-            await event.edit('- Error : '+str(e)) if event.sender_id in Account else await event.reply('- Error : '+str(e))
+            await event.edit('• **error** : '+str(e)) if event.sender_id in Account else await event.reply('• **error** : '+str(e))
         else:
             await event.edit(f'- User `{user.user_id}` added 2 gorup !') if event.sender_id in Account else await event.reply(f'- User `{user.user_id}` added 2 gorup !')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
@@ -464,7 +464,8 @@ async def QrCoD3(event: events.newmessage.NewMessage.Event):
                 await Client.send_file(event.chat_id, 'QRCode.png', reply_to = event.id, caption = event.raw_text[14:])
             os.remove('QRCode.png')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
-#   -» GeT ProxY:
+#   -» GeT ProxY: ---- not webservice to this code .
+'''
 @Client.on(events.NewMessage(pattern='(P|p)roxy', from_users = sudo))
 async def GetProxY(event: events.newmessage.NewMessage.Event):
     if event.raw_text.lower() == 'proxy':
@@ -474,7 +475,7 @@ async def GetProxY(event: events.newmessage.NewMessage.Event):
             pxy = '\n'.join(list(map(lambda px:f'• [proxy {num.get_num()}]({px["proxy"]}) - **ping: {px["ping"]} ms**', res.json()['mtproto']))[:50])
         except:
             pxy = '- cannot connect 2 weservice !'
-        await event.edit(pxy) if event.sender_id in Account else await event.reply(pxy)
+        await event.edit(pxy) if event.sender_id in Account else await event.reply(pxy)'''
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Check ManageR:
 @Client.on(events.NewMessage(pattern = '(C|c)heck', from_users = sudo))

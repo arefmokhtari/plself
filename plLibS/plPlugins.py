@@ -1,6 +1,7 @@
 #                   [   Plague Dr.  ]
 import os, random, re
 from math import ceil
+from . import coinmarketcap
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 def crtiktok(numbers: list) -> list:
     c = 0
@@ -233,4 +234,6 @@ def send_weekday(day: int):
 def edit_source_run(code: str, file: str):
     with open(file, 'w') as f:
         f.write(code)
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+coin = coinmarketcap.getCoin
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #

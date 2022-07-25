@@ -11,3 +11,4 @@ instaloader
 apscheduler
 phonenumbers
 shazamio
+beautifulsoup4
