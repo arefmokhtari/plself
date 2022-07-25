@@ -7,7 +7,7 @@ from telethon.tl.functions.contacts import BlockRequest, UnblockRequest
 from telethon.tl.types import InputPeerChannel, InputPeerUser, ChatBannedRights
 from telethon.tl.functions.photos import DeletePhotosRequest, UploadProfilePhotoRequest
 from telethon.tl.functions.account import UpdateProfileRequest, UpdateUsernameRequest
-from telethon.tl.functions.phone import JoinGroupCallRequest, CreateGroupCallRequest
+#from telethon.tl.functions.phone import JoinGroupCallRequest, CreateGroupCallRequest
 from telethon.errors.rpcerrorlist import MessageNotModifiedError
 from telethon.utils import pack_bot_file_id
 from googletrans import Translator
@@ -278,7 +278,7 @@ async def FuckinGInvalidUseR(event: events.newmessage.NewMessage.Event):
         except Exception as e:
             await event.edit('• **error** : '+str(e)) if event.sender_id in Account else await event.reply('• **error** : '+str(e))
         else:
-            await event.edit(f'- User `{user.user_id}` added 2 gorup !') if event.sender_id in Account else await event.reply(f'- User `{user.user_id}` added 2 gorup !')
+            await event.edit(f'• **user** `{user.user_id}` **added to gorup !**') if event.sender_id in Account else await event.reply(f'• **User** `{user.user_id}` **added 2 gorup !**')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» FucK Off =| :
 @Client.on(events.NewMessage(pattern = '(W|w)ow', from_users = acc_sudo))
@@ -304,13 +304,13 @@ async def FinDManageR(event: events.newmessage.NewMessage.Event):
                 filename = pl.findfile(filename, os.getcwd())
                 if event.sender_id in Account:
                     await event.delete()
-                _sending_msg = await msg.reply('- wait')
+                _sending_msg = await msg.reply('• **wait !**')
                 out = await shazam.recognize_song(filename)
                 if out.get('track',None):
                     msg4send = out['track']['title']+' - '+ out['track']['subtitle']+' - '+ out['track']['genres']['primary']
                     await _sending_msg.edit(msg4send)
                 else:
-                    await _sending_msg.edit('- not found !')
+                    await _sending_msg.edit('• **not found !**')
                 os.remove(filename)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» AnTI TabCHI - CaptchA: 
@@ -352,7 +352,7 @@ async def ReMorsE(event: events.newmessage.NewMessage.Event):
 #   -» ReStarT Th3 ProGraM:
 @Client.on(events.NewMessage(pattern = '(R|r)eload', from_users = acc_sudo, func=lambda e:e.raw_text.lower() == 'reload'))
 async def RestartProGraM(event: events.newmessage.NewMessage.Event):
-    await event.edit('- bot reloaded !') if event.sender_id in Account else await event.reply('- bot reloaded !')
+    await event.edit('• **bot reloaded !**') if event.sender_id in Account else await event.reply('• **bot reloaded !**')
     os.execl(sys.executable, sys.executable, *sys.argv)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» RuN CoD#:
@@ -364,60 +364,60 @@ async def RuNCoD3(event: events.newmessage.NewMessage.Event):
             file = os.getcwd()+'/data/code/'+'source.py'
             pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
             code = subprocess.run(['python3', file], capture_output=True, text=True)
-            await event.edit('result:\n\n'+code.stdout+'\n\nError:\n\n'+code.stderr) if event.sender_id in Account else await event.reply('result:\n\n'+code.stdout+'\n\nError:\n\n'+code.stderr)
+            await event.edit('• **result:**\n\n`'+code.stdout+'`\n\n• **Error:**\n\n`'+code.stderr+'`') if event.sender_id in Account else await event.reply('• **result:**\n\n`'+code.stdout+'`\n\n• **Error:**\n\n`'+code.stderr+'`')
         elif cmd == 'py2':
             file = os.getcwd()+'/data/code/'+'source.py'
             pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
             code = subprocess.run(['python2', file], capture_output=True, text=True)
-            await event.edit('result:\n\n'+code.stdout+'\n\nError:\n\n'+code.stderr) if event.sender_id in Account else await event.reply('result:\n\n'+code.stdout+'\n\nError:\n\n'+code.stderr)
+            await event.edit('• **result:**\n\n`'+code.stdout+'`\n\n• **Error:**\n\n`'+code.stderr+'`') if event.sender_id in Account else await event.reply('• **result:**\n\n`'+code.stdout+'`\n\n• **Error:**\n\n`'+code.stderr+'`')
         elif cmd == 'help':
-            t = 'cmds :\npy3\npy2\ncpp\nc\nlua\njava'
+            t = '• **cmds :**\n`py3`\n`py2`\n`cpp`\n`c`\n`lua`\n`java`'
             await event.edit(t) if event.sender_id in Account else await event.reply(t)
         elif cmd == 'cpp':
             file = os.getcwd()+'/data/code/'+'source.cpp'
             pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
             s = subprocess.run(['g++', '-std=c++11', file], capture_output=True, text=True)
             if s.stderr != '':
-                await event.edit('Error:\n\n'+s.stderr) if event.sender_id in Account else await event.reply('Error:\n\n'+s.stderr)
+                await event.edit('• **error:**\n\n`'+s.stderr+'`') if event.sender_id in Account else await event.reply('• **error:**\n\n`'+s.stderr+'`')
                 return
             else:
                 code = subprocess.run(['./a.out'], capture_output=True, text=True)
-                await event.edit('result:\n\n'+code.stdout) if event.sender_id in Account else await event.reply('result:\n\n'+code.stdout)
+                await event.edit('• **result:**\n\n`'+code.stdout+'`') if event.sender_id in Account else await event.reply('• **result:**\n\n`'+code.stdout+'`')
                 os.remove('a.out')
         elif cmd == 'p':
-            try:await eval(event.raw_text[event.raw_text.find('\n')+1:]);await event.edit('- DonE !') if event.sender_id in Account else await event.reply('- DonE !')
+            try:await eval(event.raw_text[event.raw_text.find('\n')+1:]);await event.edit('• **done !**') if event.sender_id in Account else await event.reply('• **done !**')
             except Exception as e:await event.edit(str(e)) if event.sender_id in Account else await event.reply(str(e))
         elif cmd == 'c':
             file = os.getcwd()+'/data/code/'+'source.c' 
             pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
             s = subprocess.run(['gcc', file, '-o', 'a.out'], capture_output=True, text=True)
             if s.stderr != '':
-                await event.edit('Error:\n\n'+s.stderr) if event.sender_id in Account else await event.reply('Error:\n\n'+s.stderr)
+                await event.edit('• **error:**\n\n`'+s.stderr+'`') if event.sender_id in Account else await event.reply('• **error:**\n\n`'+s.stderr+'`')
                 return
             else:
                 code = subprocess.run(['./a.out'], capture_output=True, text=True)
-                await event.edit('result:\n\n'+code.stdout) if event.sender_id in Account else await event.reply('result:\n\n'+code.stdout)
+                await event.edit('• **result:**\n\n`'+code.stdout+'`') if event.sender_id in Account else await event.reply('• **result:**\n\n`'+code.stdout+'`')
                 os.remove('a.out')
         elif cmd == 'lua':
             file = os.getcwd()+'/data/code/'+'source.lua'
             pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
             code = subprocess.run(['lua', file], capture_output=True, text=True)
-            await event.edit('result:\n\n'+code.stdout+'\n\nError:\n\n'+code.stderr) if event.sender_id in Account else await event.reply('result:\n\n'+code.stdout+'\n\nError:\n\n'+code.stderr)
+            await event.edit('• **result:**\n\n`'+code.stdout+'`\n\n• **error:**\n\n`'+code.stderr+'`') if event.sender_id in Account else await event.reply('• **result:**\n\n`'+code.stdout+'`\n\n• **error:**\n\n`'+code.stderr+'`')
         elif cmd == 'java':
             file = os.getcwd()+'/data/code/'+'source.java'
             pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
             s = subprocess.run(['javac', file], capture_output=True, text=True)
             if s.stderr != '':
-                await event.edit('Error:\n\n'+s.stderr) if event.sender_id in Account else await event.reply('Error:\n\n'+s.stderr)
+                await event.edit('• **error:**\n\n`'+s.stderr+'`') if event.sender_id in Account else await event.reply('• **error:**\n\n`'+s.stderr+'`')
                 return
             else:
                 os.system('cp '+os.getcwd()+'/data/code/source.class '+os.getcwd())
                 os.remove(os.getcwd()+'/data/code/'+'source.class')
                 code = subprocess.run(['java', 'source'], capture_output=True, text=True)
                 if code.stderr != '':
-                    await event.edit(code.stderr) if event.sender_id in Account else await event.reply(code.stderr)
+                    await event.edit('• **error:**\n\n`'+s.stderr+'`') if event.sender_id in Account else await event.reply('• **error:**\n\n`'+s.stderr+'`')
                 else:
-                    await event.edit('result:\n\n'+code.stdout) if event.sender_id in Account else await event.reply('result:\n\n'+code.stdout)
+                    await event.edit('• **result:**\n\n`'+code.stdout+'`\n\n• **error:**\n\n`'+code.stderr+'`') if event.sender_id in Account else await event.reply('• **result:**\n\n`'+code.stdout+'`\n\n• **error:**\n\n`'+code.stderr+'`')
                 os.remove('source.class')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» GeT LyriCZ:
@@ -434,10 +434,11 @@ async def GetLyricZ(event: events.newmessage.NewMessage.Event):
     try: 
         lyr = res.json()['lyrics']
     except:
-        lyr = '- No lyrics found !'
+        lyr = '• **no lyrics found !**'
     await event.edit(lyr) if event.sender_id in Account else await event.reply(lyr)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Voic# ChaT:
+'''
 @Client.on(events.NewMessage(pattern = '(V|v)chat', from_users = sudo))
 async def GrouPCalLMain(event: events.newmessage.NewMessage.Event):
     if len(event.raw_text.split()) == 2 and event.raw_text.split()[0].lower() == 'vchat':
@@ -449,7 +450,7 @@ async def GrouPCalLMain(event: events.newmessage.NewMessage.Event):
             print(chat.stringify())
             await Client(JoinGroupCallRequest(types.InputGroupCall(chat.id, chat.access_hash), 'plagueDr', params=types.DataJSON(data=js.dumps('{"enable_vp8_encoder":true}'))))
         elif event.raw_text.split()[1] == 'end': # .dumps(
-            pass
+            pass'''
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» QR CoD#:
 @Client.on(events.NewMessage(pattern = '(Q|q)rcode', from_users = sudo))
@@ -483,19 +484,19 @@ async def CheCKDIU(event):
     if len(event.raw_text.split()) >= 3 and event.raw_text.split()[0].lower() == 'check':
         if event.raw_text.split()[1] == 'username':
             try:check = f'• **Checking Username** `{event.raw_text.split()[2]}` **On Social Media:**\n'+'            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n'+'\n'.join(['⌬ '+i+' = '+v['stats']+ f'{"[✔️]" if v["link"] else "[✖️]"}' for i, v in req.get('https://www.wirexteam.ga/checker?username='+event.raw_text.split()[2]).json()['checker'].items()])
-            except: check = '- Error !'
+            except: check = '• **error !**'
             finally: await event.edit(check) if event.sender_id in Account else await event.reply(check)
         elif event.raw_text.split()[1] == 'ip':
             try: check = f'• **Ip Information For** ( `{event.raw_text.split()[2]}` ):'+'\n            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n'+'\n'.join(['⌬ '+i+' = '+str(v) for i, v in req.get('http://ip-api.com/json/{}?fields=status,message,continent,continentCode,country,countryCode,region,regionName,city,zip,lat,lon,timezone,currency,isp,org,as,query'.format(event.raw_text.split()[2])).json().items()])
-            except: check = '- Error !'
+            except: check = '• **error !**'
             finally: await event.edit(check) if event.sender_id in Account else await event.reply(check)
         elif event.raw_text.split()[1] == 'domain': 
             try:domain = whois(event.raw_text.split()[2]);check = f'• **Checking Domain** (`{domain.domain}`)\n            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n⌬ creation = {domain.creation_date}\n⌬ expiration = {domain.expiration_date}\n⌬ servers = [ {", ".join(domain.name_servers)} ]\n⌬ dns = {domain.dnssec}\n⌬ email = {domain.emails}\n⌬ country = {domain.country}\n⌬ state = {domain.state}'
-            except:check = '- Error !'
+            except:check = '• **error !**'
             finally:await event.edit(check) if event.sender_id in Account else await event.reply(check)
         elif event.raw_text.split()[1] == 'phone':
             try:kosphone = FuckingPhone(event.raw_text[event.raw_text.find(' ', 8)+1:]);check = f'• **checking phone** (`{kosphone.national_number}`)\n            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n⌬ country = {geocoder.description_for_number(kosphone, "en")}\n⌬ country code = {kosphone.country_code}\n⌬ co = {carrier.name_for_number(kosphone, "en")}'
-            except:check = '- Error !'
+            except:check = '• **error !**'
             finally:await event.edit(check) if event.sender_id in Account else await event.reply(check)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Take the system "TIME/DATE" and send it:
@@ -533,33 +534,33 @@ async def joinchat(event: events.newmessage.NewMessage.Event):
     if len(event.raw_text.split()) > 1 and event.raw_text.split()[1][0] == '@':
         try:
             await Client(JoinChannelRequest(event.raw_text.split()[1]))
-            await event.edit('- DonE ! JoinEd =>') if event.sender_id in Account else await event.reply('- DonE ! JoinEd =>')
-        except: await event.edit('- ErroR ! =|') if event.sender_id in Account else await event.reply('- ErroR ! =|')
+            await event.edit('• **done, joined !**') if event.sender_id in Account else await event.reply('• **done, joined !**')
+        except: await event.edit('• **error !**') if event.sender_id in Account else await event.reply('• **error !**')
     elif len(event.raw_text.split()) > 1 and pl.check_link(event.raw_text.split()[1], ptrn = 's'):
         link = pl.check_link(event.raw_text.split()[1], ptrn = 'l')
         try:
             await Client(CheckChatInviteRequest(link[link.rfind('/')+1:]))
-        except: await event.edit('- InValid LinK ! =|') if event.sender_id in Account else await event.reply('- InValid LinK ! =|')
+        except: await event.edit('• **invalid link !**') if event.sender_id in Account else await event.reply('• **invalid link !**')
         else:
             try:
                 await Client(ImportChatInviteRequest(link[link.rfind('/')+1:]))
-                await event.edit('- JoinEd In GrouP Is DonE ! =>') if event.sender_id in Account else await event.reply('- JoinEd In GrouP Is DonE ! =>')
-            except: await event.edit('- Stupid,\nth3 Account Is In th3 member GrouD ! :|') if event.sender_id in Account else await event.reply('- Stupid,\nth3 Account Is In th3 member GrouD ! :|')
+                await event.edit('• **done, joined !**') if event.sender_id in Account else await event.reply('• **done, joined !**')
+            except: await event.edit('• **Account is in member group !**') if event.sender_id in Account else await event.reply('• **Account is in member group !**')
     else:
         try:
             await Client(JoinChannelRequest(event.raw_text.split()[1]))
-            await event.edit('- DonE ! JoinEd =>') if event.sender_id in Account else await event.reply('- DonE ! JoinEd =>') 
+            await event.edit('• **done, joined !**') if event.sender_id in Account else await event.reply('• **done, joined !**') 
         except:
-            await event.edit('- ErroR ! =|') if event.sender_id in Account else await event.reply('- ErroR ! =|')
+            await event.edit('• **error !**') if event.sender_id in Account else await event.reply('• **error !**')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» InFO BOT:
 @Client.on(events.NewMessage(pattern = '(I|i)nfo', from_users = acc_sudo))
 async def SeYInFO(event: events.newmessage.NewMessage.Event):
     if event.raw_text.lower() == 'info':
-        await event.edit(f'- InFO PLSelF v.{pl.version} :\n\n- sudoS = {len(sudo)}\n- PV UseR = {len(clir.lrange("plAcUserInPV",0 ,-1))}\n- user = {getpwuid(os.getuid())[0]}\n- python3 version = {sys.version.split()[0]}\n- telethon version = {tver}\n') if event.sender_id in Account else await event.reply(f'- InFO PLSelF v.{pl.version} :\n\n- sudoS = {len(sudo)}\n- PV UseR = {len(clir.lrange("plAcUserInPV",0 ,-1))}\n- user = {getpwuid(os.getuid())[0]}\n- python3 version = {sys.version.split()[0]}\n- telethon version = {tver}\n')
+        await event.edit(f'• **info plSelf** `v.{pl.version}` :\n\n• **sudos :** `{len(sudo)}`\n• **PV user :** `{len(clir.lrange("plAcUserInPV",0 ,-1))}`\n• **user :** `{getpwuid(os.getuid())[0]}`\n• **python3 version :** `{sys.version.split()[0]}`\n• **telethon version :** `{tver}`\n') if event.sender_id in Account else await event.reply(f'• **info plSelf** `v.{pl.version}` :\n\n• **sudos :** `{len(sudo)}`\n• **PV user :** `{len(clir.lrange("plAcUserInPV",0 ,-1))}`\n• **user :** `{getpwuid(os.getuid())[0]}`\n• **python3 version :** `{sys.version.split()[0]}`\n• **telethon version :** `{tver}`\n')
     elif event.raw_text.split()[0].lower() == 'info' and event.raw_text.split()[1] == 'pv':
         c = pl.Counter()
-        users = '- user in pv:\n\n'+'\n'.join(map(lambda s:f'{c.get_num()} - [{s}](tg://user?id={s})', clir.lrange('plAcUserInPV',0 ,-1)))
+        users = '• **user in pv:**\n\n'+'\n'.join(map(lambda s:f'{c.get_num()} - [{s}](tg://user?id={s})', clir.lrange('plAcUserInPV',0 ,-1)))
         await event.edit(users) if event.sender_id in Account else await event.reply(users)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Send && SaV# Voice:
@@ -575,20 +576,20 @@ async def SenDSaVOicE(event: events.newmessage.NewMessage.Event):
                     voice = pl.create_rend_name(12)
                     await Client.download_media(msg.media, os.getcwd()+'/data/voice/'+voice)
                     clir.hset('plVoiCESaVE', voice_name, voice)
-                    await event.edit(f'- Don# ! voice name 2 call = {voice_name}') if event.sender_id in Account else await event.reply(f'- Don# ! voice name 2 call = {voice_name}')
+                    await event.edit(f'• **done, voice name to call :** `{voice_name}`') if event.sender_id in Account else await event.reply(f'• **done, voice name to call :** `{voice_name}`')
             else:
-                await event.edit('- Th VoiC# was already in the database !') if event.sender_id in Account else await event.reply('- Th VoiC# was already in the database !')
+                await event.edit('• **voice was already in the database !**') if event.sender_id in Account else await event.reply('• **voice was already in the database !**')
         elif cmd[1] == 'delete' and len(cmd) == 3:
             voice_name = cmd[2]
             if voice_name in clir.hgetall('plVoiCESaVE').keys():
                 os.remove(os.getcwd()+'/data/voice/'+pl.findfile(clir.hget('plVoiCESaVE', voice_name), os.getcwd()+'/data/voice/'))
                 clir.hdel('plVoiCESaVE', voice_name)
-                await event.edit(f'- DoN# ! {voice_name} removed 2 database !') if event.sender_id in Account else await event.reply(f'- DoN# ! {voice_name} removed 2 database !')
+                await event.edit(f'• **done,** `{voice_name}` **removed to database !**') if event.sender_id in Account else await event.reply(f'• **done,** `{voice_name}` **removed to database !**')
             else:
-                await event.edit(f'- {voice_name} not in database !') if event.sender_id in Account else await event.reply(f'- {voice_name} not in database !')
+                await event.edit(f'• **the** `{voice_name}` **not in database !**') if event.sender_id in Account else await event.reply(f'• **the** `{voice_name}` **not in database !**')
         elif cmd[1] == 'list':
             num = pl.Counter()
-            await event.edit('- VoiC# list:\n\n'+'\n'.join(map(lambda x:f'{num.get_num()} - {x}' ,clir.hgetall('plVoiCESaVE').keys()))) if event.sender_id in Account else await event.reply('- VoiC# list:\n\n'+'\n'.join(map(lambda x:f'{num.get_num()} - {x}' ,clir.hgetall('plVoiCESaVE').keys())))
+            await event.edit('• **voice list:**\n\n'+'\n'.join(map(lambda x:f'**{num.get_num()} -** `{x}`' ,clir.hgetall('plVoiCESaVE').keys()))) if event.sender_id in Account else await event.reply('• **voice list:**\n\n'+'\n'.join(map(lambda x:f'**{num.get_num()} -** `{x}`' ,clir.hgetall('plVoiCESaVE').keys())))
         else:
             voice_name = cmd[1]
             if voice_name in clir.hgetall('plVoiCESaVE').keys():
@@ -611,19 +612,19 @@ async def SenDFuCKinGFilE(event: events.newmessage.NewMessage.Event):
                 if msg.media:
                     await Client.send_file(botc.BOT_USERNAME, msg.media, caption=f'kosfile {file_name}')
                     #clir.hset('plFuCKInGFilESaVE', file_name, pack_bot_file_id(msg.media))
-                    await event.edit(f'- Don# ! file name 2 call = {file_name}') if event.sender_id in Account else await event.reply(f'- Don# ! file name 2 call = {file_name}')
+                    await event.edit(f'• **done, voice name to call :** `{file_name}`') if event.sender_id in Account else await event.reply(f'• **done, voice name to call :** `{file_name}`')
             else:
-                await event.edit('- Th fil# was already in the database !') if event.sender_id in Account else await event.reply('- Th fil# was already in the database !')
+                await event.edit('• **file was already in the database !**') if event.sender_id in Account else await event.reply('• **file was already in the database !**')
         elif cmd[1] == 'delete' and len(cmd) == 3:
             file_name = cmd[2]
             if file_name in clir.hgetall('plFuCKInGFilESaVE').keys():
                 clir.hdel('plFuCKInGFilESaVE', file_name)
-                await event.edit(f'- DoN# ! {file_name} removed 2 database !') if event.sender_id in Account else await event.reply(f'- DoN# ! {file_name} removed 2 database !')
+                await event.edit(f'• **done,** `{file_name}` **removed the database !**') if event.sender_id in Account else await event.reply(f'• **done,** `{file_name}` **removed the database !**')
             else:
-                await event.edit(f'- {file_name} not in database !') if event.sender_id in Account else await event.reply(f'- {file_name} not in database !')
+                await event.edit(f'• **the** `{file_name}` **not in database !**') if event.sender_id in Account else await event.reply(f'• **the** `{file_name}` **not in database !**')
         elif cmd[1] == 'list':
             num = pl.Counter()
-            await event.edit('- FiL# list:\n\n'+'\n'.join(map(lambda x:f'{num.get_num()} - {x}' ,clir.hgetall('plFuCKInGFilESaVE').keys()))) if event.sender_id in Account else await event.reply('- FiL# list:\n\n'+'\n'.join(map(lambda x:f'{num.get_num()} - {x}' ,clir.hgetall('plFuCKInGFilESaVE').keys())))
+            await event.edit('• **file list:**\n\n'+'\n'.join(map(lambda x:f'**{num.get_num()} -** `{x}`' ,clir.hgetall('plFuCKInGFilESaVE').keys()))) if event.sender_id in Account else await event.reply('- FiL# list:\n\n'+'\n'.join(map(lambda x:f'{num.get_num()} - {x}' ,clir.hgetall('plFuCKInGFilESaVE').keys())))
         else:
             file_name = cmd[1]
             if file_name in clir.hgetall('plFuCKInGFilESaVE').keys():
@@ -662,20 +663,20 @@ async def KirToKosMary(event: events.newmessage.NewMessage.Event):
 async def leftchat(event: events.newmessage.NewMessage.Event):
     if len(event.raw_text) == 4 and event.is_group:
         try:
-            await event.edit('Bye !') if event.sender_id in Account else await event.reply('Bye !')
+            await event.edit('bye') if event.sender_id in Account else await event.reply('bye')
             await Client(LeaveChannelRequest(await Client.get_input_entity(event.chat_id)))
-        except: await event.edit('- ErroR ! :|') if event.sender_id in Account else await event.reply('- ErroR ! :|')
+        except: await event.edit('• **error !**') if event.sender_id in Account else await event.reply('• **error !**')
     elif len(event.raw_text.split()) > 1 and pl.check_link(event.raw_text.split()[1], ptrn = 's'):
         link = pl.check_link(event.raw_text.split()[1], ptrn = 'l')
         try:
             await Client(LeaveChannelRequest(await Client.get_input_entity(link)))
-            await event.edit('- Done ! I leftEd.') if event.sender_id in Account else await event.reply('- Done ! I leftEd.')
-        except: await event.edit('- ErroR ! :|') if event.sender_id in Account else await event.reply('- ErroR ! :|')
+            await event.edit('• **done, i lefted.**') if event.sender_id in Account else await event.reply('• **done, i lefted.**')
+        except: await event.edit('• **error !**') if event.sender_id in Account else await event.reply('• **error !**')
     else:
         try:
             await Client(LeaveChannelRequest(await Client.get_input_entity(event.raw_text.split()[1])))
-            await event.edit('- Done ! I leftEd.') if event.sender_id in Account else await event.reply('- Done ! I leftEd.')
-        except: await event.edit('- ErroR ! :|') if event.sender_id in Account else await event.reply('- ErroR ! :|')
+            await event.edit('• **done, i lefted.**') if event.sender_id in Account else await event.reply('• **done, i lefted.**')
+        except: await event.edit('• **error !**') if event.sender_id in Account else await event.reply('• **error !**')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» 2 Delet# a messag3 from SUDO:
 @Client.on(events.NewMessage(pattern = '(D|d)el', from_users = sudo))
@@ -689,9 +690,9 @@ async def MuteAllGP(event: events.newmessage.NewMessage.Event):
         if event.raw_text.lower() == 'mute all':
             if str(event.chat_id) not in clir.lrange('plMuteAllGP', 0, -1):
                 clir.lpush('plMuteAllGP', event.chat_id)
-                await event.edit(f'- Th GrouP `{event.chat_id}` has been MuteD !') if event.sender_id in Account else await event.reply(f'- Th GrouP `{event.chat_id}` has been MuteD !')
+                await event.edit(f'• **group** `{event.chat_id}` **has been muted !**') if event.sender_id in Account else await event.reply(f'• **group** `{event.chat_id}` **has been muted !**')
             else:
-                await event.edit(f'- Th GrouP `{event.chat_id}` has been 2 MuteD before !') if event.sender_id in Account else await event.reply(f'- Th GrouP `{event.chat_id}` has been 2 MuteD before !')
+                await event.edit(f'• **group** `{event.chat_id}` **has been muted before !**') if event.sender_id in Account else await event.reply(f'• **group** `{event.chat_id}` **has been muted before !**')
         elif event.raw_text.split()[0].lower() == 'mute':
             user = None
             if len(event.raw_text.split()) == 1 and event.is_reply:
@@ -713,32 +714,32 @@ async def MuteAllGP(event: events.newmessage.NewMessage.Event):
                     if str(event.chat_id) in list(clir.hgetall('plMut3UserInPG').keys()):
                         if user not in clir.hget('plMut3UserInPG', str(event.chat_id)).split():
                             pl.adduserinMuteGp2hset(clir ,'plMut3UserInPG', str(event.chat_id), user)
-                            await event.edit(f'- User `{user}` has been MuteD !') if event.sender_id in Account else await event.reply(f'- User `{user}` has been MuteD !')
+                            await event.edit(f'• **user** `{user}` **has been muted !**') if event.sender_id in Account else await event.reply(f'• **user** `{user}` **has been muted !**')
                         else:
-                            await event.edit(f'- User `{user}` has been MuteD bofore !') if event.sender_id in Account else await event.reply(f'- User `{user}` has been MuteD bofore !')    
+                            await event.edit(f'• **user** `{user}` **has been muted before !**') if event.sender_id in Account else await event.reply(f'• **user** `{user}` **has been muted before !**')    
                     else:
                         pl.adduserinMuteGp2hset(clir ,'plMut3UserInPG', str(event.chat_id), user)
-                        await event.edit(f'- User `{user}` has been MuteD !') if event.sender_id in Account else await event.reply(f'- User `{user}` has been MuteD !')
+                        await event.edit(f'• **user** `{user}` **has been muted !**') if event.sender_id in Account else await event.reply(f'• **user** `{user}` **has been muted !**')
                 else:
-                    await event.edit('- User is SUDO :| !') if event.sender_id in Account else await event.reply('- User is SUDO :| !')
+                    await event.edit('• **user is SUDO !**') if event.sender_id in Account else await event.reply('• **user is SUDO !**')
     elif event.raw_text.lower() == 'mute' and event.sender_id == Account and event.is_private and event.is_reply:
         msg = await event.get_reply_message()
         if msg.peer_id.user_id == Account:
             return
         if str(msg.peer_id.user_id) not in clir.lrange('plMutePVUsEr', 0, -1):
-            await event.edit(f'- User `{msg.peer_id.user_id}` has been MuteD !')
             clir.lpush('plMutePVUsEr', msg.peer_id.user_id)
+            await event.edit(f'• **user** `{msg.peer_id.user_id}` **has been muted !**')
         else:
-            await event.edit(f'- User `{msg.peer_id.user_id}` has been MuteD bofore !')
+            await event.edit(f'• **user** `{msg.peer_id.user_id}` **has been muted bofore !**')
 @Client.on(events.NewMessage(pattern = '(U|u)nmute', from_users = sudo))
 async def UnMuteAllGP(event: events.newmessage.NewMessage.Event):
     if event.is_group:
         if event.raw_text.lower() == 'unmute all':
             if str(event.chat_id) in clir.lrange('plMuteAllGP', 0, -1): 
                 clir.lrem('plMuteAllGP', 0, event.chat_id)
-                await event.edit(f'- Th GrouP `{event.chat_id}` It has out of MuteD !') if event.sender_id in Account else await event.reply(f'- Th GrouP `{event.chat_id}` It has out of MuteD !')
+                await event.edit(f'• **group** `{event.chat_id}` **it has out of muted !**') if event.sender_id in Account else await event.reply(f'• **group** `{event.chat_id}` **it has out of muted !**')
             else:
-                await event.edit(f'- Th GrouP `{event.chat_id}` has not been MuteD !') if event.sender_id in Account else await event.reply(f'- Th GrouP `{event.chat_id}` has not been MuteD !')
+                await event.edit(f'• **group** `{event.chat_id}` **has not been muted !**') if event.sender_id in Account else await event.reply(f'• **group** `{event.chat_id}` **has not been muted !**')
         elif event.raw_text.split()[0].lower() == 'unmute':
             user = None
             if len(event.raw_text.split()) == 1 and event.is_reply:
@@ -758,21 +759,21 @@ async def UnMuteAllGP(event: events.newmessage.NewMessage.Event):
                     if str(event.chat_id) in list(clir.hgetall('plMut3UserInPG').keys()):
                         if user in clir.hget('plMut3UserInPG', str(event.chat_id)).split():
                             pl.deluserinMuteGp2hset(clir ,'plMut3UserInPG', str(event.chat_id), user)
-                            await event.edit(f'- User `{user}` has been UnMuteD !') if event.sender_id in Account else await event.reply(f'- User `{user}` has been UnMuteD !')
+                            await event.edit(f'• **user** `{user}` **has been unmuted !**') if event.sender_id in Account else await event.reply(f'• **user** `{user}` **has been unmuted !**')
                         else:
-                            await event.edit(f'- User `{user}` has no MuteD !') if event.sender_id in Account else await event.reply(f'- User `{user}` has no MuteD !')       
+                            await event.edit(f'• **user** `{user}` **has no muteD !**') if event.sender_id in Account else await event.reply(f'• **user** `{user}` **has no muteD !**')       
                     else:
-                        await event.edit(f'- User `{user}` has no MuteD !') if event.sender_id in Account else await event.reply(f'- User `{user}` has no MuteD !')
+                        await event.edit(f'• **user** `{user}` **has no muted !**') if event.sender_id in Account else await event.reply(f'• **user** `{user}` **has no muted !**')
                 else:
-                    await event.edit('- User is SUDO :| !') if event.sender_id in Account else await event.reply('- User is SUDO :| !')
+                    await event.edit('• **user is SUDO !**') if event.sender_id in Account else await event.reply('• **user is SUDO !**')
     elif event.raw_text.lower() == 'unmute' and event.sender_id == Account and event.is_private and event.is_reply:
         msg = await event.get_reply_message()
         if msg.peer_id.user_id == Account:return
         if str(msg.peer_id.user_id) in clir.lrange('plMutePVUsEr', 0, -1):
             clir.lrem('plMutePVUsEr', 0, msg.peer_id.user_id)
-            await event.edit(f'- User `{msg.peer_id.user_id}` has been UnMuteD !')
+            await event.edit(f'• **user** `{msg.peer_id.user_id}` **has been unmuted !**')
         else:
-            await event.edit(f'- User `{msg.peer_id.user_id}` has no MuteD !')
+            await event.edit(f'• **user** `{msg.peer_id.user_id}` **has no muted !**')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Th Banned User IN GP:
 @Client.on(events.NewMessage(pattern = '(B|b)an', from_users = sudo, func=lambda e:e.is_group))
@@ -782,24 +783,24 @@ async def BaNnedUserInGP(event: events.newmessage.NewMessage.Event):
             user = await Client.get_input_entity(event.raw_text.split()[1])
             if 'user_id' in user.to_dict():
                 await Client(EditBannedRequest(event.chat_id, user.user_id, ChatBannedRights(until_date=None, view_messages=True)))
-                await event.edit(f'- User `{user.user_id}` has been Banned !') if event.sender_id in Account else await event.reply(f'- User `{user.user_id}` has been Banned !')
+                await event.edit(f'• **user** `{user.user_id}` **has been Banned !**') if event.sender_id in Account else await event.reply(f'• **user** `{user.user_id}` **has been Banned !**')
         elif event.raw_text.split()[1].isdigit():
             await Client(EditBannedRequest(event.chat_id, int(event.raw_text.split()[1]), ChatBannedRights(until_date=None, view_messages=True)))
-            await event.edit(f'- User `{int(event.raw_text.split()[1])}` has been Banned !') if event.sender_id in Account else await event.reply(f'- User `{int(event.raw_text.split()[1])}` has been Banned !')
+            await event.edit(f'• **user** `{event.raw_text.split()[1]}` **has been Banned !**') if event.sender_id in Account else await event.reply(f'• **user** `{event.raw_text.split()[1]}` **has been Banned !**')
         elif bool(event.entities) and 'user_id' in event.entities[0].to_dict():
             await Client(EditBannedRequest(event.chat_id, event.entities[0].user_id, ChatBannedRights(until_date=None, view_messages=True)))
-            await event.edit(f'- User `{event.entities[0].user_id}` has been Banned !') if event.sender_id in Account else await event.reply(f'- User `{event.entities[0].user_id}` has been Banned !')
+            await event.edit(f'• **user** `{event.entities[0].user_id}` **has been Banned !**') if event.sender_id in Account else await event.reply(f'• **user** `{event.entities[0].user_id}` **has been Banned !**')
     elif event.is_reply and event.raw_text.lower() == 'ban':
         msg = await event.get_reply_message()
         user = msg.from_id.channel_id if 'channel_id' in msg.from_id.to_dict() else msg.from_id.user_id
         if user in sudo:
-            await event.edit(f'- User `{user}` is SUDO :| !') if event.sender_id in Account else await event.reply(f'- User `{user}` is SUDO :| !')
+            await event.edit(f'• **user** `{user}` **is SUDO !**') if event.sender_id in Account else await event.reply(f'• **user** `{user}` **is SUDO !**')
         else:
             try: await Client(EditBannedRequest(event.chat_id, user, ChatBannedRights(until_date=None, view_messages=True)))
             except:
-                await event.edit('- ErroR !') if event.sender_id in Account else await event.reply('- ErroR !')
+                await event.edit('• **error !**') if event.sender_id in Account else await event.reply('• **error !**')
             else:
-                await event.edit(f'- User `{user}` has been Banned !') if event.sender_id in Account else await event.reply(f'- User `{user}` has been Banned !')
+                await event.edit(f'• **user** `{user}` **has been Banned !**') if event.sender_id in Account else await event.reply(f'• **user** `{user}` **has been Banned !**')
 #   -» Th UnBanned User IN GP:
 @Client.on(events.NewMessage(pattern = '(U|u)nban', from_users = sudo))
 async def BaNnedUserInGP(event: events.newmessage.NewMessage.Event):
@@ -808,21 +809,21 @@ async def BaNnedUserInGP(event: events.newmessage.NewMessage.Event):
             user = await Client.get_input_entity(event.raw_text.split()[1])
             if 'user_id' in user.to_dict():
                 await Client.edit_permissions(event.chat_id, user.user_id, until_date=None, view_messages=True)
-                await event.edit(f'- User `{user.user_id}` has been UnBanned !') if event.sender_id in Account else await event.reply(f'- User `{user.user_id}` has been UnBanned !')
+                await event.edit(f'• **user** `{user.user_id}` **has been unbanned !**') if event.sender_id in Account else await event.reply(f'• **user** `{user.user_id}` **has been unbanned !**')
         elif event.raw_text.split()[1].isdigit():
             await Client.edit_permissions(event.chat_id, int(event.raw_text.split()[1]), until_date=None, view_messages=True)
-            await event.edit(f'- User `{int(event.raw_text.split()[1])}` has been UnBanned !') if event.sender_id in Account else await event.reply(f'- User `{int(event.raw_text.split()[1])}` has been UnBanned !')
+            await event.edit(f'• **user** `{event.raw_text.split()[1]}` **has been unbanned !**') if event.sender_id in Account else await event.reply(f'• **user** `{event.raw_text.split()[1]}` **has been unbanned !**')
         elif bool(event.entities) and 'user_id' in event.entities[0].to_dict():
             await Client.edit_permissions(event.chat_id, event.entities[0].user_id, until_date=None, view_messages=True)
-            await event.edit(f'- User `{event.entities[0].user_id}` has been UnBanned !') if event.sender_id in Account else await event.reply(f'- User `{event.entities[0].user_id}` has been UnBanned !')
+            await event.edit(f'• **user** `{event.entities[0].user_id}` **has been unbanned !**') if event.sender_id in Account else await event.reply(f'• **user** `{event.entities[0].user_id}` **has been unbanned !**')
     elif event.is_reply and event.raw_text.lower() == 'unban':
         msg = await event.get_reply_message()
         user = msg.from_id.channel_id if 'channel_id' in msg.from_id.to_dict() else msg.from_id.user_id
         try: await Client.edit_permissions(event.chat_id, user, until_date=None, view_messages=True)
         except:
-            await event.edit('- ErroR !') if event.sender_id in Account else await event.reply('- ErroR !')
+            await event.edit('• **error !**') if event.sender_id in Account else await event.reply('• **error !**')
         else:
-            await event.edit(f'- User `{user}` has been UnBanned !') if event.sender_id in Account else await event.reply(f'- User `{user}` has been UnBanned !')
+            await event.edit(f'• **user** `{user}` **has been unbanned !**') if event.sender_id in Account else await event.reply(f'• **user** `{user}` **has been unbanned !**')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Set ManageR: 
 @Client.on(events.NewMessage(pattern = '(S|s)et', from_users = sudo))
@@ -834,32 +835,32 @@ async def SetManageR(event: events.newmessage.NewMessage.Event):
             if bio == 'delete':
                 clir.delete('plFuckinBio')
                 await Client(UpdateProfileRequest(about = ''))
-                await event.edit('- Don# ! bio was DeleTeD !') if event.sender_id in Account else await event.reply('- Don# ! bio was DeleTeD !')
+                await event.edit('• **done, bio was deleted !**') if event.sender_id in Account else await event.reply('• **done, bio was deleted !**')
             else:
                 if len(bio) <= 70:
                     clir.set('plFuckinBio', bio)
                     await Client(UpdateProfileRequest(about = bio))
-                    await event.edit(f'- Don# ! bio = {bio}') if event.sender_id in Account else await event.reply(f'- Don# ! bio = {bio}')
+                    await event.edit(f'• **done, bio :** `{bio}`') if event.sender_id in Account else await event.reply(f'• **done, bio :** `{bio}`')
         elif cmd[1] == 'username':
             username = event.raw_text[event.raw_text.find(' ', 5)+1:]
             if username == 'delete':
                 await Client(UpdateUsernameRequest(''))
-                await event.edit('- Don# ! username was DeleTeD !') if event.sender_id in Account else await event.reply('- Don# ! username was DeleTeD !')
+                await event.edit('• **done, username was deleted !**') if event.sender_id in Account else await event.reply('• **done, username was deleted !**')
             else:
                 await Client(UpdateUsernameRequest(username))
-                await event.edit(f'- Don# ! username = {username}') if event.sender_id in Account else await event.reply(f'- Don# ! username = {username}')
+                await event.edit(f'• **done, username :** `{username}`') if event.sender_id in Account else await event.reply(f'• **done, username :** `{username}`')
         elif cmd[1] == 'name':
             name = event.raw_text[event.raw_text.find(' ', 5)+1:]
             await Client(UpdateProfileRequest(first_name = name))
-            await event.edit(f'- Don# ! name = {name}') if event.sender_id in Account else await event.reply(f'- Don# ! name = {name}')
+            await event.edit(f'• **done, name :** `{name}`') if event.sender_id in Account else await event.reply(f'• **done, name :** `{name}`')
         elif cmd[1] == 'lastname':
             lastname = event.raw_text[event.raw_text.find(' ', 5)+1:]
             if lastname == 'delete':
                 await Client(UpdateProfileRequest(last_name = ''))
-                await event.edit('- Don# ! lastname was DeleTeD !') if event.sender_id in Account else await event.reply('- Don# ! lastname was DeleTeD !')
+                await event.edit('• **done, lastname was deleted !**') if event.sender_id in Account else await event.reply('• **done, lastname was deleted !**')
             else:
                 await Client(UpdateProfileRequest(last_name = lastname))
-                await event.edit(f'- Don# ! lastname = {lastname}') if event.sender_id in Account else await event.reply(f'- Don# ! lastname = {lastname}')
+                await event.edit(f'• **done, lastname :** `{lastname}`') if event.sender_id in Account else await event.reply(f'• **done, lastname :** `{lastname}`')
         elif cmd[1] == 'profile':
             if event.raw_text.split()[2] == 'this' and event.is_reply:
                 msg = await event.get_reply_message()
@@ -879,7 +880,7 @@ async def SetManageR(event: events.newmessage.NewMessage.Event):
                     else:
                         if event.sender_id in Account:
                             await event.delete()
-                        await msg.reply('- Don# ! profile SetED !')
+                        await msg.reply('• **done, profile seted !**')
                         os.remove(Fil3)
             elif cmd[2] == 'group':
                 if event.is_reply:
@@ -894,7 +895,7 @@ async def SetManageR(event: events.newmessage.NewMessage.Event):
                                 await Client(EditPhotoRequest(cmd[3][1:], pic))
                                 if event.sender_id in Account:
                                     await event.delete()
-                                await msg.reply('- Don# ! profile SetED !')
+                                await msg.reply('• **done, profile seted !**')
                                 os.remove(Fil3)
                             elif cmd[3][0]=='-' and cmd[3][1:].isdigit():
                                 pic_name = pl.create_rend_name(10)
@@ -904,7 +905,7 @@ async def SetManageR(event: events.newmessage.NewMessage.Event):
                                 await Client(EditPhotoRequest(await Client.get_input_entity(int(cmd[3])), pic))
                                 if event.sender_id in Account:
                                     await event.delete()
-                                await msg.reply('- Don# ! profile SetED !')
+                                await msg.reply('• **done, profile seted !**')
                                 os.remove(Fil3)
                         elif event.is_reply and (event.is_group or event.is_channel):
                             pic_name = pl.create_rend_name(10)
@@ -914,15 +915,15 @@ async def SetManageR(event: events.newmessage.NewMessage.Event):
                             await Client(EditPhotoRequest(event.chat_id, pic))
                             if event.sender_id in Account:
                                 await event.delete()
-                            await msg.reply('- Don# ! profile SetED !')
+                            await msg.reply('• **done, profile seted !**')
                             os.remove(Fil3)
             elif cmd[2] == 'delete':
                 await Client(DeletePhotosRequest([(await Client.get_profile_photos('me'))[0]]))
-                await event.edit(f'- Don# ! a Profile DeleTeD !') if event.sender_id in Account else await event.reply(f'- Don# ! a Profile DeleTeD !')
+                await event.edit(f'• **done, a profile deleted !**') if event.sender_id in Account else await event.reply(f'• **done, a profile deleted !**')
             elif cmd[2] == 'deleteall':
                 await Client(DeletePhotosRequest((await Client.get_profile_photos('me'))))
-                await event.edit(f'- Don# ! All Profile WaS DeleTeD !') if event.sender_id in Account else await event.reply(f'- Don# ! All Profile WaS DeleTeD !')
-        elif cmd[1] == 'randname':
+                await event.edit(f'• **done, all profile was deleted !**') if event.sender_id in Account else await event.reply(f'• **done, all profile was deleted !**')
+            '''elif cmd[1] == 'randname':
             if cmd[2] == 'on':
                 if bool(clir.get('plSetrandnameNow')):
                         await event.edit('- The randname was already ON') if event.sender_id in Account else await event.reply('- The randname was already ON')
@@ -934,47 +935,46 @@ async def SetManageR(event: events.newmessage.NewMessage.Event):
                 if bool(get_re):
                     await event.edit('- DonE ! SeT randname is OFF !') if event.sender_id in Account else await event.reply('- DonE ! SeT randname is OFF !')
                     clir.delete('plSetrandnameNow')
-                else: await event.edit('- The randname was already OFF') if event.sender_id in Account else await event.reply('- The randname was already OFF')
+                else: await event.edit('- The randname was already OFF') if event.sender_id in Account else await event.reply('- The randname was already OFF')'''
         elif cmd[1] == 'lasttime':
             if cmd[2] == 'on':
                 if bool(clir.get('plSetTimENow')):
-                    await event.edit('- The lasttime was already ON') if event.sender_id in Account else await event.reply('- The lasttime was already ON')
+                    await event.edit('• **lasttime was already ON !**') if event.sender_id in Account else await event.reply('• **lasttime was already ON !**')
                 else:
                     full = (await Client.get_me()).last_name or '<<<!@n@!@dlfd;f;sfldssdkskmadki!l!l>>>'
                     clir.set('plSetTimENow', full)
-                    await event.edit('- DonE ! SeT LasT Tim3 is ON !') if event.sender_id in Account else await event.reply('- DonE ! SeT LasT Tim3 is ON !')
+                    await event.edit('• **done, set lasttime is ON !**') if event.sender_id in Account else await event.reply('• **done, set lasttime is ON !**')
             elif cmd[2] == 'off':
                 get_re = clir.get('plSetTimENow')
                 if bool(get_re):
-                    await event.edit('- DonE ! SeT LasT Tim3 is OFF !') if event.sender_id in Account else await event.reply('- DonE ! SeT LasT Tim3 is OFF !')
+                    await event.edit('• **done, set lastime is OFF !**') if event.sender_id in Account else await event.reply('• **done, set lastime is OFF !**')
                     await Client(UpdateProfileRequest(last_name = '')) if get_re == '<<<!@n@!@dlfd;f;sfldssdkskmadki!l!l>>>' else await Client(UpdateProfileRequest(last_name = get_re))
                     clir.delete('plSetTimENow')
-                else: await event.edit('- The time was already OFF') if event.sender_id in Account else await event.reply('- The time was already OFF')
+                else: await event.edit('• **lasttime was already OFF !**') if event.sender_id in Account else await event.reply('• **lasttime was already OFF !**')
         elif cmd[1] == 'biotime':
             if cmd[2] == 'on':
                 if bool(clir.get('plBioTimENow')):
-                    await event.edit('- The biotime was already ON') if event.sender_id in Account else await event.reply('- The biotime was already ON')
+                    await event.edit('• **biotime was already ON !**') if event.sender_id in Account else await event.reply('• **biotime was already ON !**')
                 else:
                     clir.set('plBioTimENow', 'KoSKoS=D')
-                    await event.edit('- DonE ! biotime is ON !') if event.sender_id in Account else await event.reply('- DonE ! biotime is ON !')
+                    await event.edit('• **done, biotime is ON !**') if event.sender_id in Account else await event.reply('• **done, biotime is ON !**')
             elif cmd[2] == 'off':
                 if bool(clir.get('plBioTimENow')):
-                    await event.edit('- DonE ! SeT biotime is OFF !') if event.sender_id in Account else await event.reply('- DonE ! SeT biotime is OFF !')
+                    await event.edit('• **done, biotime is OFF !**') if event.sender_id in Account else await event.reply('• **done, biotime is OFF !**')
                     clir.delete('plBioTimENow')
         elif cmd[1] == 'forward':
             if cmd[2] == 'off':
                 if bool(clir.get('plForWardSendOrno')):
                     clir.delete('plForWardSendOrno')
-                    await event.edit('- done, the forward has offline') if event.sender_id in Account else await event.reply('- done, the forward has offline')
+                    await event.edit('• **done, forward has offline !**') if event.sender_id in Account else await event.reply('• **done, forward has offline !**')
                 else:
-                    await event.edit('- the forward was already offline') if event.sender_id in Account else await event.reply('- the forward was already offline')
+                    await event.edit('• **forward was already offline !**') if event.sender_id in Account else await event.reply('• **forward was already offline !**')
             elif cmd[2] == 'on':
                 if bool(clir.get('plForWardSendOrno')):
-                    await event.edit('- the forward was already online') if event.sender_id in Account else await event.reply('- the forward was already online')
+                    await event.edit('• **forward was already online !**') if event.sender_id in Account else await event.reply('• **forward was already online !**')
                 else:
                     clir.set('plForWardSendOrno', 'True')
-                    await event.edit('- done, the forward has online') if event.sender_id in Account else await event.reply('- done, the forward has online')
-
+                    await event.edit('• **done, forward has online !**') if event.sender_id in Account else await event.reply('• **done, forward has online !**')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» PIN MsG : 
 @Client.on(events.NewMessage(pattern = '(P|p)in', from_users = sudo, func=lambda e:e.raw_text.lower() == 'pin'))
@@ -982,20 +982,21 @@ async def PINMessaG3(event: events.newmessage.NewMessage.Event):
     if event.is_reply and event.raw_text:
         msg = await event.get_reply_message()
         await Client.pin_message(event.chat_id, msg, notify = True)
-        await event.edit('- Messag# Pinned !') if event.sender_id in Account else await event.reply('- Messag# Pinned !')
+        await event.edit('• **message pinned !**') if event.sender_id in Account else await event.reply('• **message pinned !**')
+#   -» UNPIN MsG : 
 @Client.on(events.NewMessage(pattern = '(U|u)npin', from_users = sudo, func=lambda e:e.raw_text.lower() == 'unpin'))
 async def UnPINMessaG3(event: events.newmessage.NewMessage.Event):
     if event.is_group:
         msg = await Client.get_messages(event.chat_id, ids=types.InputMessagePinned())
         if msg != None:
             await Client.unpin_message(event.chat_id, msg.id)
-            await event.delete() and await Client.send_message(event.chat_id, '- msg unpined !', reply_to=msg.id) if event.sender_id in Account else await Client.send_message(event.chat_id, '- msg unpined !', reply_to=msg.id) 
+            await event.delete() and await Client.send_message(event.chat_id, '• **message unpinned !**', reply_to=msg.id) if event.sender_id in Account else await Client.send_message(event.chat_id, '• **message unpinned !**', reply_to=msg.id) 
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» SpeedTesT:
 @Client.on(events.NewMessage(pattern = '(S|s)peedtest', from_users = sudo))
 async def SpeeDTesT(event: events.newmessage.NewMessage.Event):
     if event.raw_text.lower() == 'speedtest':
-        msg = await event.edit('- FuckinG WaiT !') if event.sender_id in Account else await event.reply('- FuckinG WaiT !')
+        msg = await event.edit('• **wait !**') if event.sender_id in Account else await event.reply('• **wait !**')
         st = Speedtest()
         FuckingTIME = dt.now()
         st.get_servers()
@@ -1003,14 +1004,14 @@ async def SpeeDTesT(event: events.newmessage.NewMessage.Event):
         st.download()
         st.upload()
         res = st.results.dict()
-        await msg.edit(f'- result from **speedtest.net** after {(dt.now()-FuckingTIME).seconds}s :\n\n- download = {res["download"]:,} Mbps\n- upload = {res["ping"]:,} Mbps\n- ping = {res["ping"]} ms')
+        await msg.edit(f'• **result from `speedtest.net` after {(dt.now()-FuckingTIME).seconds}s :**\n\n**• download :** `{res["download"]:,}` **Mbps**\n**• upload :** `{res["ping"]:,}` **Mbps**\n**• ping :** `{res["ping"]}` **ms**')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» PING CMD:
 @Client.on(events.NewMessage(pattern = '(P|p)ing', from_users = sudo, func=lambda e:e.raw_text.lower() == 'ping'))
 async def PING(event: events.newmessage.NewMessage.Event):
     TStarT = dt.now()
-    kosmsg = await Client.send_message(event.chat_id, '-- ping cmd !')
-    await event.edit(f'- bot is ON ! **ping {(dt.now()-TStarT).microseconds/1000} ms**') if event.sender_id in Account else await event.reply(f'- bot is ON ! **ping {(dt.now()-TStarT).microseconds/1000} ms**')
+    kosmsg = await Client.send_message(event.chat_id, '**-- ping cmd !**')
+    await event.edit(f'• `bot is ON !` **ping {(dt.now()-TStarT).microseconds/1000} ms**') if event.sender_id in Account else await event.reply(f'• `bot is ON !` **ping {(dt.now()-TStarT).microseconds/1000} ms**')
     await kosmsg.delete()
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» SenD FuckinG Gam3:
@@ -1025,22 +1026,22 @@ async def ThBlockEdUseR(event: events.newmessage.NewMessage.Event):
     if event.is_reply:
         msg = await event.get_reply_message()
         if event.is_group:
-            await event.edit(f'- User `{msg.from_id.user_id}` has been blocked !')
+            await event.edit(f'• **user** `{msg.from_id.user_id}` **has been blocked !**')
             await Client(BlockRequest(msg.from_id.user_id))
         else:
-            await event.edit(f'- User `{msg.peer_id.user_id}` has been blocked !')
+            await event.edit(f'• **user** `{msg.peer_id.user_id}` **has been blocked !**')
             await Client(BlockRequest(msg.peer_id.user_id))
-
+#   -»
 @Client.on(events.NewMessage(pattern = '(U|u)nblock', from_users = Account, func=lambda e:e.raw_text.lower() == 'unblock'))
 async def ThUnBlockEdUseR(event: events.newmessage.NewMessage.Event):
     if event.is_reply:
         msg = await event.get_reply_message()
         if event.is_group:
-            await event.edit(f'- User `{msg.from_id.user_id}` has been unblocked !')
             await Client(UnblockRequest(msg.from_id.user_id))
+            await event.edit(f'• **user** `{msg.from_id.user_id}` **has been unblocked !**')
         else:
-            await event.edit(f'- User `{msg.peer_id.user_id}` has been unblocked !')
             await Client(UnblockRequest(msg.peer_id.user_id))
+            await event.edit(f'• **user** `{msg.peer_id.user_id}` **has been unblocked !**')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» MaiN Message Edit:
 @Client.on(events.MessageEdited())
@@ -1093,30 +1094,31 @@ async def MaiNMessageEdited(event: events.MessageEdited.Event):
     elif cmd == 'panel':await PANELAPI(event)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» There is nothing to say here:
+'''
 @Client.on(events.NewMessage(pattern='(T|t)urn off', from_users=acc_sudo, func=lambda e:e.raw_text.lower()=='turn off'))
 async def TurNFuckinGOff(event: events.newmessage.NewMessage.Event):
-    await event.edit('- bot went offline !') if event.sender_id in Account else await event.reply('- bot went offline !')
+    await event.edit('• **bot went offline !**') if event.sender_id in Account else await event.reply('• **bot went offline !**')
     await bot.disconnect()
     await Client.disconnect()
-    #insta.close()
+    #insta.close()'''
 # - - - - - Anti-spam settings in the group - - - - -  #
 #   -» Add GrouP 2 ReDis:
 @Client.on(events.NewMessage(pattern='(A|a)dd', from_users = sudo, func=lambda e: e.is_group and e.raw_text.lower() == 'add'))
 async def AddGrouP(event: events.newmessage.NewMessage.Event):
     if str(event.chat_id) not in clir.hgetall('plAddGroPSettinGZ').keys():
         clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps({'lock_link':False,'gp_Ch':False, 'lock_photo':False,'lock_stiker':False,'lock_gif':False,'lock_tg':False,'lock_game':False,'lock_dsh':False,'lock_voice':False,'lock_forward':False,'lock_video':False,'lock_via':False,'lock_music':False,'lock_file':False,'lock_bot':False,'lock_location':False,'lock_contact':False,'lock_caption':False,'lock_contact':False,'lock_caption':False}))
-        await event.edit('- Th GrouP AddEd to database !') if event.sender_id in Account else await event.reply('- Th GrouP AddEd to database !')
+        await event.edit('• **group add to database !**') if event.sender_id in Account else await event.reply('• **group add to database !**')
     else:
-        await event.edit('- Th GrouP AddEd to database before !') if event.sender_id in Account else await event.reply('- Th GrouP AddEd to database before !')
+        await event.edit('• **group added to database before !**') if event.sender_id in Account else await event.reply('• **group added to database before !**')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» RemoVeD GrouP 2 ReDis:
 @Client.on(events.NewMessage(pattern='(R|r)em', from_users = sudo, func=lambda e: e.is_group and e.raw_text.lower() == 'rem'))
 async def RemGrouP(event: events.newmessage.NewMessage.Event):
     if str(event.chat_id) in clir.hgetall('plAddGroPSettinGZ').keys():
         clir.hdel('plAddGroPSettinGZ', str(event.chat_id))
-        await event.edit('- Th GrouP DeleTeD to database !') if event.sender_id in Account else await event.reply('- Th GrouP DeleTeD to database !')
+        await event.edit('• **group deleted to database !**') if event.sender_id in Account else await event.reply('• **group deleted to database !**')
     else: 
-        await event.edit('- Th GrouP DeleTeD to database before !') if event.sender_id in Account else await event.reply('- Th GrouP DeleTeD to database before !')
+        await event.edit('• **group deleted to database before !**') if event.sender_id in Account else await event.reply('• **group deleted to database before !**')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» BoT H3lp:
 @Client.on(events.NewMessage(pattern = '(H|h)elp', from_users = sudo, func=lambda e:e.raw_text.lower() == 'help'))
@@ -1130,10 +1132,7 @@ async def SendHelP(event: events.newmessage.NewMessage.Event):
             result = await Client.inline_query(botc.BOT_USERNAME, 'fuckinghelp', entity=event.chat_id)
             await result[0].click(reply_to=event.id)
     except Exception as e:
-        if event.sender_id in Account:
-            await event.edit(f'- ErroR : {e}')
-        else:
-            await event.reply(f'- ErroR : {e}')
+        await event.edit(f'• **error :** {e}') if event.sender_id in Account else await event.reply(f'• **error :** {e}')
     #await event.edit(pl.STR_HELP_BOT) if event.sender_id in Account else await event.reply(pl.STR_HELP_BOT)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» SenD PaneL:
@@ -1151,14 +1150,14 @@ async def PANELAPI(event: events.newmessage.NewMessage.Event):
                     await result[0].click(reply_to=event.id)
             except Exception as e:
                 if event.sender_id in Account:
-                    await event.edit(f'- ErroR : {e}')
+                    await event.edit(f'• **error :** {e}')
                 else:
-                    await event.reply(f'- ErroR : {e}')
+                    await event.reply(f'• **error :** {e}')
         else:
             if event.sender_id in Account:
-                await event.edit('- Th GrouP not in database !')
+                await event.edit('• **group not in database !**')
             else:
-                await event.reply('- Th GrouP not in database !')
+                await event.reply('• **group not in database !**')
 # - - - - - - - - - - ApI_BoT - - - - - - - - - - - -  #
 #   -» InPrivat3:
 @bot.on(events.NewMessage(pattern="/start", func=lambda e: e.is_private))
