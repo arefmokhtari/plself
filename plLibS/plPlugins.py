@@ -80,6 +80,10 @@ class Color:
     BACKGROUND_RED = '\x1b[41m'
     BACKGROUND_GRAY = '\x1b[100m'
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+async def _exec(code, event, Client): # a memento from my friend, Andy =D
+    exec(f"async def __exec(event, Client): " + "".join(f"\n {x}" for x in code.split("\n")))
+    return await locals()["__exec"](event, Client)
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 def bot_redis(StrictRedis, redis_number):
     try:
         BOTREDIS = StrictRedis(host = '127.0.0.1', port = 6379, db = redis_number, decode_responses = True) 

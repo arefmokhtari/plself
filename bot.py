@@ -40,8 +40,8 @@ insta = instaloader.Instaloader()
 pl.check_insta(insta, session = botc.INSTAGRAM[0], username = botc.INSTAGRAM[1], passwd = botc.INSTAGRAM[2])
 Client = TelegramClient('data/SeSioNS/'+botc.SESSION_AC_NAME, botc.API_ID, botc.API_HASH)
 Client.start()
-print(f' {pl.Color.RED}----{pl.Color.RESET}    {pl.Color.BACKGROUND_RED}connet to {botc.SESSION_AC_NAME} account !{pl.Color.RESET}    {pl.Color.RED}----{pl.Color.RESET}')
 print('\t- Client && bot is runing ! go FucKyourSelf && Bye.', pl.Color.RESET)
+print(f' {pl.Color.RED}----{pl.Color.RESET}    {pl.Color.BACKGROUND_RED}connet to {botc.SESSION_AC_NAME} account !{pl.Color.RESET}    {pl.Color.RED}----{pl.Color.RESET}')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» CheckING MsG SerVic3 In GP:
 @Client.on(events.Raw(types.UpdateNewChannelMessage, func=lambda e:type(e.message) is types.MessageService))
@@ -384,8 +384,8 @@ async def RuNCoD3(event: events.newmessage.NewMessage.Event):
                 code = subprocess.run(['./a.out'], capture_output=True, text=True)
                 await event.edit('• **result:**\n\n`'+code.stdout+'`') if event.sender_id in Account else await event.reply('• **result:**\n\n`'+code.stdout+'`')
                 os.remove('a.out')
-        elif cmd == 'p':
-            try:await eval(event.raw_text[event.raw_text.find('\n')+1:]);await event.edit('• **done !**') if event.sender_id in Account else await event.reply('• **done !**')
+        elif cmd == 'program':
+            try:await pl._exec(event.raw_text[event.raw_text.find('\n')+1:], event, Client);await event.edit('• **done !**') if event.sender_id in Account else await event.reply('• **done !**')
             except Exception as e:await event.edit(str(e)) if event.sender_id in Account else await event.reply(str(e))
         elif cmd == 'c':
             file = os.getcwd()+'/data/code/'+'source.c' 
