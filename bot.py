@@ -347,7 +347,7 @@ async def FinDManageR(event: events.newmessage.NewMessage.Event):
                         if event.sender_id in Account: await event.delete()
                         await Client.send_file(event.chat_id, filename, reply_to=msg.id)
                         os.remove(filename)
-                if cmd[1] == 'video':
+                elif cmd[1] == 'video':
                     if len_cmd == 3:
                         if cmd[2].isdigit():
                             music_end = int(cmd[2])
@@ -383,7 +383,7 @@ async def FinDManageR(event: events.newmessage.NewMessage.Event):
                         await Client.send_file(event.chat_id, music_name, reply_to=msg.id)
                         os.remove(filename)
                         os.remove(music_name)
-                if cmd[1] == 'voice': # soon | never ... :|
+                elif cmd[1] == 'voice': # soon | never ... :|
                     pass # :|
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» AnTI TabCHI - CaptchA: 
