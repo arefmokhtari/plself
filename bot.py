@@ -503,7 +503,7 @@ async def GetLyricZ(event: events.newmessage.NewMessage.Event):
             music, artist = msg.media.document.attributes[0].title, msg.media.document.attributes[0].performer
     else:
         artist, music = text[text.find(' ')+1:text.rfind('-')], text[text.rfind('-')+1:]
-    res = req.get('https://api.lyrics.ovh/v1/'+artist+'/'+music)
+    res = req.get('https://api.lyrics.ovh/v1/'+artist+'/'+music, timeout=10)
     try: 
         lyr = res.json()['lyrics']
     except:
@@ -1119,7 +1119,7 @@ async def ThUnBlockEdUseR(event: events.newmessage.NewMessage.Event):
 #   -» MaiN Message Edit:
 @Client.on(events.MessageEdited())
 async def check__edited_massag3(event: events.MessageEdited.Event):await check_massag3(event)
-@Client.on(events.MessageEdited(from_users = sudo))
+@Client.on(events.MessageEdited(from_users = sudo, func=lambda e:e.raw_text))
 async def MaiNMessageEdited(event: events.MessageEdited.Event):
     cmd = event.raw_text.split()[0].lower()
     if event.sender_id in Account:
@@ -1136,7 +1136,7 @@ async def MaiNMessageEdited(event: events.MessageEdited.Event):
         elif cmd == 'set':await SetManageR(event)
         elif cmd == 'block':await ThBlockEdUseR(event)
         elif cmd == 'unblock':await ThUnBlockEdUseR(event)
-        elif cmd == 'turn':await TurNFuckinGOff(event)
+        #elif cmd == 'turn':await TurNFuckinGOff(event)
     if cmd == 'ping':await PING(event)
     elif cmd == 'code':await RuNCoD3(event)
     elif cmd == 'pin':await PINMessaG3(event)
@@ -1149,13 +1149,13 @@ async def MaiNMessageEdited(event: events.MessageEdited.Event):
     elif cmd == 'morse':await ReMorsE(event)
     elif cmd == 'help':await SendHelP(event)
     elif cmd == 'lyrics':await GetLyricZ(event)
-    elif cmd == 'vchat':await GrouPCalLMain(event)
+    #elif cmd == 'vchat':await GrouPCalLMain(event)
     elif cmd == 'qrcode':await QrCoD3(event)
-    elif cmd == 'proxy':await GetProxY(event)
+    #elif cmd == 'proxy':await GetProxY(event)
     elif cmd == 'check':await CheCKDIU(event)
     elif cmd == 'time':await SeYTime(event)
     elif cmd == 'tr':await TranslatE(event)
-    elif cmd == 'del':await GetProxY(event)
+    elif cmd == 'del':await DeleteMessag3(event)
     elif cmd == 'mute':await MuteAllGP(event)
     elif cmd == 'unmute':await UnMuteAllGP(event)
     elif cmd == 'ban':await BaNnedUserInGP(event)
@@ -1196,6 +1196,8 @@ async def RemGrouP(event: events.newmessage.NewMessage.Event):
 #   -» BoT H3lp:
 @Client.on(events.NewMessage(pattern = '(H|h)elp', from_users = sudo, func=lambda e:e.raw_text.lower() == 'help'))
 async def SendHelP(event: events.newmessage.NewMessage.Event):
+    await event.reply(pl.STR_HELP_BOT) if event.sender_id in Account else await event.reply(pl.STR_HELP_BOT)
+    '''
     try: 
         if event.sender_id in Account: 
             result = await Client.inline_query(botc.BOT_USERNAME, 'fuckinghelp', entity=event.chat_id)
@@ -1205,8 +1207,7 @@ async def SendHelP(event: events.newmessage.NewMessage.Event):
             result = await Client.inline_query(botc.BOT_USERNAME, 'fuckinghelp', entity=event.chat_id)
             await result[0].click(reply_to=event.id)
     except Exception as e:
-        await event.edit(f'• **error :** {e}') if event.sender_id in Account else await event.reply(f'• **error :** {e}')
-    #await event.edit(pl.STR_HELP_BOT) if event.sender_id in Account else await event.reply(pl.STR_HELP_BOT)
+        await event.edit(f'• **error :** {e}') if event.sender_id in Account else await event.reply(f'• **error :** {e}')'''
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» SenD PaneL:
 @Client.on(events.NewMessage(pattern = '(P|p)anel', from_users = sudo))
@@ -1264,7 +1265,7 @@ async def ChTabchi(event: events.InlineQuery.Event): # 'ChTabchi '+data+' '+str(
         await event.answer([result])
         os.remove(pic_name+'.jpg')
 #   -»
-@bot.on(events.InlineQuery(pattern='fuckinghelp', users=Account))
+'''@bot.on(events.InlineQuery(pattern='fuckinghelp', users=Account))
 async def SenDFucKinGHelP(event: events.InlineQuery.Event):
     buttons = [
         (
@@ -1278,7 +1279,7 @@ async def SenDFucKinGHelP(event: events.InlineQuery.Event):
     ]
     builder = event.builder
     kos = await builder.article(title='fuckinghelp', text=f'**°• WlC 2 Th source help page! | pl-self v.{pl.version} •°**', buttons=buttons)
-    await event.answer([kos])
+    await event.answer([kos])'''
 #   -» 
 @bot.on(events.InlineQuery(pattern="panel", users = Account)) 
 async def gpanel_1(event: events.InlineQuery.Event):
@@ -1362,7 +1363,7 @@ async def pl_main(event: events.InlineQuery.Event):
             )
         ]
     await event.edit('°• Welcome to the management panel of Group!\nPlease choose: •°', buttons=buttons)
-@bot.on(events.CallbackQuery)
+@bot.on(events.CallbackQuery())
 async def main_call(event: events.CallbackQuery.Event):
     buttons = [(Button.inline("°• [ BacK ] •°", data="bk_panel"),),]
     if (event.data.split()[0] == b"ftabchi" or event.data.split()[0] == b"ttabchi"):
@@ -1370,7 +1371,7 @@ async def main_call(event: events.CallbackQuery.Event):
             return await cktabchi(event)
         else : await event.answer('برای تو نیستش.',alert= True)
     elif event.query.user_id in sudo:
-        try: 
+        try:
             if event.data == b"gpl1": 
                 return await panel_1(event)
             elif event.data == b"gpl2":
