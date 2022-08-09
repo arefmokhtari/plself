@@ -27,6 +27,7 @@ from captcha.image import ImageCaptcha
 from apscheduler.schedulers.asyncio import AsyncIOScheduler 
 import requests as req
 from redis import StrictRedis
+from pydub import AudioSegment
 # - - - - - - - - - - - ValueS - - - - - - - - - - - - #
 Account = botc.acc_sudo 
 acc_sudo = botc.main_sudo
@@ -77,7 +78,7 @@ async def GetMsGServic3InGP(event: events.raw.Raw):
         await Client.delete_messages(event.message.peer_id.channel_id, event.message.id)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» CheckING ALL Message:
-@Client.on(events.NewMessage)
+@Client.on(events.NewMessage())
 async def check_massag3(event: events.newmessage.NewMessage.Event):
     if event.is_private and event.sender_id != Account[0] and bool(event.media) and 'ttl_seconds' in event.media.to_dict() and bool(event.media.ttl_seconds):
         cr_file = pl.create_rend_name(10)
@@ -290,28 +291,100 @@ async def GetFuckinGNuD3(event: events.newmessage.NewMessage.Event):
             await Client.download_media(msg.media, os.getcwd()+'/data/photos/'+cr_file)
             await Client.send_file(botc.CHANNEL_FOR_FWD, os.getcwd()+'/data/photos/'+pl.findfile(cr_file, os.getcwd()+'/data/photos'))
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
-#   -» find ManageR:
-@Client.on(events.NewMessage(pattern='(F|f)ind', from_users=sudo))
+#   -» MusiC ManageR:
+@Client.on(events.NewMessage(pattern='(M|m)usic', from_users=sudo))
 async def FinDManageR(event: events.newmessage.NewMessage.Event):
     cmd = event.raw_text.split()
-    if len(cmd) == 2:
-        if cmd[1] == 'music' and event.is_reply:
-            msg = await event.get_reply_message()
-            if msg.media:
-                filename = pl.create_rend_name(6)
-                await Client.download_media(msg, filename)
-                shazam = Shazam()
-                filename = pl.findfile(filename, os.getcwd())
-                if event.sender_id in Account:
-                    await event.delete()
-                _sending_msg = await msg.reply('• **wait !**')
-                out = await shazam.recognize_song(filename)
-                if out.get('track',None):
-                    msg4send = out['track']['title']+' - '+ out['track']['subtitle']+' - '+ out['track']['genres']['primary']
+    len_cmd = len(cmd)
+    if event.is_reply:
+        msg = await event.get_reply_message()
+        if msg.media and type(msg.media) is types.MessageMediaDocument and msg.media.document and msg.media.document.attributes:
+            if len_cmd >= 2:
+                if cmd[1] == 'find' and msg.media.document.mime_type == 'audio/ogg':
+                    print(type(msg.media), msg.media.stringify(), sep='\n')
+                    filename = pl.create_rend_name(6)
+                    await Client.download_media(msg, filename)
+                    shazam = Shazam()
+                    filename = pl.findfile(filename, os.getcwd())
+                    if event.sender_id in Account:await event.delete()
+                    _sending_msg = await msg.reply('• **wait !**')
+                    out = await shazam.recognize_song(filename)
+                    if out.get('track'):
+                        msg4send = f'**• music info:**\n**• name:** `{out["track"]["title"]}`\n**• artist:** `{out["track"]["subtitle"]}`\n**• genre:** `{out["track"]["genres"]["primary"]}`\n**• album:** `{out["track"]["sections"][0]["metadata"][0]["text"]}`'
+                    else:
+                        msg4send = '• **not found !**'
                     await _sending_msg.edit(msg4send)
-                else:
-                    await _sending_msg.edit('• **not found !**')
-                os.remove(filename)
+                    os.remove(filename)
+                elif cmd[1] == 'info':
+                    await event.edit(f'**• music info:**\n**• title:** `{msg.media.document.attributes[0].title}`\n**• performer:** `{msg.media.document.attributes[0].performer}`\n**• filename:** `{msg.media.document.attributes[1].file_name}`') if event.sender_id in Account else await event.reply(f'**• music info:**\n**• title:** `{msg.media.document.attributes[0].title}`\n**• performer:** `{msg.media.document.attributes[0].performer}`\n**• filename:** `{msg.media.document.attributes[1].file_name}`')
+                elif cmd[1] == 'cut':
+                    if len_cmd == 3:
+                        if cmd[2].isdigit():
+                            music_end = int(cmd[2])
+                            await Client.download_media(msg)
+                            filename = msg.media.document.attributes[1].file_name
+                            sound = AudioSegment.from_mp3(filename)
+                            sound[0 : music_end * 1000].export(filename)
+                            if event.sender_id in Account: await event.delete()
+                            await Client.send_file(event.chat_id, filename, reply_to=msg.id)
+                            os.remove(filename)
+                    elif len_cmd == 4:
+                        if cmd[2].isdigit() and cmd[3].isdigit():
+                            music_start = int(cmd[2])
+                            music_end = int(cmd[3])
+                            await Client.download_media(msg)
+                            filename = msg.media.document.attributes[1].file_name
+                            sound = AudioSegment.from_mp3(filename)
+                            sound[music_start * 1000 : music_end * 1000].export(filename)
+                            if event.sender_id in Account: await event.delete()
+                            await Client.send_file(event.chat_id, filename, reply_to=msg.id)
+                            os.remove(filename)
+                    else:
+                        await Client.download_media(msg)
+                        filename = msg.media.document.attributes[1].file_name
+                        sound = AudioSegment.from_mp3(filename)
+                        sound[0 : 120000].export(filename)
+                        if event.sender_id in Account: await event.delete()
+                        await Client.send_file(event.chat_id, filename, reply_to=msg.id)
+                        os.remove(filename)
+                if cmd[1] == 'video':
+                    if len_cmd == 3:
+                        if cmd[2].isdigit():
+                            music_end = int(cmd[2])
+                            await Client.download_media(msg)
+                            filename = msg.media.document.attributes[1].file_name
+                            music_name = filename[:filename.rfind('.')]+'.mp3'
+                            sound = AudioSegment.from_file(filename)
+                            sound[0: music_end * 1000].export(music_name, format='mp3')
+                            if event.sender_id in Account: await event.delete()
+                            await Client.send_file(event.chat_id, music_name, reply_to=msg.id)
+                            os.remove(filename)
+                            os.remove(music_name)
+                    elif len_cmd == 4:
+                        if cmd[2].isdigit() and cmd[3].isdigit():
+                            music_start = int(cmd[2])
+                            music_end = int(cmd[3])
+                            await Client.download_media(msg)
+                            filename = msg.media.document.attributes[1].file_name
+                            music_name = filename[:filename.rfind('.')]+'.mp3'
+                            sound = AudioSegment.from_file(filename)
+                            sound[music_start * 1000: music_end * 1000].export(music_name, format='mp3')
+                            if event.sender_id in Account: await event.delete()
+                            await Client.send_file(event.chat_id, music_name, reply_to=msg.id)
+                            os.remove(filename)
+                            os.remove(music_name)
+                    else:
+                        await Client.download_media(msg)
+                        filename = msg.media.document.attributes[1].file_name
+                        music_name = filename[:filename.rfind('.')]+'.mp3'
+                        sound = AudioSegment.from_file(filename)
+                        sound.export(music_name, format='mp3')
+                        if event.sender_id in Account: await event.delete()
+                        await Client.send_file(event.chat_id, music_name, reply_to=msg.id)
+                        os.remove(filename)
+                        os.remove(music_name)
+                if cmd[1] == 'voice': # soon | never ... :|
+                    pass # :|
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» AnTI TabCHI - CaptchA: 
 @Client.on(events.NewMessage(pattern = '(A|a)ntitabchi', from_users = sudo))
