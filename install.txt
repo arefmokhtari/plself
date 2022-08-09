@@ -12,3 +12,4 @@ apscheduler
 phonenumbers
 shazamio
 beautifulsoup4
+pydub
