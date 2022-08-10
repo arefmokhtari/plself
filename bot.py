@@ -49,7 +49,8 @@ print(f' {pl.Color.RED}----{pl.Color.RESET}    {pl.Color.BACKGROUND_RED}connet t
 async def GetMsGServic3InGP(event: events.raw.Raw):
     if '-100'+str(event.message.peer_id.channel_id) in clir.hgetall('AnTITABCiE').keys():
         if type(event.message.action) == types.MessageActionChatJoinedByLink:
-            await Client.edit_permissions(event.message.peer_id.channel_id, event.message.from_id.user_id, 
+
+            await Client.edit_permissions(event.message.peer_id.channel_id, event.message.from_id, 
                 view_messages = True,
                 send_messages = False,
             )
@@ -57,7 +58,7 @@ async def GetMsGServic3InGP(event: events.raw.Raw):
             data = pl.create_rend_name(4) 
             image.generate(data) 
             image.write(data, data+'.jpg')
-            result = await Client.inline_query(botc.BOT_USERNAME, 'CkTabchi '+data+' '+str(event.message.from_id.user_id), entity=event.message.peer_id.channel_id)
+            result = await Client.inline_query(botc.BOT_USERNAME, 'CkTabchi '+data+' '+str(event.message.from_id), entity=event.message.peer_id.channel_id)
             await result[0].click() 
         elif type(event.message.action) == types.MessageActionChatAddUser:
             
@@ -80,7 +81,7 @@ async def GetMsGServic3InGP(event: events.raw.Raw):
 #   -» CheckING ALL Message:
 @Client.on(events.NewMessage())
 async def check_massag3(event: events.newmessage.NewMessage.Event):
-    if event.is_private and event.sender_id != Account[0] and bool(event.media) and 'ttl_seconds' in event.media.to_dict() and bool(event.media.ttl_seconds):
+    if event.is_private and event.sender_id != Account[0] and event.media and event.media.ttl_seconds:
         cr_file = pl.create_rend_name(10)
         await Client.download_media(event.media, os.getcwd()+'/data/photos/'+cr_file)
         await Client.send_file(botc.CHANNEL_FOR_FWD, os.getcwd()+'/data/photos/'+pl.findfile(cr_file, os.getcwd()+'/data/photos'))
@@ -212,14 +213,13 @@ async def FloodSpaM(event: events.newmessage.NewMessage.Event):
             await Client.send_message(event.chat_id, str(num.get_num()))
     elif len(event.raw_text.split()) == 3 and event.raw_text.split()[0].lower() == 'flood' and event.raw_text.split()[1] == 'fosh' and event.raw_text.split()[2].isdigit():
         await event.delete()
-        kosfosh = pl.KOS_FoSH
         if event.is_reply:
             msg = await event.get_reply_message()
             for _ in range(int(event.raw_text.split()[2])):
-                await msg.reply(kosfosh[rand.randint(0, len(kosfosh)-1)])
+                await msg.reply(rand.choice(pl.KOS_FoSH))
         else:
             for _ in range(int(event.raw_text.split()[2])):
-                await Client.send_message(event.chat_id, kosfosh[rand.randint(0, len(kosfosh)-1)])
+                await Client.send_message(event.chat_id, rand.choice(pl.KOS_FoSH))
     elif len(event.raw_text.split()) >= 3 and event.raw_text.split()[0].lower() == 'flood' and event.raw_text.split()[1].isdigit():
         await event.delete()
         for _ in range(int(event.raw_text.split()[1])):
@@ -236,11 +236,11 @@ async def IdProcessing(event: events.newmessage.NewMessage.Event):
             else:
                 await event.edit('`{}`'.format(chat.user_id)) if event.sender_id in Account else await event.reply('`{}`'.format(chat.user_id))      
         if event.raw_text.split()[1] == 'chat':
-            if event.is_group:await event.edit(str(event.chat_id)) if event.sender_id in Account else await event.reply(str(event.chat_id))
+            if event.is_group:await event.edit(f'`{event.chat_id}`') if event.sender_id in Account else await event.reply(f'`{event.chat_id}`')
         elif event.raw_text.split()[1][0] == '-':
-            chat = await Client.get_entity(int(event.raw_text.split()[1]))#[4:])
+            chat = await Client.get_entity(int(event.raw_text.split()[1]))
             if chat.username == None:
-                await event.edit('- not username !') if event.sender_id in Account else await event.reply('- not username !')
+                await event.edit('**• not username !**') if event.sender_id in Account else await event.reply('**• not username !**')
             else:
                 await event.edit(f'@{chat.username}') if event.sender_id in Account else await event.reply(f'@{chat.username}') 
         elif event.raw_text.split()[1][0].isdigit():
@@ -392,23 +392,16 @@ async def SeTAntITabCHI(event):
     if event.is_group and len(event.raw_text.split()) == 2 and event.raw_text.split()[0].lower() == 'antitabchi':
         if event.raw_text.split()[1] == 'on': # 'AnTITABCiE'
             if str(event.chat_id) in clir.hgetall('AnTITABCiE').keys():
-                if event.sender_id in Account:
-                    await event.edit('فعالع')
-                else:
-                    await event.reply('فعالع')
+                await event.edit('**• anti tabchi was active !**') if event.sender_id in Account else await event.reply('**• anti tabchi was active !**')
             else:
-                data = []
-                if event.sender_id in Account:
-                    await event.edit('فعال شد')
-                else:
-                    await event.reply('فعال شد')
-                clir.hset('AnTITABCiE', str(event.chat_id), js.dumps(data))
+                clir.hset('AnTITABCiE', str(event.chat_id), js.dumps([]))
+                await event.edit('**• done, anti tabchi is active !**') if event.sender_id in Account else await event.reply('**• done, anti tabchi is active !**')
         elif event.raw_text.split()[1] == 'off':
             if str(event.chat_id) in clir.hgetall('AnTITABCiE').keys():
                 clir.hdel('AnTITABCiE', str(event.chat_id))
-                await event.edit('پاک شد') if event.sender_id in Account else await event.reply('پاک شد')
+                await event.edit('**• done, anti tabchi service cleared !**') if event.sender_id in Account else await event.reply('**• done, anti tabchi service cleared !**')
             else:
-                await event.edit('نبود') if event.sender_id in Account else await event.reply('نبود')
+                await event.edit('**• anti tabchi is not active !**') if event.sender_id in Account else await event.reply('**• anti tabchi is not active !**')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» BaS#:
 @Client.on(events.NewMessage(pattern = '(B|b)ase', from_users = sudo))
@@ -437,12 +430,20 @@ async def RuNCoD3(event: events.newmessage.NewMessage.Event):
             file = os.getcwd()+'/data/code/'+'source.py'
             pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
             code = subprocess.run(['python3', file], capture_output=True, text=True)
-            await event.edit('• **result:**\n\n`'+code.stdout+'`\n\n• **Error:**\n\n`'+code.stderr+'`') if event.sender_id in Account else await event.reply('• **result:**\n\n`'+code.stdout+'`\n\n• **Error:**\n\n`'+code.stderr+'`')
+            if code.stderr != '':
+                await event.edit('• **error:**\n\n`'+code.stderr+'`') if event.sender_id in Account else await event.reply('• **error:**\n\n`'+code.stderr+'`')
+                return
+            else:
+                await event.edit('• **result:**\n\n`'+code.stdout+'`') if event.sender_id in Account else await event.reply('• **result:**\n\n`'+code.stdout+'`')
         elif cmd == 'py2':
             file = os.getcwd()+'/data/code/'+'source.py'
             pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
             code = subprocess.run(['python2', file], capture_output=True, text=True)
-            await event.edit('• **result:**\n\n`'+code.stdout+'`\n\n• **Error:**\n\n`'+code.stderr+'`') if event.sender_id in Account else await event.reply('• **result:**\n\n`'+code.stdout+'`\n\n• **Error:**\n\n`'+code.stderr+'`')
+            if code.stderr != '':
+                await event.edit('• **error:**\n\n`'+code.stderr+'`') if event.sender_id in Account else await event.reply('• **error:**\n\n`'+code.stderr+'`')
+                return
+            else:
+                await event.edit('• **result:**\n\n`'+code.stdout+'`') if event.sender_id in Account else await event.reply('• **result:**\n\n`'+code.stdout+'`')
         elif cmd == 'help':
             t = '• **cmds :**\n`py3`\n`py2`\n`cpp`\n`c`\n`lua`\n`java`'
             await event.edit(t) if event.sender_id in Account else await event.reply(t)
@@ -1091,7 +1092,7 @@ async def PING(event: events.newmessage.NewMessage.Event):
 @Client.on(events.NewMessage(pattern = '(G|g)ame', from_users = sudo, func=lambda e:e.raw_text.lower() == 'game'))
 async def SendFGam3(event: events.newmessage.NewMessage.Event):
     result = await Client.inline_query('gamee', '', entity=event.chat_id)           
-    await result[rand.randint(0, len(result)-1)].click(reply_to=event.id)
+    await (rand.choice(result)).click(reply_to=event.id)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» 2 Block && UnBlock:
 @Client.on(events.NewMessage(pattern = '(B|b)lock', from_users = Account, func=lambda e:e.raw_text.lower() == 'block'))
