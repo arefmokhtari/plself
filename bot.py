@@ -538,6 +538,57 @@ async def QrCoD3(event: events.newmessage.NewMessage.Event):
                 await Client.send_file(event.chat_id, 'QRCode.png', reply_to = event.id, caption = event.raw_text[14:])
             os.remove('QRCode.png')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+#   -» 2 CoiN MarkeT:
+@Client.on(events.NewMessage(pattern = '(C|c)oin', from_users = sudo))
+async def SetCoiNManaGeR(event: events.newmessage.NewMessage.Event):
+    cmd = event.raw_text.split()
+    len_cmd = len(cmd)
+    if cmd[0].lower() == 'coin':
+        if len_cmd >= 3 and cmd[1].isdigit() and cmd[2].isdigit():
+            start = int(cmd[1])
+            end = int(cmd[2])
+            sep = 1 if start < end else -1
+            coin = pl.Coin.getCoin(loop=True)
+            coin_dict = {}
+            for page in range(start, end, sep):
+                coin.update(page=page)
+                coin_dict = pl.Coin.collection_dict(coin_dict, coin.get_dict())
+            pms = pl.split_coins(coin_dict)
+            for i in pms:
+                await event.reply(i)
+        elif len_cmd > 1:
+            if cmd[1].isdigit():
+                coin = pl.Coin.getCoin(page=int(cmd[1]))
+                pms = pl.split_coins(coin)
+                for i in pms:
+                    await event.reply(i)
+            else:
+                searching = cmd[1]
+                start_page = None
+                end_page = None
+                if len_cmd >= 3 and cmd[2].isdigit():
+                    start_page = int(cmd[2])
+                if len_cmd >= 4 and cmd[3].isdigit():
+                    end_page = int(cmd[3])
+                if end_page and start_page:
+                    sep = 1 if start_page < end_page else -1
+                    coin = pl.Coin.getCoin(loop=True)
+                    coin_dict = {}
+                    for page in range(start_page, end_page, sep):
+                        coin.update(page=page)
+                        coin_dict = pl.Coin.collection_dict(coin_dict, coin.get_dict())
+                    find = coin_dict.get(searching)
+                    await event.reply(f'`{find:,}$`') if find else await event.reply('**• not found !**')
+                else:
+                    coin = pl.Coin.getCoin(page=start_page)
+                    find = coin.get_dict().get(searching)
+                    await event.reply(f'`{find:,}$`') if find else await event.reply('**• not found !**')
+        else:
+            coin = pl.Coin.getCoin()
+            pms = pl.split_coins(coin)
+            for i in pms:
+                await event.reply(i)
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» GeT ProxY: ---- not webservice to this code .
 '''
 @Client.on(events.NewMessage(pattern='(P|p)roxy', from_users = sudo))

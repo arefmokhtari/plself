@@ -3,6 +3,8 @@ import os, random, re
 from math import ceil
 from . import coinmarketcap
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+Coin = coinmarketcap
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 def crtiktok(numbers: list) -> list:
     c = 0
     num = []
@@ -212,6 +214,19 @@ class Counter:
     def clear(self):
         self.number = 0
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+def split_coins(coins: Coin.getCoin | dict, num: int = 60) -> list:
+    pms = []
+    cntr = Counter()
+    c = 0
+    iterator = coins.get_dict().items() if type(coins) is Coin.getCoin else coins.items()
+    for i, v in iterator:
+        index = cntr.get_num()
+        if index%num==0:c+=1
+        if (c+1) >= len(pms): pms.append('')
+        pms[c] += f'{index} - {i}: `{v:,}$`\n'
+    while pms.count(''): pms.remove('')
+    return pms
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 async def user_in_channel(bot, chat, user, UserNotParticipantError):
     try:
         await bot.get_permissions(chat, user)
@@ -238,6 +253,4 @@ def send_weekday(day: int):
 def edit_source_run(code: str, file: str):
     with open(file, 'w') as f:
         f.write(code)
-# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
-coin = coinmarketcap.getCoin
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #

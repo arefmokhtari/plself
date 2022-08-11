@@ -10,6 +10,7 @@ def collection_dict(*data) -> dict:
     d = {}
     for dt in data: d.update(dt)
     return d
+
 def _2float(text: str) -> float: 
     return float(text.replace('.','00'))
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - #
@@ -40,4 +41,5 @@ class getCoin:
         for coin_length in range(self.length()):
             data[self.get_name(coin_length)] = self.get_price(coin_length)
         return data
+        
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - #
