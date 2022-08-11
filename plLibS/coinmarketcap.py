@@ -8,8 +8,7 @@ pages = '/?page='
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 def collection_dict(*data) -> dict:
     d = {}
-    for dt in data:
-        d.update(dt)
+    for dt in data: d.update(dt)
     return d
 def _2float(text: str) -> float: 
     return float(text.replace('.','00'))
