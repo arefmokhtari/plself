@@ -300,8 +300,7 @@ async def FinDManageR(event: events.newmessage.NewMessage.Event):
         msg = await event.get_reply_message()
         if msg.media and type(msg.media) is types.MessageMediaDocument and msg.media.document and msg.media.document.attributes:
             if len_cmd >= 2:
-                if cmd[1] == 'find' and msg.media.document.mime_type == 'audio/ogg':
-                    print(type(msg.media), msg.media.stringify(), sep='\n')
+                if cmd[1] == 'find' and msg.media.document.mime_type in ['audio/ogg', 'video/mp4', 'audio/mpeg']:
                     filename = pl.create_rend_name(6)
                     await Client.download_media(msg, filename)
                     shazam = Shazam()
@@ -347,12 +346,12 @@ async def FinDManageR(event: events.newmessage.NewMessage.Event):
                         if event.sender_id in Account: await event.delete()
                         await Client.send_file(event.chat_id, filename, reply_to=msg.id)
                         os.remove(filename)
-                elif cmd[1] == 'video':
+                elif cmd[1] == 'video' and msg.media.document.mime_type == 'video/mp4':
                     if len_cmd == 3:
                         if cmd[2].isdigit():
                             music_end = int(cmd[2])
-                            await Client.download_media(msg)
-                            filename = msg.media.document.attributes[1].file_name
+                            filename = pl.create_rend_name(8)+'.mp4'
+                            await Client.download_media(msg, filename)
                             music_name = filename[:filename.rfind('.')]+'.mp3'
                             sound = AudioSegment.from_file(filename)
                             sound[0: music_end * 1000].export(music_name, format='mp3')
@@ -364,8 +363,8 @@ async def FinDManageR(event: events.newmessage.NewMessage.Event):
                         if cmd[2].isdigit() and cmd[3].isdigit():
                             music_start = int(cmd[2])
                             music_end = int(cmd[3])
-                            await Client.download_media(msg)
-                            filename = msg.media.document.attributes[1].file_name
+                            filename = pl.create_rend_name(8)+'.mp4'
+                            await Client.download_media(msg, filename)
                             music_name = filename[:filename.rfind('.')]+'.mp3'
                             sound = AudioSegment.from_file(filename)
                             sound[music_start * 1000: music_end * 1000].export(music_name, format='mp3')
@@ -374,8 +373,8 @@ async def FinDManageR(event: events.newmessage.NewMessage.Event):
                             os.remove(filename)
                             os.remove(music_name)
                     else:
-                        await Client.download_media(msg)
-                        filename = msg.media.document.attributes[1].file_name
+                        filename = pl.create_rend_name(8)+'.mp4'
+                        await Client.download_media(msg, filename)
                         music_name = filename[:filename.rfind('.')]+'.mp3'
                         sound = AudioSegment.from_file(filename)
                         sound.export(music_name, format='mp3')
