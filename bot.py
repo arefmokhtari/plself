@@ -443,6 +443,15 @@ async def RuNCoD3(event: events.newmessage.NewMessage.Event):
                 return
             else:
                 await event.edit('• **result:**\n\n`'+code.stdout+'`') if event.sender_id in Account else await event.reply('• **result:**\n\n`'+code.stdout+'`')
+        elif cmd == 'js':
+            file = os.getcwd()+'/data/code/'+'source.js'
+            pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
+            code = subprocess.run(['node', file], capture_output=True, text=True)
+            if code.stderr != '':
+                await event.edit('• **error:**\n\n`'+code.stderr+'`') if event.sender_id in Account else await event.reply('• **error:**\n\n`'+code.stderr+'`')
+                return
+            else:
+                await event.edit('• **result:**\n\n`'+code.stdout+'`') if event.sender_id in Account else await event.reply('• **result:**\n\n`'+code.stdout+'`')
         elif cmd == 'help':
             t = '• **cmds :**\n`py3`\n`py2`\n`cpp`\n`c`\n`lua`\n`java`'
             await event.edit(t) if event.sender_id in Account else await event.reply(t)
