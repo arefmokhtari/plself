@@ -35,7 +35,7 @@ class getCoin:
         return name.lower().replace(' ','_')
     def get_price(self, index: int) -> float:
         name = self.tags[index].select('td:nth-child(4)')[0]
-        return _2float(name.span.text[1:].replace(',', ''))
+        return name.span.text[1:] #_2float(name.span.text[1:].replace(',', ''))
     def get_dict(self) -> dict:
         data = {}
         for coin_length in range(self.length()):
