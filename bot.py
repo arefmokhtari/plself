@@ -587,11 +587,11 @@ async def SetCoiNManaGeR(event: events.newmessage.NewMessage.Event):
                         coin.update(page=page)
                         coin_dict = pl.Coin.collection_dict(coin_dict, coin.get_dict())
                     find = coin_dict.get(searching)
-                    await event.reply(f'`{find:,}$`') if find else await event.reply('**• not found !**')
+                    await event.reply(f'`{find}$`') if find else await event.reply('**• not found !**')
                 else:
                     coin = pl.Coin.getCoin(page=start_page)
                     find = coin.get_dict().get(searching)
-                    await event.reply(f'`{find:,}$`') if find else await event.reply('**• not found !**')
+                    await event.reply(f'`{find}$`') if find else await event.reply('**• not found !**')
         else:
             coin = pl.Coin.getCoin()
             pms = pl.split_coins(coin)

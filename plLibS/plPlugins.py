@@ -223,7 +223,7 @@ def split_coins(coins: Coin.getCoin | dict, num: int = 60) -> list:
         index = cntr.get_num()
         if index%num==0:c+=1
         if (c+1) >= len(pms): pms.append('')
-        pms[c] += f'{index} - {i}: `{v:,}$`\n'
+        pms[c] += f'{index} - {i}: `{v}$`\n'
     while pms.count(''): pms.remove('')
     return pms
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
