@@ -17,7 +17,8 @@
 * REDIS_NUMBER : number os redis BataBase*
 * SESSION_AC_NAME && SESSION_API_NAME :  ur|API session name*
 
-## unzip data.zip: ``` unzip data.zip;rm -rf data.zip```
+## unzip data.zip: 
+``` unzip data.zip;rm -rf data.zip```
 
 # install apps:
 ```apt install python3```
