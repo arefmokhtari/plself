@@ -6,7 +6,7 @@
 
 *note: to use 'pytgcalls' in version 0.7 project, python3 version must be < 3.10*
 
-## - first, fill 'plLibS/plConfig.py' to set the complete config
+## - first, fill '.env' to set the complete config
 # config:
 
 * API_ID && API_HASH :  set ur API 

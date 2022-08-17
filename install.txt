@@ -15,3 +15,4 @@ phonenumbers
 shazamio
 beautifulsoup4
 pydub
+python-dotenv

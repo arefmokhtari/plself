@@ -2,6 +2,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 from bs4 import BeautifulSoup as bs
 import requests as rq
+from .ClasseS import Counter
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 coinmarketcap = 'https://coinmarketcap.com'
 pages = '/?page='
@@ -41,5 +42,17 @@ class getCoin:
         for coin_length in range(self.length()):
             data[self.get_name(coin_length)] = self.get_price(coin_length)
         return data
-        
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+def split_coins(coins, num: int = 60) -> list:
+    pms = []
+    cntr = Counter()
+    c = 0
+    iterator = coins.get_dict().items() if type(coins) is getCoin else coins.items()
+    for i, v in iterator:
+        index = cntr.get_num()
+        if index%num==0:c+=1
+        if (c+1) >= len(pms): pms.append('')
+        pms[c] += f'{index} - {i}: `{v}$`\n'
+    while pms.count(''): pms.remove('')
+    return pms
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #

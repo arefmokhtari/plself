@@ -17,7 +17,7 @@ import qrcode
 from phonenumbers import geocoder, carrier, parse as FuckingPhone
 from whois import whois
 from pwd import getpwuid
-from plLibS import plPlugins as pl, plConfig as botc
+import plLibS as pl
 import os, sys, subprocess
 import json as js
 import random as rand 
@@ -28,21 +28,22 @@ import requests as req
 from psutil import Process
 from pydub import AudioSegment
 # - - - - - - - - - - - ValueS - - - - - - - - - - - - #
-Account = botc.acc_sudo 
-acc_sudo = botc.main_sudo
-sudo = botc.sudoS
+Account = pl.botc.acc_sudo 
+acc_sudo = pl.botc.main_sudo
+sudo = pl.botc.sudoS
 #phone = '+989360145942'
+print(pl.botc.API_ID, pl.botc.INSTAGRAM)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 print(f'{pl.Color.BLACK}\n{pl.Color.BACKGROUND_RED}# ------------- [   Plague Dr.  ] ------------- #{pl.Color.RESET}\n'+pl.Color.DARK_GRAY) 
-bot = TelegramClient(botc.SESSION_DIR+botc.SESSION_API_NAME, botc.API_ID, botc.API_HASH).start(bot_token=botc.BOT_TOKEN)
-clir = pl.bot_redis(botc.REDIS_NUMBER)
+bot = TelegramClient(pl.botc.SESSION_DIR+pl.botc.SESSION_API_NAME, pl.botc.API_ID, pl.botc.API_HASH).start(bot_token=pl.botc.BOT_TOKEN)
+clir = pl.bot_redis(pl.botc.REDIS_NUMBER)
 insta = instaloader.Instaloader()
-pl.check_insta(insta, session = botc.INSTAGRAM[0], username = botc.INSTAGRAM[1], passwd = botc.INSTAGRAM[2])
-Client = TelegramClient('data/SeSioNS/'+botc.SESSION_AC_NAME, botc.API_ID, botc.API_HASH)
+pl.check_insta(insta, session = pl.botc.INSTAGRAM[0], username = pl.botc.INSTAGRAM[1], passwd = pl.botc.INSTAGRAM[2])
+Client = TelegramClient(pl.botc.SESSION_DIR+pl.botc.SESSION_AC_NAME, pl.botc.API_ID, pl.botc.API_HASH)
 Client.start()
 group_call_factory = pl.VchatCall(Client)
 print('\t- Client && bot is runing ! go FucKyourSelf && Bye.', pl.Color.RESET)
-print(f' {pl.Color.RED}----{pl.Color.RESET}    {pl.Color.BACKGROUND_RED}connet to {botc.SESSION_AC_NAME} account !{pl.Color.RESET}    {pl.Color.RED}----{pl.Color.RESET}')
+print(f' {pl.Color.RED}----{pl.Color.RESET}    {pl.Color.BACKGROUND_RED}connet to {pl.botc.SESSION_AC_NAME} account !{pl.Color.RESET}    {pl.Color.RED}----{pl.Color.RESET}')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» CheckING MsG SerVic3 In GP:
 @Client.on(events.Raw(types.UpdateNewChannelMessage, func=lambda e:type(e.message) is types.MessageService))
@@ -59,7 +60,7 @@ async def GetMsGServic3InGP(event: events.raw.Raw):
             data = pl.create_rend_name(4) 
             image.generate(data) 
             image.write(data, data+'.jpg')
-            result = await Client.inline_query(botc.BOT_USERNAME, 'CkTabchi '+data+' '+str(event.message.from_id), entity=event.message.peer_id.channel_id)
+            result = await Client.inline_query(pl.botc.BOT_USERNAME, 'CkTabchi '+data+' '+str(event.message.from_id), entity=event.message.peer_id.channel_id)
             await result[0].click() 
         elif type_message == types.MessageActionChatAddUser:
             for users in event.message.action.users:
@@ -71,7 +72,7 @@ async def GetMsGServic3InGP(event: events.raw.Raw):
                 data = pl.create_rend_name(4) 
                 image.generate(data) 
                 image.write(data, data+'.jpg')
-                result = await Client.inline_query(botc.BOT_USERNAME, 'CkTabchi '+data+' '+str(users), entity=event.message.peer_id.channel_id)
+                result = await Client.inline_query(pl.botc.BOT_USERNAME, 'CkTabchi '+data+' '+str(users), entity=event.message.peer_id.channel_id)
                 await result[0].click() 
     #if (chat_id in list(clir.hgetall('plAddGroPSettinGZ').keys()) and js.loads(clir.hget('plAddGroPSettinGZ', chat_id))['lock_tg']) and'action' in event.message.to_dict() and type_message is types.MessageActionChatAddUser:
     #    pass
@@ -84,7 +85,7 @@ async def check_massag3(event: events.newmessage.NewMessage.Event):
     if event.is_private and event.sender_id != Account[0] and event.media and event.media.ttl_seconds:
         cr_file = pl.create_rend_name(10)
         await Client.download_media(event.media, os.getcwd()+'/data/photos/'+cr_file)
-        await Client.send_file(botc.CHANNEL_FOR_FWD, os.getcwd()+'/data/photos/'+pl.findfile(cr_file, os.getcwd()+'/data/photos'))
+        await Client.send_file(pl.botc.CHANNEL_FOR_FWD, os.getcwd()+'/data/photos/'+pl.findfile(cr_file, os.getcwd()+'/data/photos'))
     if event.sender_id in sudo: 
         pass
     elif event.is_group:
@@ -108,23 +109,23 @@ async def check_massag3(event: events.newmessage.NewMessage.Event):
                 if get_user == None:
                     if clir.get('plForWardSendOrno'):
                         clir.setex('acdontsave:'+sender_id+':pl', 86400, 1)
-                        await Client.forward_messages(botc.CHANNEL_FOR_FWD, event.message)
+                        await Client.forward_messages(pl.botc.CHANNEL_FOR_FWD, event.message)
                 else:
                     if get_user < 15:
                         if clir.get('plForWardSendOrno'):
                             clir.setex('acdontsave:'+sender_id+':pl', 86400, get_user+1)
-                            await Client.forward_messages(botc.CHANNEL_FOR_FWD, event.message)
+                            await Client.forward_messages(pl.botc.CHANNEL_FOR_FWD, event.message)
             await event.delete()
         elif sender_id not in clir.lrange('DonTCare2MsG', 0, -1) and not await pl.userisbot(clir, event):
             if get_user == None:
                 if clir.get('plForWardSendOrno'):
                     clir.setex('acdontsave:'+sender_id+':pl', 86400, 1)
-                    await Client.forward_messages(botc.CHANNEL_FOR_FWD, event.message)
+                    await Client.forward_messages(pl.botc.CHANNEL_FOR_FWD, event.message)
             else:
                 if get_user < 15:
                     if clir.get('plForWardSendOrno'):
                         clir.setex('acdontsave:'+sender_id+':pl', 86400, get_user+1)
-                        await Client.forward_messages(botc.CHANNEL_FOR_FWD, event.message)
+                        await Client.forward_messages(pl.botc.CHANNEL_FOR_FWD, event.message)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» RMSG MSG:
 @Client.on(events.NewMessage(pattern = '(R|r)msg', from_users = sudo))
@@ -292,7 +293,7 @@ async def GetFuckinGNuD3(event: events.newmessage.NewMessage.Event):
         if msg.media:
             cr_file = pl.create_rend_name(10)
             await Client.download_media(msg.media, os.getcwd()+'/data/photos/'+cr_file)
-            await Client.send_file(botc.CHANNEL_FOR_FWD, os.getcwd()+'/data/photos/'+pl.findfile(cr_file, os.getcwd()+'/data/photos'))
+            await Client.send_file(pl.botc.CHANNEL_FOR_FWD, os.getcwd()+'/data/photos/'+pl.findfile(cr_file, os.getcwd()+'/data/photos'))
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» MusiC ManageR:
 @Client.on(events.NewMessage(pattern='(M|m)usic', from_users=sudo))
@@ -586,17 +587,17 @@ async def SetCoiNManaGeR(event: events.newmessage.NewMessage.Event):
             start = int(cmd[1])
             end = int(cmd[2])
             sep = 1 if start < end else -1
-            coin = pl.Coin.getCoin(loop=True)
+            coin = pl.getCoin(loop=True)
             coin_dict = {}
             for page in range(start, end, sep):
                 coin.update(page=page)
-                coin_dict = pl.Coin.collection_dict(coin_dict, coin.get_dict())
+                coin_dict = pl.collection_dict(coin_dict, coin.get_dict())
             pms = pl.split_coins(coin_dict)
             for i in pms:
                 await event.reply(i)
         elif len_cmd > 1:
             if cmd[1].isdigit():
-                coin = pl.Coin.getCoin(page=int(cmd[1]))
+                coin = pl.getCoin(page=int(cmd[1]))
                 pms = pl.split_coins(coin)
                 for i in pms:
                     await event.reply(i)
@@ -610,19 +611,19 @@ async def SetCoiNManaGeR(event: events.newmessage.NewMessage.Event):
                     end_page = int(cmd[3])
                 if end_page and start_page:
                     sep = 1 if start_page < end_page else -1
-                    coin = pl.Coin.getCoin(loop=True)
+                    coin = pl.getCoin(loop=True)
                     coin_dict = {}
                     for page in range(start_page, end_page, sep):
                         coin.update(page=page)
-                        coin_dict = pl.Coin.collection_dict(coin_dict, coin.get_dict())
+                        coin_dict = pl.collection_dict(coin_dict, coin.get_dict())
                     find = coin_dict.get(searching)
                     await event.reply(f'`{find}$`') if find else await event.reply('**• not found !**')
                 else:
-                    coin = pl.Coin.getCoin(page=start_page)
+                    coin = pl.getCoin(page=start_page)
                     find = coin.get_dict().get(searching)
                     await event.reply(f'`{find}$`') if find else await event.reply('**• not found !**')
         else:
-            coin = pl.Coin.getCoin()
+            coin = pl.getCoin()
             pms = pl.split_coins(coin)
             for i in pms:
                 await event.reply(i)
@@ -719,7 +720,7 @@ async def joinchat(event: events.newmessage.NewMessage.Event):
 async def SeYInFO(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event)
     if event.raw_text.lower() == 'info': 
-        await pl.send_sudo_msg(event, f'• **info plSelf** `v.{pl.version}` :\n\n• **sudos :** `{len(sudo)}`\n• **PV user :** `{len(clir.lrange("plAcUserInPV",0 ,-1))}`\n• **user :** `{getpwuid(os.getuid())[0]}`\n• **used RAM:** `{int(((Process(os.getpid()).memory_full_info().rss)/1024)/1024)}MB`\n• **python3 version :** `{sys.version.split()[0]}`\n• **telethon version :** `{tver}`\n', Account)
+        await pl.send_sudo_msg(event, f'• **info plSelf** `v.{pl.botc.version}` :\n\n• **sudos :** `{len(sudo)}`\n• **PV user :** `{len(clir.lrange("plAcUserInPV",0 ,-1))}`\n• **user :** `{getpwuid(os.getuid())[0]}`\n• **used RAM:** `{int(((Process(os.getpid()).memory_full_info().rss)/1024)/1024)}MB`\n• **python3 version :** `{sys.version.split()[0]}`\n• **telethon version :** `{tver}`\n', Account)
     elif len_cmd > 1 and cmd[0] == 'info' and cmd[1] == 'pv':
         c = pl.Counter()
         await pl.send_sudo_msg(event, '• **user in pv:**\n\n'+'\n'.join(map(lambda s:f'{c.get_num()} - [{s}](tg://user?id={s})', clir.lrange('plAcUserInPV',0 ,-1))), Account)
@@ -770,7 +771,7 @@ async def SenDFuCKinGFilE(event: events.newmessage.NewMessage.Event):
             if file_name not in clir.hgetall('plFuCKInGFilESaVE').keys():
                 msg = await event.get_reply_message()
                 if msg.media:
-                    await Client.send_file(botc.BOT_USERNAME, msg.media, caption=f'kosfile {file_name}')
+                    await Client.send_file(pl.botc.BOT_USERNAME, msg.media, caption=f'kosfile {file_name}')
                     #clir.hset('plFuCKInGFilESaVE', file_name, pack_bot_file_id(msg.media))
                     await pl.send_sudo_msg(event, f'• **done, voice name to call :** `{file_name}`', Account)
             else:
@@ -793,10 +794,10 @@ async def SenDFuCKinGFilE(event: events.newmessage.NewMessage.Event):
                     reply_to = event.reply_to.reply_to_msg_id
                 elif event.sender_id not in Account:
                     reply_to = event.id
-                await Client.send_message(botc.BOT_USERNAME, f'kosfile {file_name} {event.chat_id} {reply_to}')
+                await Client.send_message(pl.botc.BOT_USERNAME, f'kosfile {file_name} {event.chat_id} {reply_to}')
                 if event.sender_id in Account:
                     await event.delete()
-@Client.on(events.NewMessage(pattern = 'kosnanatmary', from_users=botc.BOT_USERNAME)) # good pattern 
+@Client.on(events.NewMessage(pattern = 'kosnanatmary', from_users=pl.botc.BOT_USERNAME)) # good pattern 
 async def KosNaNatMary(event: events.newmessage.NewMessage.Event):
     if event.media:
         cmd = event.raw_text.split()
@@ -957,7 +958,7 @@ async def BaNnedUserInGP(event: events.newmessage.NewMessage.Event):
         elif event.entities and 'user_id' in event.entities[0].to_dict():
             await Client(EditBannedRequest(event.chat_id, event.entities[0].user_id, ChatBannedRights(until_date=None, view_messages=True)))
             await pl.send_sudo_msg(event, f'• **user** `{event.entities[0].user_id}` **has been Banned !**', Account)
-    elif event.is_reply and text == 'ban':
+    elif event.is_reply and event.raw_text.lower() == 'ban':
         msg = await event.get_reply_message()
         user = msg.from_id.channel_id if 'channel_id' in msg.from_id.to_dict() else msg.from_id.user_id
         if user in sudo:
@@ -1285,7 +1286,7 @@ async def RemGrouP(event: events.newmessage.NewMessage.Event):
 #   -» BoT H3lp:
 @Client.on(events.NewMessage(pattern = '(H|h)elp', from_users = sudo, func=lambda e:e.raw_text.lower() == 'help'))
 async def SendHelP(event: events.newmessage.NewMessage.Event):
-    await pl.send_sudo_msg(event, pl.STR_HELP_BOT, Account)
+    await pl.send_sudo_msg(event, pl.botc.STR_HELP_BOT, Account)
     '''
     try: 
         if event.sender_id in Account: 
@@ -1305,11 +1306,11 @@ async def PANELAPI(event: events.newmessage.NewMessage.Event):
         if str(event.chat_id) in clir.hgetall('plAddGroPSettinGZ'):
             try: 
                 if event.sender_id in Account: 
-                    result = await Client.inline_query(botc.BOT_USERNAME, 'panel', entity=event.chat_id)
+                    result = await Client.inline_query(pl.botc.BOT_USERNAME, 'panel', entity=event.chat_id)
                     await result[0].click()
                     await event.delete()
                 else:
-                    result = await Client.inline_query(botc.BOT_USERNAME, 'panel', entity=event.chat_id)
+                    result = await Client.inline_query(pl.botc.BOT_USERNAME, 'panel', entity=event.chat_id)
                     await result[0].click(reply_to=event.id)
             except Exception as e:
                 await pl.send_sudo_msg(event, f'• **error :** {e}', Account)
