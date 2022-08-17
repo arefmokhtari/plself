@@ -32,7 +32,6 @@ Account = pl.botc.acc_sudo
 acc_sudo = pl.botc.main_sudo
 sudo = pl.botc.sudoS
 #phone = '+989360145942'
-print(pl.botc.API_ID, pl.botc.INSTAGRAM)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 print(f'{pl.Color.BLACK}\n{pl.Color.BACKGROUND_RED}# ------------- [   Plague Dr.  ] ------------- #{pl.Color.RESET}\n'+pl.Color.DARK_GRAY) 
 bot = TelegramClient(pl.botc.SESSION_DIR+pl.botc.SESSION_API_NAME, pl.botc.API_ID, pl.botc.API_HASH).start(bot_token=pl.botc.BOT_TOKEN)
