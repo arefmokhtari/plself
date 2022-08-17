@@ -1,7 +1,10 @@
 #                   [   Plague Dr.  ]
-import os, random, re
+import os, random, re, asyncio
 from math import ceil
 from . import coinmarketcap
+from pytgcalls import GroupCallFactory
+from speedtest import Speedtest
+from redis import StrictRedis
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 Coin = coinmarketcap
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
@@ -15,7 +18,7 @@ def crtiktok(numbers: list) -> list:
         c += 1
     return num
 num = crtiktok('⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹'.split())
-version = 0.6
+version = 0.7
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 STR_HELP_BOT = f'''**°• WlC 2 Th source help page! | pl-self v.{version} •°
  - Warning: Only sudo account and sudo\'s can use this system.**
@@ -86,7 +89,7 @@ async def _exec(code, event, Client): # a memento from my friend, Andy =D
     exec(f"async def __exec(event, Client): " + "".join(f"\n {x}" for x in code.split("\n")))
     return await locals()["__exec"](event, Client)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
-def bot_redis(StrictRedis, redis_number):
+def bot_redis(redis_number: int) -> StrictRedis:
     try:
         BOTREDIS = StrictRedis(host = '127.0.0.1', port = 6379, db = redis_number, decode_responses = True) 
         BOTREDIS.set('plagueDr','aref')
@@ -129,7 +132,7 @@ async def userisbot(clir, event):
             clir.lpush('plAcUserInPV', user.id)
             return False
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
-def switch(search: object, sdict: list, default: object):
+def switch(search: object, sdict: dict, default: object):
     return sdict.get(search, default)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 class Base:
@@ -214,7 +217,7 @@ class Counter:
     def clear(self):
         self.number = 0
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
-def split_coins(coins: Coin.getCoin | dict, num: int = 60) -> list:
+def split_coins(coins, num: int = 60) -> list:
     pms = []
     cntr = Counter()
     c = 0
@@ -227,7 +230,7 @@ def split_coins(coins: Coin.getCoin | dict, num: int = 60) -> list:
     while pms.count(''): pms.remove('')
     return pms
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
-async def user_in_channel(bot, chat, user, UserNotParticipantError):
+async def user_in_channel(bot, chat, user, UserNotParticipantError) -> bool:
     try:
         await bot.get_permissions(chat, user)
         return True
@@ -247,10 +250,50 @@ def jdmonthname(month: int) -> str:
 def send_seasons(month: int, ptn: str = 'm') -> str:
     return ['Spring', 'Summer', 'Fall', 'winter'][(ceil(month/3))-1] if ptn == 'm' else ['Bahar', 'Tabestan', 'Paiiz', 'Zemeston'][(ceil(month/3))-1]
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
-def send_weekday(day: int):
+def send_weekday(day: int) -> str:
     return ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][day]
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 def edit_source_run(code: str, file: str):
     with open(file, 'w') as f:
         f.write(code)
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+class VchatCall(GroupCallFactory):
+    def __init__(self, Client):
+        super().__init__(Client, self.MTPROTO_CLIENT_TYPE.TELETHON)
+        self._play_voice = None
+    def is_played(self) -> bool:
+        return bool(self._play_voice)
+    async def start_voice_chat(self, event, msg4show,  file_name = None, *,
+                               youtube: bool = False, youtube_link = None):
+        await self.stop_voice_chat()
+        if findfile('input.raw', os.getcwd()): os.remove('input.raw')
+        os.system(f'ffmpeg -i "{file_name}" -f s16le -ac 2 -ar 48000 -acodec pcm_s16le input.raw')
+        os.remove(file_name)
+        self._play_voice = self.get_file_group_call('input.raw')
+        try:
+            await self._play_voice.start(event.chat_id)
+            await msg4show.edit('**• done !**')
+        except asyncio.exceptions.TimeoutError as er:
+            await msg4show.edit(f'{er}')
+            print('-----')
+    async def stop_voice_chat(self):
+        if self.is_played():
+            await self._play_voice.stop()
+            self._play_voice = None
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+def get_cmds(event):
+    cmd = event.raw_text.lower().split()
+    len_cmd = len(cmd)
+    return [cmd, len_cmd]
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+async def send_sudo_msg(event, message, Account):
+    return await event.edit(message) if event.sender_id in Account else await event.reply(message)
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+async def dict_speedtest() -> dict:
+    st = Speedtest()
+    st.get_servers()
+    st.get_best_server()
+    st.download()
+    st.upload()
+    return st.results.dict()
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
