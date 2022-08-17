@@ -857,7 +857,7 @@ async def MuteAllGP(event: events.newmessage.NewMessage.Event):
                 await pl.send_sudo_msg(event, f'• **group** `{event.chat_id}` **has been muted !**', Account)
             else:
                 await pl.send_sudo_msg(event, f'• **group** `{event.chat_id}` **has been muted before !**', Account)
-        elif cmd()[0] == 'mute':
+        elif cmd[0] == 'mute':
             user = None
             if len_cmd == 1 and event.is_reply:
                 user = await event.get_reply_message()
