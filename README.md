@@ -3,6 +3,7 @@
 
 ### bot commands are available in the help cmd !
 *note: This script must be run in a Linux environment (to access and Scriptlibraries)*
+
 *note: to use 'pytgcalls' in version 0.7 project, python3 version must be < 3.10*
 
 ## - first, fill 'plLibS/plConfig.py' to set the complete config
