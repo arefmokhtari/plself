@@ -2,7 +2,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 from bs4 import BeautifulSoup as bs
 import requests as rq
-from .ClasseS import Counter
+from .plPlugins import Counter
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 coinmarketcap = 'https://coinmarketcap.com'
 pages = '/?page='

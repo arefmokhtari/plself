@@ -1,6 +1,8 @@
 #                   [   Plague Dr.  ]
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 from pytgcalls import GroupCallFactory
+from .plPlugins import findfile
+import os, asyncio
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 class VchatCall(GroupCallFactory):
     def __init__(self, Client):

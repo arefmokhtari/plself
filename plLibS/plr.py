@@ -1,8 +1,9 @@
 #                   [   Plague Dr.  ]
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 from redis import StrictRedis
-from plPlugins import bot_redis, Color
-from plConfig import REDIS_NUMBER
+from .DataManageR import bot_redis
+from .Color import Color
+from .plConfig import botc
 import json as js
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 def show():
@@ -77,9 +78,9 @@ def show():
             'plFuCKInGFilESaVE':clir.hgetall('plFuCKInGFilESaVE'),
             'AnTITABCiE':clir.hgetall('AnTITABCiE')
         }
-        with open( f'data/backup{REDIS_NUMBER}.json', 'w',  encoding='utf-8') as f:
+        with open( f'data/backup{botc.REDIS_NUMBER}.json', 'w',  encoding='utf-8') as f:
             js.dump(_4backup, f)
-        print(f'\n- done ! \nth backup saved in "data/backup{REDIS_NUMBER}.json"')
+        print(f'\n- done ! \nth backup saved in "data/backup{botc.REDIS_NUMBER}.json"')
     elif cmd == '5':
         print('\n- Under Construction !')
     elif cmd == '0':
@@ -90,9 +91,9 @@ def show():
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 if __name__ == '__main__':
     print(f'\n\t\t{Color.BLACK} {Color.BACKGROUND_RED}㉿ [   Plague Dr.  ] ㉿{Color.RESET}')
-    clir = bot_redis(StrictRedis, REDIS_NUMBER)
+    clir = bot_redis(StrictRedis, botc.REDIS_NUMBER)
     print(Color.RED ,'\n\t• Redis PlSelf-Database Management System !')
-    print(f'\t- Connected to RediS Number {Color.YELLOW} {REDIS_NUMBER} {Color.RED}!')
+    print(f'\t- Connected to RediS Number {Color.YELLOW} {botc.REDIS_NUMBER} {Color.RED}!')
     print('\t• Please select one of the following:\n', Color.RESET)
     show()
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #

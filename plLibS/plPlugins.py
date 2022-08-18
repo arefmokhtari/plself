@@ -1,5 +1,6 @@
 #                   [   Plague Dr.  ]
 import os, random, re
+from speedtest import Speedtest
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 CoDMORsE = {'a' : ".-", 'b' : "-...", 'c' : "-.-.", 'd' : "-..", 'e' : ".", 'f' : "..-.", 'g' : "--.", 'h' : "....", 'i' : "..", 'j' : ".--", 'k' : "-.-", 'l' : ".-..", 'm' : "--", 'n' : "-.", 'o' : "---", 'p' : ".--.", 'q' : "--.-", 'r' : ".-.", 's' : "...", 't' : "-", 'u' : "..-", 'v' : "...-", 'w' : ".--", 'x' : "-..-", 'y' : "-.--", 'z' : "--..", ' ' : ' ', '1':  ".---", '2':  "..---", '3': "...--", '4':  "....-",'5': ".....", '6':  "-....", '7': "--...", '8':  "---..", '9':  "----.", '0': "-----", '۱':  ".---", '۲':  "..---", '۳': "...--", '۴':  "....-", '۵': ".....", '۶':  "-....", '۷': "--...", '۸':  "---..", '۹':  "----.", '۰': "-----", 'آ' : '.-', 'ا' : '.-', 'ب' : '-...', 'پ' : '.--.', 'ت' : '-', 'ث' : '-.-.', 'ج' : '.---', 'چ' : '---.', 'ح' : '....', 'خ' : '-..-', 'د' : '-..', 'ذ' : '...-', 'ر' : '.-.', 'ز' : '--..', 'ژ' : '--.', 'س' : '...', 'ش' : '----', 'ص' : '.-.-', 'ض' : '..-..', 'ط' : '..-', 'ظ' : '-.--', 'ع' : '---', 'غ' : '..--', 'ف' : '..--', 'ق' : '..-.', 'ک' : '-.-', 'گ' : '--.-', 'ل' : '.-..', 'م' : '--', 'ن' : '.-', 'و' : '.--', 'ه' : '.', 'ی' : '..', '\n':'\n'}
 # - - - - - - - - - - - -FuncTioN- - - - - - - - - - - #
@@ -77,7 +78,40 @@ def get_cmds(event):
     cmd = event.raw_text.lower().split()
     len_cmd = len(cmd)
     return [cmd, len_cmd]
+class Counter:
+    def __init__(self):
+        self.number = 0
+    def get_num(self):
+        self.number += 1
+        return self.number
+    def clear(self):
+        self.number = 0
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+class Base:
+    def __init__(self, s, b):
+        self.ns = Base.base(self, s, b)
+    def charbase(self, n, base):
+        s = '0123456789ABCDEF'
+        if n < base:
+            return s[n]
+        else:
+            return self.charbase(n//base , base) + s[ n % base]
+    def base(self, s, base):
+        ns = ''
+        for ch in s:
+            ns += self.charbase(ord(ch),base)+' '
+        return ns
+    def result(self):
+        return self.ns
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 async def send_sudo_msg(event, message, Account):
     return await event.edit(message) if event.sender_id in Account else await event.reply(message)
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+async def dict_speedtest() -> dict:
+    st = Speedtest()
+    st.get_servers()
+    st.get_best_server()
+    st.download()
+    st.upload()
+    return st.results.dict()
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
