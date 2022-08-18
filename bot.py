@@ -1,5 +1,6 @@
 #                   [   Plague Dr.  ]
 # - - - - - - - - - - -LIBRarYS- - - - - - - - - - - - #
+from re import L
 from telethon import TelegramClient, events, Button, types, __version__ as tver
 from telethon.tl.functions.messages import ImportChatInviteRequest, CheckChatInviteRequest
 from telethon.tl.functions.channels import JoinChannelRequest, LeaveChannelRequest, EditBannedRequest, InviteToChannelRequest, EditPhotoRequest
@@ -11,13 +12,12 @@ from telethon.tl.functions.phone import CreateGroupCallRequest, JoinGroupCallReq
 from telethon.errors.rpcerrorlist import MessageNotModifiedError
 from telethon.utils import pack_bot_file_id
 from googletrans import Translator
-import instaloader
 from shazamio import Shazam
 import qrcode
 from phonenumbers import geocoder, carrier, parse as FuckingPhone
 from whois import whois
 from pwd import getpwuid
-import plLibS as pl
+import scripts as pl
 import os, sys, subprocess
 import json as js
 import random as rand 
@@ -36,8 +36,7 @@ sudo = pl.botc.sudoS
 print(f'{pl.Color.BLACK}\n{pl.Color.BACKGROUND_RED}# ------------- [   Plague Dr.  ] ------------- #{pl.Color.RESET}\n'+pl.Color.DARK_GRAY) 
 bot = TelegramClient(pl.botc.SESSION_DIR+pl.botc.SESSION_API_NAME, pl.botc.API_ID, pl.botc.API_HASH).start(bot_token=pl.botc.BOT_TOKEN)
 clir = pl.bot_redis(pl.botc.REDIS_NUMBER)
-insta = instaloader.Instaloader()
-pl.check_insta(insta, session = pl.botc.INSTAGRAM[0], username = pl.botc.INSTAGRAM[1], passwd = pl.botc.INSTAGRAM[2])
+insta = pl.instaBot(pl.botc.INSTAGRAM[0],pl.botc.INSTAGRAM[1], pl.botc.INSTAGRAM[2], pl.botc.SESSION_DIR[:-1])
 Client = TelegramClient(pl.botc.SESSION_DIR+pl.botc.SESSION_AC_NAME, pl.botc.API_ID, pl.botc.API_HASH)
 Client.start()
 group_call_factory = pl.VchatCall(Client)
@@ -89,7 +88,8 @@ async def check_massag3(event: events.newmessage.NewMessage.Event):
         pass
     elif event.is_group:
         chat_id = str(event.chat_id)
-        if chat_id in clir.lrange('plMuteAllGP', 0, -1) or (chat_id in clir.hgetall('plMut3UserInPG').keys() and chat_id in clir.hget('plMut3UserInPG', str(event.chat_id)).split()):
+        usr = str(event.sender_id)
+        if chat_id in clir.lrange('plMuteAllGP', 0, -1) or (chat_id in clir.hgetall('plMut3UserInPG').keys() and usr in clir.hget('plMut3UserInPG', chat_id).split()):
             await event.delete()
         elif chat_id in clir.hgetall('plAddGroPSettinGZ').keys():
             database = js.loads(clir.hget('plAddGroPSettinGZ', chat_id))
@@ -153,40 +153,32 @@ async def InsTA(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event)
     if len_cmd == 3 and cmd[0] == 'insta':
         if cmd[1] == 'post': 
-            post = instaloader.Post.from_shortcode(insta.context, cmd[2])
-            insta.download_post(post, target = 'insta')
-            file_name = [i for i in pl.fileindir(insta.format_filename(post), os.listdir(os.getcwd()+'/insta')) if pl.checklist4insta(i)]
-            Files = [os.getcwd()+'/insta/'+fi for fi in file_name]
+            file_name = await insta.down_post(cmd[2])
+            Files = [os.getcwd()+'/insta/'+fi for fi in file_name.get('file')]
+            post = file_name.get('post')
             if len(file_name) >= 1:
                 try:
                     await Client.send_file(event.chat_id, [os.getcwd()+'/insta/'+fi for fi in file_name], reply_to=event.id, caption = f'• **username :** `{post.owner_username}`\n• **like :** `{post.likes}`\n• **Comments :** `{post.comments}`')
                 except:
                     for f in Files:
                         await Client.send_file(event.chat_id, f, reply_to=event.id, caption = f'• **username :** `{post.owner_username}`\n• **like :** `{post.likes}`\n• **Comments :** `{post.comments}`')
-            for FilES in os.listdir('insta'):
-                os.remove('insta'+'/'+FilES)
-            os.rmdir('insta')
+            pl.instaBot.remove_dir('insta')
         elif cmd[1] == 'profile':
-            profile = instaloader.Profile.from_username(insta.context, cmd[2])
-            insta.download_profile(profile, profile_pic_only=True)
-            fucking_file = [kos for kos in os.listdir(os.getcwd()+'/'+profile.username) if kos.endswith('jpg')][0]
+            files = await insta.down_profile(cmd[2])
+            fucking_file = files.get('file')
+            profile = files.get('profile')
             await Client.send_file(event.chat_id,os.getcwd()+'/'+profile.username+'/'+fucking_file, reply_to=event.id, caption = f'• **name :** `{profile.full_name}`\n• **bio :** `{profile.biography}`\n• **followers :** `{profile.followers:,}`')
-            for FilES in os.listdir(profile.username):
-                os.remove(profile.username+'/'+FilES)
-            os.rmdir(profile.username)
+            pl.instaBot.remove_dir(profile.username)
         elif cmd[1] == 'story':
-            profile = instaloader.Profile.from_username(insta.context, cmd[2])
-            insta.download_profile(profile, download_stories_only = True, profile_pic = False)
-            files = [kos for kos in os.listdir(os.getcwd()+'/'+profile.username) if pl.checklist4insta(kos)]
-            Files = [profile.username+'/'+sher for sher in files]
+            files = await insta.down_story(cmd[2])
+            profile = files.get('profile')
+            Files = files.get('file')
             try:
                 await Client.send_file(event.chat_id, Files, reply_to=event.id)
             except:
                     for f in Files:
                         await Client.send_file(event.chat_id, f, reply_to=event.id)
-            for FilES in os.listdir(profile.username):
-                os.remove(profile.username+'/'+FilES)
-            os.rmdir(profile.username)
+            pl.instaBot.remove_dir(profile.username)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Calculator:
 @Client.on(events.NewMessage(pattern = '(C|c)al', from_users = sudo))
@@ -238,7 +230,7 @@ async def IdProcessing(event: events.newmessage.NewMessage.Event):
             if 'channel_id' in chat.to_dict():
                 await pl.send_sudo_msg(event, f'`-100{chat.channel_id}`', Account)
             else:
-                await pl.send_sudo_msg(event, f'`-100{chat.user_id}`', Account)
+                await pl.send_sudo_msg(event, f'`{chat.user_id}`', Account)
         if cmd[1] == 'chat':
             if event.is_group:await pl.send_sudo_msg(event, f'`{event.chat_id}`', Account)
         elif cmd[1][0] == '-':
@@ -469,7 +461,7 @@ async def RuNCoD3(event: events.newmessage.NewMessage.Event):
                 await pl.send_sudo_msg(event, '• **result:**\n\n`'+code.stdout+'`', Account)
                 os.remove('a.out')
         elif cmd == 'program':
-            try:await pl._exec(event.raw_text[event.raw_text.find('\n')+1:], event, Client);await pl.send_sudo_msg(event, '• **done !**', Account)
+            try:await pl.myexec(event.raw_text[event.raw_text.find('\n')+1:], event, Client);await pl.send_sudo_msg(event, '• **done !**', Account)
             except Exception as e:await pl.send_sudo_msg(event, str(e), Account)
         elif cmd == 'c':
             file = os.getcwd()+'/data/code/'+'source.c' 

@@ -9,4 +9,5 @@ from .plPlugins import *
 from .VchatCall import *
 from .DataManageR import *
 from .ClocK import *
+from .instaBot import *
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
