@@ -691,12 +691,10 @@ async def joinchat(event: events.newmessage.NewMessage.Event):
     elif len_cmd > 1 and pl.check_link(cmd[1], ptrn = 's'):
         link = pl.check_link(cmd[1], ptrn = 'l')
         try:
-            print((await Client(CheckChatInviteRequest(link[link.rfind('/')+1:]))).stringify())
+            await Client(CheckChatInviteRequest(link[link.rfind('/')+1:]))
         except: await pl.send_sudo_msg(event, '• **invalid link !**', Account)
         else:
             try:
-                # HideChatJoinRequestRequest()
-                print(link[link.rfind('/')+1:])
                 await Client(ImportChatInviteRequest(link[link.rfind('/')+1:]))
                 await pl.send_sudo_msg(event, '• **done, joined !**', Account)
             except Exception as er: await pl.send_sudo_msg(event, f'•** error: {er}!**', Account)
