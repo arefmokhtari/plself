@@ -1,9 +1,8 @@
 #                   [   Plague Dr.  ]
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
-from redis import StrictRedis
-from .DataManageR import bot_redis
-from .Color import Color
-from .plConfig import botc
+from DataManageR import bot_redis
+from Color import Color
+from plConfig import botc
 import json as js
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 def show():
@@ -91,7 +90,7 @@ def show():
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 if __name__ == '__main__':
     print(f'\n\t\t{Color.BLACK} {Color.BACKGROUND_RED}㉿ [   Plague Dr.  ] ㉿{Color.RESET}')
-    clir = bot_redis(StrictRedis, botc.REDIS_NUMBER)
+    clir = bot_redis(botc.REDIS_NUMBER)
     print(Color.RED ,'\n\t• Redis PlSelf-Database Management System !')
     print(f'\t- Connected to RediS Number {Color.YELLOW} {botc.REDIS_NUMBER} {Color.RED}!')
     print('\t• Please select one of the following:\n', Color.RESET)

@@ -231,7 +231,7 @@ async def IdProcessing(event: events.newmessage.NewMessage.Event):
                 await pl.send_sudo_msg(event, f'`-100{chat.channel_id}`', Account)
             else:
                 await pl.send_sudo_msg(event, f'`{chat.user_id}`', Account)
-        if cmd[1] == 'chat':
+        elif cmd[1] == 'chat':
             if event.is_group:await pl.send_sudo_msg(event, f'`{event.chat_id}`', Account)
         elif cmd[1][0] == '-':
             chat = await Client.get_entity(int(cmd[1]))
@@ -241,7 +241,7 @@ async def IdProcessing(event: events.newmessage.NewMessage.Event):
                 await pl.send_sudo_msg(event, f'@{chat.username}', Account)
         elif cmd[1][0].isdigit():
             await pl.send_sudo_msg(event, f'[{cmd[1]}](tg://user?id={cmd[1]})', Account)
-        elif event.entities and 'user_id' in event.entities[0].to_dict():
+        elif event.entities and getattr(event.entities[0], 'user_id'):
             await pl.send_sudo_msg(event, f'`{event.entities[0].user_id}`', Account)
     elif event.is_private and event.raw_text.lower() == 'id':
         if event.is_reply:
@@ -524,7 +524,6 @@ async def GrouPCalLMain(event: events.newmessage.NewMessage.Event):
             await pl.send_sudo_msg(event, '**• voice ChaT WaS created !**', Account)
         elif cmd[1] == 'join':
             chat = await event.get_chat()
-            print(chat.stringify())
             await Client(JoinGroupCallRequest(types.InputGroupCall(chat.id, chat.access_hash), 'plagueDr', params=types.DataJSON(data=js.dumps('{"enable_vp8_encoder":true}'))))
         elif cmd[1] == 'play' and event.is_reply:
             msg = await event.get_reply_message()
@@ -1262,7 +1261,7 @@ async def TurNFuckinGOff(event: events.newmessage.NewMessage.Event):
 @Client.on(events.NewMessage(pattern='(A|a)dd', from_users = sudo, func=lambda e: e.is_group and e.raw_text.lower() == 'add'))
 async def AddGrouP(event: events.newmessage.NewMessage.Event):
     if str(event.chat_id) not in clir.hgetall('plAddGroPSettinGZ').keys():
-        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps({'lock_link':False,'gp_Ch':False, 'lock_photo':False,'lock_stiker':False,'lock_gif':False,'lock_tg':False,'lock_game':False,'lock_dsh':False,'lock_voice':False,'lock_forward':False,'lock_video':False,'lock_via':False,'lock_music':False,'lock_file':False,'lock_bot':False,'lock_location':False,'lock_contact':False,'lock_caption':False,'lock_contact':False,'lock_caption':False}))
+        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(pl.BOT_GROUP_DATABASE))
         await pl.send_sudo_msg(event, '• **group add to database !**', Account)
     else: await pl.send_sudo_msg(event, '• **group added to database before !**', Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
@@ -1443,7 +1442,7 @@ async def main_call(event: events.CallbackQuery.Event):
     if (event.data.split()[0] == b"ftabchi" or event.data.split()[0] == b"ttabchi"):
         if event.original_update.user_id == int(event.data.split()[1]):
             return await cktabchi(event)
-        else : await event.answer('برای تو نیستش.',alert= True)
+        else : await event.answer('برای تو نیستش.', alert= True)
     elif event.query.user_id in sudo:
         try:
             if event.data == b"gpl1": 
@@ -1453,7 +1452,7 @@ async def main_call(event: events.CallbackQuery.Event):
             elif event.data == b"bk_panel":
                 return await pl_main(event)
             elif event.data == b"exitpl":
-                return await event.edit('- The panel was closed !')
+                return await event.edit('**• panel was closed !**')
             elif event.data == b"list_mute_pv":
                 return await event.edit('Muted User in Pv :'+' - '.join(clir.lrange('plMutePVUsEr', 0, -1)),buttons=buttons)
             elif event.data == b"list_mute_gp":
@@ -1555,7 +1554,7 @@ async def main_call(event: events.CallbackQuery.Event):
                         return await panel_1(event)
                     else:
                         database['lock_forward'] = True
-                        clir.hset('plAddGroPSetticktabchinGZ', str(event.chat_id), js.dumps(database))
+                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
                         await panel_1(event)
                 elif event.data == b"lock_video":
                     if database['lock_video']:

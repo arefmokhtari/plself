@@ -113,3 +113,10 @@ def check_user_id(text: str):
     except:pass
     return None
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+BOT_GROUP_DATABASE = {
+    'lock_link':False,'gp_Ch':False, 'lock_photo':False,'lock_stiker':False,'lock_gif':False,
+    'lock_tg':False,'lock_game':False,'lock_dsh':False,'lock_voice':False,'lock_forward':False,
+    'lock_video':False,'lock_via':False,'lock_music':False,'lock_file':False,'lock_bot':False,
+    'lock_location':False,'lock_contact':False,'lock_caption':False,'lock_contact':False,'lock_caption':False
+}
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #

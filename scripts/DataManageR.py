@@ -1,6 +1,5 @@
 #                   [   Plague Dr.  ]
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
-from .Color import Color
 from redis import StrictRedis
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 def bot_redis(redis_number: int) -> StrictRedis:
@@ -8,7 +7,7 @@ def bot_redis(redis_number: int) -> StrictRedis:
         BOTREDIS = StrictRedis(host = '127.0.0.1', port = 6379, db = redis_number, decode_responses = True) 
         BOTREDIS.set('plagueDr','aref')
     except Exception as e:
-        print(f'{Color.RED}×  cannot connect to redis !\n╰─>{Color.RESET}', e)
+        print('\x1b[91m×  cannot connect to redis !\n╰─>\x1b[0m', e)
         quit()
     else:
         return BOTREDIS
