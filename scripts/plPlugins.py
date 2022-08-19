@@ -61,10 +61,11 @@ def edit_source_run(code: str, file: str):
     with open(file, 'w') as f:
         f.write(code)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
-def get_cmds(event):
-    cmd = event.raw_text.lower().split()
+def get_cmds(event, lower: bool = True):
+    cmd = event.raw_text.lower().split() if lower else event.raw_text.split()
     len_cmd = len(cmd)
     return [cmd, len_cmd]
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 class Counter:
     def __init__(self):
         self.number = 0

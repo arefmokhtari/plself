@@ -2,7 +2,7 @@
 # - - - - - - - - - - -LIBRarYS- - - - - - - - - - - - #
 from re import L
 from telethon import TelegramClient, events, Button, types, __version__ as tver
-from telethon.tl.functions.messages import ImportChatInviteRequest, CheckChatInviteRequest
+from telethon.tl.functions.messages import ImportChatInviteRequest, CheckChatInviteRequest, HideChatJoinRequestRequest
 from telethon.tl.functions.channels import JoinChannelRequest, LeaveChannelRequest, EditBannedRequest, InviteToChannelRequest, EditPhotoRequest
 from telethon.tl.functions.contacts import BlockRequest, UnblockRequest
 from telethon.tl.types import InputPeerChannel, InputPeerUser, ChatBannedRights
@@ -682,7 +682,7 @@ async def DonTSaveMsgInChannel(event: events.newmessage.NewMessage.Event):
 #   -» JoiN In GrouP:
 @Client.on(events.NewMessage(pattern = '(J|j)oin', from_users = acc_sudo))
 async def joinchat(event: events.newmessage.NewMessage.Event):
-    cmd, len_cmd = pl.get_cmds(event)
+    cmd, len_cmd = pl.get_cmds(event, False)
     if len_cmd > 1 and cmd[1][0] == '@':
         try:
             await Client(JoinChannelRequest(cmd[1]))
@@ -691,13 +691,15 @@ async def joinchat(event: events.newmessage.NewMessage.Event):
     elif len_cmd > 1 and pl.check_link(cmd[1], ptrn = 's'):
         link = pl.check_link(cmd[1], ptrn = 'l')
         try:
-            await Client(CheckChatInviteRequest(link[link.rfind('/')+1:]))
+            print((await Client(CheckChatInviteRequest(link[link.rfind('/')+1:]))).stringify())
         except: await pl.send_sudo_msg(event, '• **invalid link !**', Account)
         else:
             try:
+                # HideChatJoinRequestRequest()
+                print(link[link.rfind('/')+1:])
                 await Client(ImportChatInviteRequest(link[link.rfind('/')+1:]))
                 await pl.send_sudo_msg(event, '• **done, joined !**', Account)
-            except: await pl.send_sudo_msg(event, '• **Account is in member group !**', Account)
+            except Exception as er: await pl.send_sudo_msg(event, f'•** error: {er}!**', Account)
     else:
         try:
             await Client(JoinChannelRequest(cmd[1]))
@@ -812,23 +814,23 @@ async def KirToKosMary(event: events.newmessage.NewMessage.Event):
 #   -» LefT In GrouP:
 @Client.on(events.NewMessage(pattern = '(L|l)eft', from_users = acc_sudo))
 async def leftchat(event: events.newmessage.NewMessage.Event):
-    cmd, len_cmd = pl.get_cmds(event)
-    if len_cmd == 4 and event.is_group:
+    cmd, len_cmd = pl.get_cmds(event, False)
+    if event.raw_text.lower() == 'left' and event.is_group:
         try:
             await pl.send_sudo_msg(event, 'bye', Account)
             await Client(LeaveChannelRequest(await Client.get_input_entity(event.chat_id)))
-        except: await pl.send_sudo_msg(event, '**• error !**', Account)
+        except Exception as er: await pl.send_sudo_msg(event, f'**• error: {er}**', Account)
     elif len_cmd > 1 and pl.check_link(cmd[1], ptrn = 's'):
         link = pl.check_link(cmd[1], ptrn = 'l')
         try:
             await Client(LeaveChannelRequest(await Client.get_input_entity(link)))
             await pl.send_sudo_msg(event, '• **done, i lefted.**', Account)
-        except: await pl.send_sudo_msg(event, '**• error !**', Account)
+        except Exception as er: await pl.send_sudo_msg(event, f'**• error: {er}**', Account)
     else:
         try:
             await Client(LeaveChannelRequest(await Client.get_input_entity(event.raw_text.split()[1])))
             await pl.send_sudo_msg(event, '• **done, i lefted.**', Account)
-        except: await pl.send_sudo_msg(event, '**• error !**', Account)
+        except Exception as er: await pl.send_sudo_msg(event, f'**• error: {er}**', Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» 2 Delet# a messag3 from SUDO:
 @Client.on(events.NewMessage(pattern = '(D|d)el', from_users = sudo))
