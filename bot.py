@@ -720,7 +720,14 @@ async def SeYInFO(event: events.newmessage.NewMessage.Event):
 async def SenDSaVOicE(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event)
     if len_cmd >= 2 and cmd[0] == 'voice':
-        if cmd[1] == 'save' and event.is_reply and len_cmd == 3:
+        if cmd[1] == 'play' and event.is_reply:
+            msg = await event.get_reply_message()
+            if msg.media and getattr(msg.media.document, 'attributes') and type(msg.media.document.attributes[0]) is types.DocumentAttributeAudio and msg.media.document.attributes[0].voice:
+                file = await Client.download_media(msg)
+                formt = file[file.rfind('.')+1:]
+                txt = pl.voice_to_str(AudioSegment, file)
+                await pl.send_sudo_msg(event, f'{txt}', Account)
+        elif cmd[1] == 'save' and event.is_reply and len_cmd == 3:
             voice_name = cmd[2]
             if voice_name not in clir.hgetall('plVoiCESaVE').keys():
                 msg = await event.get_reply_message()
@@ -989,151 +996,154 @@ async def BaNnedUserInGP(event: events.newmessage.NewMessage.Event):
 async def SetManageR(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event)
     if len_cmd >= 3 and cmd[0] == 'set':
-        if cmd[1] == 'bio':
-            bio = event.raw_text[event.raw_text.find(' ', 5)+1:]
-            if bio == 'delete':
-                clir.delete('plFuckinBio')
-                await Client(UpdateProfileRequest(about = ''))
-                await pl.send_sudo_msg(event, '• **done, bio was deleted !**', Account)
-            else:
-                if len(bio) <= 70:
-                    clir.set('plFuckinBio', bio)
-                    await Client(UpdateProfileRequest(about = bio))
-                    await pl.send_sudo_msg(event, f'• **done, bio :** `{bio}`', Account)
-        elif cmd[1] == 'username':
-            username = event.raw_text[event.raw_text.find(' ', 5)+1:]
-            if username == 'delete':
-                await Client(UpdateUsernameRequest(''))
-                await pl.send_sudo_msg(event, '• **done, username was deleted !**', Account)
-            else:
-                await Client(UpdateUsernameRequest(username))
-                await pl.send_sudo_msg(event, f'• **done, username :** `{username}`', Account)
-        elif cmd[1] == 'name':
-            name = event.raw_text[event.raw_text.find(' ', 5)+1:]
-            await Client(UpdateProfileRequest(first_name = name))
-            await pl.send_sudo_msg(event, f'• **done, name :** `{name}`', Account)
-        elif cmd[1] == 'lastname':
-            lastname = event.raw_text[event.raw_text.find(' ', 5)+1:]
-            if lastname == 'delete':
-                await Client(UpdateProfileRequest(last_name = ''))
-                await pl.send_sudo_msg(event, '• **done, lastname was deleted !**', Account)
-            else:
-                await Client(UpdateProfileRequest(last_name = lastname))
-                await pl.send_sudo_msg(event, f'• **done, lastname :** `{lastname}`', Account)
-        elif cmd[1] == 'profile':
-            if cmd[2] == 'this' and event.is_reply:
-                msg = await event.get_reply_message()
-                if msg.media:
-                    pic_name = pl.create_rend_name(10)
-                    await Client.download_media(msg.media, file=pic_name)
-                    Fil3 = pl.findfile(pic_name, os.getcwd())
-                    pic = await Client.upload_file(os.getcwd()+'/'+Fil3)
-                    try:
-                        if Fil3.endswith('.mp4'):
-                            await Client(UploadProfilePhotoRequest(video=pic))
-                        else:
-                            await Client(UploadProfilePhotoRequest(file=pic))
-                    except Exception as e:
-                        os.remove(Fil3)
-                        await pl.send_sudo_msg(event, str(e), Account)
-                    else:
-                        if event.sender_id in Account:
-                            await event.delete()
-                        await msg.reply('• **done, profile seted !**')
-                        os.remove(Fil3)
-            elif cmd[2] == 'group':
-                if event.is_reply:
+        try:
+            if cmd[1] == 'bio':
+                bio = event.raw_text[event.raw_text.find(' ', 5)+1:]
+                if bio == 'delete':
+                    clir.delete('plFuckinBio')
+                    await Client(UpdateProfileRequest(about = ''))
+                    await pl.send_sudo_msg(event, '• **done, bio was deleted !**', Account)
+                else:
+                    if len(bio) <= 70:
+                        clir.set('plFuckinBio', bio)
+                        await Client(UpdateProfileRequest(about = bio))
+                        await pl.send_sudo_msg(event, f'• **done, bio :** `{bio}`', Account)
+            elif cmd[1] == 'username':
+                username = event.raw_text[event.raw_text.find(' ', 5)+1:]
+                if username == 'delete':
+                    await Client(UpdateUsernameRequest(''))
+                    await pl.send_sudo_msg(event, '• **done, username was deleted !**', Account)
+                else:
+                    await Client(UpdateUsernameRequest(username))
+                    await pl.send_sudo_msg(event, f'• **done, username :** `{username}`', Account)
+            elif cmd[1] == 'name':
+                name = event.raw_text[event.raw_text.find(' ', 5)+1:]
+                await Client(UpdateProfileRequest(first_name = name))
+                await pl.send_sudo_msg(event, f'• **done, name :** `{name}`', Account)
+            elif cmd[1] == 'lastname':
+                lastname = event.raw_text[event.raw_text.find(' ', 5)+1:]
+                if lastname == 'delete':
+                    await Client(UpdateProfileRequest(last_name = ''))
+                    await pl.send_sudo_msg(event, '• **done, lastname was deleted !**', Account)
+                else:
+                    await Client(UpdateProfileRequest(last_name = lastname))
+                    await pl.send_sudo_msg(event, f'• **done, lastname :** `{lastname}`', Account)
+            elif cmd[1] == 'profile':
+                if cmd[2] == 'this' and event.is_reply:
                     msg = await event.get_reply_message()
                     if msg.media:
-                        if len_cmd > 3:
-                            if cmd[3][0] == '@':
-                                pic_name = pl.create_rend_name(10)
-                                await Client.download_media(msg.media, file=pic_name)
-                                Fil3 = pl.findfile(pic_name, os.getcwd())
-                                pic = await Client.upload_file(os.getcwd()+'/'+Fil3)
-                                await Client(EditPhotoRequest(cmd[3][1:], pic))
-                                if event.sender_id in Account:
-                                    await event.delete()
-                                await msg.reply('• **done, profile seted !**')
-                                os.remove(Fil3)
-                            elif cmd[3][0]=='-' and cmd[3][1:].isdigit():
-                                pic_name = pl.create_rend_name(10)
-                                await Client.download_media(msg.media, file=pic_name)
-                                Fil3 = pl.findfile(pic_name, os.getcwd())
-                                pic = await Client.upload_file(os.getcwd()+'/'+Fil3)
-                                await Client(EditPhotoRequest(await Client.get_input_entity(int(cmd[3])), pic))
-                                if event.sender_id in Account:
-                                    await event.delete()
-                                await msg.reply('• **done, profile seted !**')
-                                os.remove(Fil3)
-                        elif event.is_reply and (event.is_group or event.is_channel):
-                            pic_name = pl.create_rend_name(10)
-                            await Client.download_media(msg.media, file=pic_name)
-                            Fil3 = pl.findfile(pic_name, os.getcwd())
-                            pic = await Client.upload_file(os.getcwd()+'/'+Fil3)
-                            await Client(EditPhotoRequest(event.chat_id, pic))
+                        pic_name = pl.create_rend_name(10)
+                        await Client.download_media(msg.media, file=pic_name)
+                        Fil3 = pl.findfile(pic_name, os.getcwd())
+                        pic = await Client.upload_file(os.getcwd()+'/'+Fil3)
+                        try:
+                            if Fil3.endswith('.mp4'):
+                                await Client(UploadProfilePhotoRequest(video=pic))
+                            else:
+                                await Client(UploadProfilePhotoRequest(file=pic))
+                        except Exception as e:
+                            os.remove(Fil3)
+                            await pl.send_sudo_msg(event, str(e), Account)
+                        else:
                             if event.sender_id in Account:
                                 await event.delete()
                             await msg.reply('• **done, profile seted !**')
                             os.remove(Fil3)
-            elif cmd[2] == 'delete':
-                await Client(DeletePhotosRequest([(await Client.get_profile_photos('me'))[0]]))
-                await pl.send_sudo_msg(event, '• **done, a profile deleted !**', Account)
-            elif cmd[2] == 'deleteall':
-                await Client(DeletePhotosRequest((await Client.get_profile_photos('me'))))
-                await pl.send_sudo_msg(event, '• **done, all profile was deleted !**', Account)
-            '''elif cmd[1] == 'randname':
-            if cmd[2] == 'on':
-                if bool(clir.get('plSetrandnameNow')):
-                        await event.edit('- The randname was already ON') if event.sender_id in Account else await event.reply('- The randname was already ON')
-                else:
-                    clir.set('plSetrandnameNow', 'KoSKoS')
-                    await event.edit('- DonE ! SeT randname is ON !') if event.sender_id in Account else await event.reply('- DonE ! SeT randname is ON !')
-            elif cmd[2] == 'off':
-                get_re = clir.get('plSetrandnameNow')
-                if bool(get_re):
-                    await event.edit('- DonE ! SeT randname is OFF !') if event.sender_id in Account else await event.reply('- DonE ! SeT randname is OFF !')
-                    clir.delete('plSetrandnameNow')
-                else: await event.edit('- The randname was already OFF') if event.sender_id in Account else await event.reply('- The randname was already OFF')'''
-        elif cmd[1] == 'lasttime':
-            if cmd[2] == 'on':
-                if clir.get('plSetTimENow'):
-                    await pl.send_sudo_msg(event, '• **lasttime was already ON !**', Account)
-                else:
-                    full = (await Client.get_me()).last_name or '<<<!@n@!@dlfd;f;sfldssdkskmadki!l!l>>>'
-                    clir.set('plSetTimENow', full)
-                    await pl.send_sudo_msg(event, '• **done, set lasttime is ON !**', Account)
-            elif cmd[2] == 'off':
-                get_re = clir.get('plSetTimENow')
-                if get_re:
-                    await Client(UpdateProfileRequest(last_name = '')) if get_re == '<<<!@n@!@dlfd;f;sfldssdkskmadki!l!l>>>' else await Client(UpdateProfileRequest(last_name = get_re))
-                    clir.delete('plSetTimENow')
-                    await pl.send_sudo_msg(event, '• **done, set lastime is OFF !**', Account)
-                else: await pl.send_sudo_msg(event, '• **lasttime was already OFF !**', Account)
-        elif cmd[1] == 'biotime':
-            if cmd[2] == 'on':
-                if clir.get('plBioTimENow'):
-                    await pl.send_sudo_msg(event, '• **biotime was already ON !**', Account)
-                else:
-                    clir.set('plBioTimENow', 'KoSKoS=D')
-                    await pl.send_sudo_msg(event, '• **done, biotime is ON !**', Account)
-            elif cmd[2] == 'off':
-                if clir.get('plBioTimENow'):
-                    clir.delete('plBioTimENow')
-                    await pl.send_sudo_msg(event, '• **done, biotime is OFF !**', Account)
-        elif cmd[1] == 'forward':
-            if cmd[2] == 'off':
-                if clir.get('plForWardSendOrno'):
-                    clir.delete('plForWardSendOrno')
-                    await pl.send_sudo_msg(event, '• **done, forward has offline !**', Account)
-                else:
-                    await pl.send_sudo_msg(event, '• **forward was already offline !**', Account)
-            elif cmd[2] == 'on':
-                if clir.get('plForWardSendOrno'):
-                    await pl.send_sudo_msg(event, '• **forward was already online !**', Account)
-                else:
-                    clir.set('plForWardSendOrno', 'True')
-                    await pl.send_sudo_msg(event, '• **done, forward has online !**', Account)
+                elif cmd[2] == 'group':
+                    if event.is_reply:
+                        msg = await event.get_reply_message()
+                        if msg.media:
+                            if len_cmd > 3:
+                                if cmd[3][0] == '@':
+                                    pic_name = pl.create_rend_name(10)
+                                    await Client.download_media(msg.media, file=pic_name)
+                                    Fil3 = pl.findfile(pic_name, os.getcwd())
+                                    pic = await Client.upload_file(os.getcwd()+'/'+Fil3)
+                                    await Client(EditPhotoRequest(cmd[3][1:], pic))
+                                    if event.sender_id in Account:
+                                        await event.delete()
+                                    await msg.reply('• **done, profile seted !**')
+                                    os.remove(Fil3)
+                                elif cmd[3][0]=='-' and cmd[3][1:].isdigit():
+                                    pic_name = pl.create_rend_name(10)
+                                    await Client.download_media(msg.media, file=pic_name)
+                                    Fil3 = pl.findfile(pic_name, os.getcwd())
+                                    pic = await Client.upload_file(os.getcwd()+'/'+Fil3)
+                                    await Client(EditPhotoRequest(await Client.get_input_entity(int(cmd[3])), pic))
+                                    if event.sender_id in Account:
+                                        await event.delete()
+                                    await msg.reply('• **done, profile seted !**')
+                                    os.remove(Fil3)
+                            elif event.is_reply and (event.is_group or event.is_channel):
+                                pic_name = pl.create_rend_name(10)
+                                await Client.download_media(msg.media, file=pic_name)
+                                Fil3 = pl.findfile(pic_name, os.getcwd())
+                                pic = await Client.upload_file(os.getcwd()+'/'+Fil3)
+                                await Client(EditPhotoRequest(event.chat_id, pic))
+                                if event.sender_id in Account:
+                                    await event.delete()
+                                await msg.reply('• **done, profile seted !**')
+                                os.remove(Fil3)
+                elif cmd[2] == 'delete':
+                    await Client(DeletePhotosRequest([(await Client.get_profile_photos('me'))[0]]))
+                    await pl.send_sudo_msg(event, '• **done, a profile deleted !**', Account)
+                elif cmd[2] == 'deleteall':
+                    await Client(DeletePhotosRequest((await Client.get_profile_photos('me'))))
+                    await pl.send_sudo_msg(event, '• **done, all profile was deleted !**', Account)
+                '''elif cmd[1] == 'randname':
+                if cmd[2] == 'on':
+                    if bool(clir.get('plSetrandnameNow')):
+                            await event.edit('- The randname was already ON') if event.sender_id in Account else await event.reply('- The randname was already ON')
+                    else:
+                        clir.set('plSetrandnameNow', 'KoSKoS')
+                        await event.edit('- DonE ! SeT randname is ON !') if event.sender_id in Account else await event.reply('- DonE ! SeT randname is ON !')
+                elif cmd[2] == 'off':
+                    get_re = clir.get('plSetrandnameNow')
+                    if bool(get_re):
+                        await event.edit('- DonE ! SeT randname is OFF !') if event.sender_id in Account else await event.reply('- DonE ! SeT randname is OFF !')
+                        clir.delete('plSetrandnameNow')
+                    else: await event.edit('- The randname was already OFF') if event.sender_id in Account else await event.reply('- The randname was already OFF')'''
+            elif cmd[1] == 'lasttime':
+                if cmd[2] == 'on':
+                    if clir.get('plSetTimENow'):
+                        await pl.send_sudo_msg(event, '• **lasttime was already ON !**', Account)
+                    else:
+                        full = (await Client.get_me()).last_name or '<<<!@n@!@dlfd;f;sfldssdkskmadki!l!l>>>'
+                        clir.set('plSetTimENow', full)
+                        await pl.send_sudo_msg(event, '• **done, set lasttime is ON !**', Account)
+                elif cmd[2] == 'off':
+                    get_re = clir.get('plSetTimENow')
+                    if get_re:
+                        await Client(UpdateProfileRequest(last_name = '')) if get_re == '<<<!@n@!@dlfd;f;sfldssdkskmadki!l!l>>>' else await Client(UpdateProfileRequest(last_name = get_re))
+                        clir.delete('plSetTimENow')
+                        await pl.send_sudo_msg(event, '• **done, set lastime is OFF !**', Account)
+                    else: await pl.send_sudo_msg(event, '• **lasttime was already OFF !**', Account)
+            elif cmd[1] == 'biotime':
+                if cmd[2] == 'on':
+                    if clir.get('plBioTimENow'):
+                        await pl.send_sudo_msg(event, '• **biotime was already ON !**', Account)
+                    else:
+                        clir.set('plBioTimENow', 'KoSKoS=D')
+                        await pl.send_sudo_msg(event, '• **done, biotime is ON !**', Account)
+                elif cmd[2] == 'off':
+                    if clir.get('plBioTimENow'):
+                        clir.delete('plBioTimENow')
+                        await pl.send_sudo_msg(event, '• **done, biotime is OFF !**', Account)
+            elif cmd[1] == 'forward':
+                if cmd[2] == 'off':
+                    if clir.get('plForWardSendOrno'):
+                        clir.delete('plForWardSendOrno')
+                        await pl.send_sudo_msg(event, '• **done, forward has offline !**', Account)
+                    else:
+                        await pl.send_sudo_msg(event, '• **forward was already offline !**', Account)
+                elif cmd[2] == 'on':
+                    if clir.get('plForWardSendOrno'):
+                        await pl.send_sudo_msg(event, '• **forward was already online !**', Account)
+                    else:
+                        clir.set('plForWardSendOrno', 'True')
+                        await pl.send_sudo_msg(event, '• **done, forward has online !**', Account)
+        except Exception as er:
+            await pl.send_sudo_msg(event, f'**• error: {er}**', Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» PIN MsG : 
 @Client.on(events.NewMessage(pattern = '(P|p)in', from_users = sudo, func=lambda e:e.raw_text.lower() == 'pin'))

@@ -1,6 +1,7 @@
 #                   [   Plague Dr.  ]
 import os, random, re
 from speedtest import Speedtest
+import speech_recognition as sr 
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 CoDMORsE = {'a' : ".-", 'b' : "-...", 'c' : "-.-.", 'd' : "-..", 'e' : ".", 'f' : "..-.", 'g' : "--.", 'h' : "....", 'i' : "..", 'j' : ".--", 'k' : "-.-", 'l' : ".-..", 'm' : "--", 'n' : "-.", 'o' : "---", 'p' : ".--.", 'q' : "--.-", 'r' : ".-.", 's' : "...", 't' : "-", 'u' : "..-", 'v' : "...-", 'w' : ".--", 'x' : "-..-", 'y' : "-.--", 'z' : "--..", ' ' : ' ', '1':  ".---", '2':  "..---", '3': "...--", '4':  "....-",'5': ".....", '6':  "-....", '7': "--...", '8':  "---..", '9':  "----.", '0': "-----", '۱':  ".---", '۲':  "..---", '۳': "...--", '۴':  "....-", '۵': ".....", '۶':  "-....", '۷': "--...", '۸':  "---..", '۹':  "----.", '۰': "-----", 'آ' : '.-', 'ا' : '.-', 'ب' : '-...', 'پ' : '.--.', 'ت' : '-', 'ث' : '-.-.', 'ج' : '.---', 'چ' : '---.', 'ح' : '....', 'خ' : '-..-', 'د' : '-..', 'ذ' : '...-', 'ر' : '.-.', 'ز' : '--..', 'ژ' : '--.', 'س' : '...', 'ش' : '----', 'ص' : '.-.-', 'ض' : '..-..', 'ط' : '..-', 'ظ' : '-.--', 'ع' : '---', 'غ' : '..--', 'ف' : '..--', 'ق' : '..-.', 'ک' : '-.-', 'گ' : '--.-', 'ل' : '.-..', 'م' : '--', 'ن' : '.-', 'و' : '.--', 'ه' : '.', 'ی' : '..', '\n':'\n'}
 # - - - - - - - - - - - -FuncTioN- - - - - - - - - - - #
@@ -120,4 +121,16 @@ BOT_GROUP_DATABASE = {
     'lock_video':False,'lock_via':False,'lock_music':False,'lock_file':False,'lock_bot':False,
     'lock_location':False,'lock_contact':False,'lock_caption':False,'lock_contact':False,'lock_caption':False
 }
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+def voice_to_str(AudioSegment, file, language = 'fa-IR'):
+    voice = AudioSegment.from_ogg(file)
+    filename = file[:file.rfind('.')] + '.wav'
+    AudioSegment.export(voice, filename, 'wav')
+    with sr.AudioFile(filename) as source:
+        r = sr.Recognizer()
+        audio_data = r.record(source)
+        text = r.recognize_google(audio_data, language=language)
+    os.remove(file)
+    os.remove(filename)
+    return text
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
