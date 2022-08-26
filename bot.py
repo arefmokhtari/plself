@@ -1,7 +1,7 @@
 #                   [   Plague Dr.  ]
 # - - - - - - - - - - -LIBRarYS- - - - - - - - - - - - #
 from re import L
-from telethon import TelegramClient, events, Button, types, __version__ as tver
+from telethon import TelegramClient, events, Button, types, __version__ as tver, errors
 from telethon.tl.functions.messages import ImportChatInviteRequest, CheckChatInviteRequest, HideChatJoinRequestRequest
 from telethon.tl.functions.channels import JoinChannelRequest, LeaveChannelRequest, EditBannedRequest, InviteToChannelRequest, EditPhotoRequest
 from telethon.tl.functions.contacts import BlockRequest, UnblockRequest
@@ -81,9 +81,8 @@ async def GetMsGServic3InGP(event: events.raw.Raw):
 @Client.on(events.NewMessage())
 async def check_massag3(event: events.newmessage.NewMessage.Event):
     if event.is_private and event.sender_id != Account[0] and event.media and event.media.ttl_seconds:
-        cr_file = pl.create_rend_name(10)
-        await Client.download_media(event.media, os.getcwd()+'/data/photos/'+cr_file)
-        await Client.send_file(pl.botc.CHANNEL_FOR_FWD, os.getcwd()+'/data/photos/'+pl.findfile(cr_file, os.getcwd()+'/data/photos'))
+        file_name = await Client.download_media(event.media, 'data/photos')
+        await Client.send_file(pl.botc.CHANNEL_FOR_FWD, file_name)
     if event.sender_id in sudo: 
         pass
     elif event.is_group:
@@ -282,9 +281,8 @@ async def GetFuckinGNuD3(event: events.newmessage.NewMessage.Event):
     if event.is_reply:
         msg = await event.get_reply_message()
         if msg.media:
-            cr_file = pl.create_rend_name(10)
-            await Client.download_media(msg.media, os.getcwd()+'/data/photos/'+cr_file)
-            await Client.send_file(pl.botc.CHANNEL_FOR_FWD, os.getcwd()+'/data/photos/'+pl.findfile(cr_file, os.getcwd()+'/data/photos'))
+            file_name = await Client.download_media(msg.media, 'data/photos')
+            await Client.send_file(pl.botc.CHANNEL_FOR_FWD, file_name)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» MusiC ManageR:
 @Client.on(events.NewMessage(pattern='(M|m)usic', from_users=sudo))
@@ -295,15 +293,15 @@ async def FinDManageR(event: events.newmessage.NewMessage.Event):
         if msg.media and type(msg.media) is types.MessageMediaDocument and msg.media.document and msg.media.document.attributes:
             if len_cmd >= 2:
                 if cmd[1] == 'find' and msg.media.document.mime_type in ['audio/ogg', 'video/mp4', 'audio/mpeg']:
-                    filename = pl.create_rend_name(6)
-                    await Client.download_media(msg, filename)
+                    filename = await Client.download_media(msg)
                     shazam = Shazam()
-                    filename = pl.findfile(filename, os.getcwd())
                     if event.sender_id in Account:await event.delete()
                     _sending_msg = await msg.reply('• **wait !**')
                     out = await shazam.recognize_song(filename)
                     if out.get('track'):
-                        msg4send = f'**• music info:**\n**• name:** `{out["track"]["title"]}`\n**• artist:** `{out["track"]["subtitle"]}`\n**• genre:** `{out["track"]["genres"]["primary"]}`\n**• album:** `{out["track"]["sections"][0]["metadata"][0]["text"]}`'
+                        try:album = out["track"]["sections"][0]["metadata"][0]["text"]
+                        except IndexError:album = 'nill'
+                        msg4send = f'**• music info:**\n**• name:** `{out["track"]["title"]}`\n**• artist:** `{out["track"]["subtitle"]}`\n**• genre:** `{out["track"]["genres"]["primary"]}`\n**• album:** `{album}`'
                     else:
                         msg4send = '• **not found !**'
                     await _sending_msg.edit(msg4send)
@@ -314,8 +312,7 @@ async def FinDManageR(event: events.newmessage.NewMessage.Event):
                     if len_cmd == 3:
                         if cmd[2].isdigit():
                             music_end = int(cmd[2])
-                            await Client.download_media(msg)
-                            filename = msg.media.document.attributes[1].file_name
+                            filename = await Client.download_media(msg)
                             sound = AudioSegment.from_mp3(filename)
                             sound[0 : music_end * 1000].export(filename)
                             if event.sender_id in Account: await event.delete()
@@ -325,16 +322,14 @@ async def FinDManageR(event: events.newmessage.NewMessage.Event):
                         if cmd[2].isdigit() and cmd[3].isdigit():
                             music_start = int(cmd[2])
                             music_end = int(cmd[3])
-                            await Client.download_media(msg)
-                            filename = msg.media.document.attributes[1].file_name
+                            filename = await Client.download_media(msg)
                             sound = AudioSegment.from_mp3(filename)
                             sound[music_start * 1000 : music_end * 1000].export(filename)
                             if event.sender_id in Account: await event.delete()
                             await Client.send_file(event.chat_id, filename, reply_to=msg.id)
                             os.remove(filename)
                     else:
-                        await Client.download_media(msg)
-                        filename = msg.media.document.attributes[1].file_name
+                        filename = await Client.download_media(msg)
                         sound = AudioSegment.from_mp3(filename)
                         sound[0 : 120000].export(filename)
                         if event.sender_id in Account: await event.delete()
@@ -344,38 +339,35 @@ async def FinDManageR(event: events.newmessage.NewMessage.Event):
                     if len_cmd == 3:
                         if cmd[2].isdigit():
                             music_end = int(cmd[2])
-                            filename = pl.create_rend_name(8)+'.mp4'
-                            await Client.download_media(msg, filename)
-                            music_name = filename[:filename.rfind('.')]+'.mp3'
-                            sound = AudioSegment.from_file(filename)
-                            sound[0: music_end * 1000].export(music_name, format='mp3')
+                            video_name = await Client.download_media(msg)
+                            filename = video_name[:video_name.rfind('.')]+'.mp3'
+                            sound = AudioSegment.from_file(video_name)
+                            sound[0: music_end * 1000].export(filename, format='mp3')
                             if event.sender_id in Account: await event.delete()
-                            await Client.send_file(event.chat_id, music_name, reply_to=msg.id)
+                            await Client.send_file(event.chat_id, filename, reply_to=msg.id)
                             os.remove(filename)
-                            os.remove(music_name)
+                            os.remove(video_name)
                     elif len_cmd == 4:
                         if cmd[2].isdigit() and cmd[3].isdigit():
                             music_start = int(cmd[2])
                             music_end = int(cmd[3])
-                            filename = pl.create_rend_name(8)+'.mp4'
-                            await Client.download_media(msg, filename)
-                            music_name = filename[:filename.rfind('.')]+'.mp3'
-                            sound = AudioSegment.from_file(filename)
-                            sound[music_start * 1000: music_end * 1000].export(music_name, format='mp3')
+                            video_name = await Client.download_media(msg)
+                            filename = video_name[:video_name.rfind('.')]+'.mp3'
+                            sound = AudioSegment.from_file(video_name)
+                            sound[music_start * 1000: music_end * 1000].export(filename, format='mp3')
                             if event.sender_id in Account: await event.delete()
-                            await Client.send_file(event.chat_id, music_name, reply_to=msg.id)
+                            await Client.send_file(event.chat_id, filename, reply_to=msg.id)
                             os.remove(filename)
-                            os.remove(music_name)
+                            os.remove(video_name)
                     else:
-                        filename = pl.create_rend_name(8)+'.mp4'
-                        await Client.download_media(msg, filename)
-                        music_name = filename[:filename.rfind('.')]+'.mp3'
-                        sound = AudioSegment.from_file(filename)
-                        sound.export(music_name, format='mp3')
+                        video_name = await Client.download_media(msg)
+                        filename = video_name[:video_name.rfind('.')]+'.mp3'
+                        sound = AudioSegment.from_file(video_name)
+                        sound.export(filename, format='mp3')
                         if event.sender_id in Account: await event.delete()
-                        await Client.send_file(event.chat_id, music_name, reply_to=msg.id)
+                        await Client.send_file(event.chat_id, filename, reply_to=msg.id)
                         os.remove(filename)
-                        os.remove(music_name)
+                        os.remove(video_name)
                 elif cmd[1] == 'voice': # soon | never ... :|
                     pass # :|
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
@@ -520,21 +512,17 @@ async def GrouPCalLMain(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event)
     if len_cmd == 2 and cmd[0] == 'vchat':
         if cmd[1] == 'create':
-            await Client(CreateGroupCallRequest(event.chat_id))
-            await pl.send_sudo_msg(event, '**• voice ChaT WaS created !**', Account)
+            try:await Client(CreateGroupCallRequest(event.chat_id))
+            except errors.rpcbaseerrors.BadRequestError:await pl.send_sudo_msg(event, '**• voice chat ending, please request again !**', Account)
+            else:await pl.send_sudo_msg(event, '**• voice chat was created !**', Account)
         elif cmd[1] == 'join':
             chat = await event.get_chat()
-            await Client(JoinGroupCallRequest(types.InputGroupCall(chat.id, chat.access_hash), 'plagueDr', params=types.DataJSON(data=js.dumps('{"enable_vp8_encoder":true}'))))
+            await Client(JoinGroupCallRequest(types.InputGroupCall(chat.id, chat.access_hash), await Client.get_entity('me'), params=types.DataJSON(data=js.dumps('{"enable_vp8_encoder":true}'))))
         elif cmd[1] == 'play' and event.is_reply:
             msg = await event.get_reply_message()
             if type(msg.media) is types.MessageMediaDocument and msg.media.document and msg.media.document.attributes:
                 msg4show = await pl.send_sudo_msg(event, '**• wait !**', Account)
-                try:
-                    filename = msg.media.document.attributes[1].file_name
-                except IndexError: # , 
-                    formt = '.oga' if msg.media.document.mime_type == 'audio/ogg' else 'mp4' if msg.media.document.mime_type == 'video/mp4' else '.mp3' if msg.media.document.mime_type == 'audio/mpeg' else ''
-                    filename = pl.create_rend_name(6) +'.'+ formt
-                await Client.download_media(msg, filename)
+                filename = await Client.download_media(msg)
                 await group_call_factory.start_voice_chat(event,msg4show, file_name=filename)
         elif cmd[1] == 'stop':
             if group_call_factory.is_played():
@@ -724,7 +712,6 @@ async def SenDSaVOicE(event: events.newmessage.NewMessage.Event):
             msg = await event.get_reply_message()
             if msg.media and getattr(msg.media.document, 'attributes') and type(msg.media.document.attributes[0]) is types.DocumentAttributeAudio and msg.media.document.attributes[0].voice:
                 file = await Client.download_media(msg)
-                formt = file[file.rfind('.')+1:]
                 txt = pl.voice_to_str(AudioSegment, file)
                 await pl.send_sudo_msg(event, f'{txt}', Account)
         elif cmd[1] == 'save' and event.is_reply and len_cmd == 3:
@@ -732,8 +719,7 @@ async def SenDSaVOicE(event: events.newmessage.NewMessage.Event):
             if voice_name not in clir.hgetall('plVoiCESaVE').keys():
                 msg = await event.get_reply_message()
                 if msg.media and type(msg.media) is types.MessageMediaDocument and msg.media.document.attributes and type(msg.media.document.attributes[0]) is types.DocumentAttributeAudio and msg.media.document.attributes[0].voice:
-                    voice = pl.create_rend_name(12)
-                    await Client.download_media(msg.media, os.getcwd()+'/data/voice/'+voice)
+                    voice = await Client.download_media(msg.media, 'data/voice')
                     clir.hset('plVoiCESaVE', voice_name, voice)
                     await pl.send_sudo_msg(event, f'• **done, voice name to call :** `{voice_name}`', Account)
             else:
@@ -741,7 +727,7 @@ async def SenDSaVOicE(event: events.newmessage.NewMessage.Event):
         elif cmd[1] == 'delete' and len_cmd == 3:
             voice_name = cmd[2]
             if voice_name in clir.hgetall('plVoiCESaVE').keys():
-                os.remove(os.getcwd()+'/data/voice/'+pl.findfile(clir.hget('plVoiCESaVE', voice_name), os.getcwd()+'/data/voice/'))
+                os.remove(clir.hget('plVoiCESaVE', voice_name))
                 clir.hdel('plVoiCESaVE', voice_name)
                 await pl.send_sudo_msg(event, f'• **done,** `{voice_name}` **removed to database !**', Account)
             else:await pl.send_sudo_msg(event, f'• **the** `{voice_name}` **not in database !**', Account)
@@ -754,9 +740,9 @@ async def SenDSaVOicE(event: events.newmessage.NewMessage.Event):
                 await event.delete()
                 if event.is_reply:
                     msg = await event.get_reply_message()
-                    await Client.send_file(event.chat_id, os.getcwd()+'/data/voice/'+pl.findfile(clir.hget('plVoiCESaVE', voice_name), os.getcwd()+'/data/voice/'), reply_to=msg.id)
+                    await Client.send_file(event.chat_id, clir.hget('plVoiCESaVE', voice_name), reply_to=msg.id)
                 else:
-                    await Client.send_file(event.chat_id, os.getcwd()+'/data/voice/'+pl.findfile(clir.hget('plVoiCESaVE', voice_name), os.getcwd()+'/data/voice/'))
+                    await Client.send_file(event.chat_id, clir.hget('plVoiCESaVE', voice_name))
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» FilE ManageR:
 @Client.on(events.NewMessage(pattern = '(F|f)ile', from_users = acc_sudo))
@@ -1032,58 +1018,45 @@ async def SetManageR(event: events.newmessage.NewMessage.Event):
                 if cmd[2] == 'this' and event.is_reply:
                     msg = await event.get_reply_message()
                     if msg.media:
-                        pic_name = pl.create_rend_name(10)
-                        await Client.download_media(msg.media, file=pic_name)
-                        Fil3 = pl.findfile(pic_name, os.getcwd())
-                        pic = await Client.upload_file(os.getcwd()+'/'+Fil3)
+                        pic_name= await Client.download_media(msg.media)
+                        pic = await Client.upload_file(pic_name)
                         try:
-                            if Fil3.endswith('.mp4'):
+                            if pic_name.endswith('.mp4'):
                                 await Client(UploadProfilePhotoRequest(video=pic))
                             else:
                                 await Client(UploadProfilePhotoRequest(file=pic))
                         except Exception as e:
-                            os.remove(Fil3)
                             await pl.send_sudo_msg(event, str(e), Account)
                         else:
-                            if event.sender_id in Account:
-                                await event.delete()
+                            if event.sender_id in Account: await event.delete()
                             await msg.reply('• **done, profile seted !**')
-                            os.remove(Fil3)
+                        finally:os.remove(pic_name)
                 elif cmd[2] == 'group':
                     if event.is_reply:
                         msg = await event.get_reply_message()
                         if msg.media:
                             if len_cmd > 3:
                                 if cmd[3][0] == '@':
-                                    pic_name = pl.create_rend_name(10)
-                                    await Client.download_media(msg.media, file=pic_name)
-                                    Fil3 = pl.findfile(pic_name, os.getcwd())
-                                    pic = await Client.upload_file(os.getcwd()+'/'+Fil3)
+                                    pic_name = await Client.download_media(msg.media)
+                                    pic = await Client.upload_file(pic_name)
                                     await Client(EditPhotoRequest(cmd[3][1:], pic))
-                                    if event.sender_id in Account:
-                                        await event.delete()
+                                    if event.sender_id in Account:await event.delete()
                                     await msg.reply('• **done, profile seted !**')
-                                    os.remove(Fil3)
+                                    os.remove(pic_name)
                                 elif cmd[3][0]=='-' and cmd[3][1:].isdigit():
-                                    pic_name = pl.create_rend_name(10)
-                                    await Client.download_media(msg.media, file=pic_name)
-                                    Fil3 = pl.findfile(pic_name, os.getcwd())
-                                    pic = await Client.upload_file(os.getcwd()+'/'+Fil3)
+                                    pic_name = await Client.download_media(msg.media)
+                                    pic = await Client.upload_file(pic_name)
                                     await Client(EditPhotoRequest(await Client.get_input_entity(int(cmd[3])), pic))
-                                    if event.sender_id in Account:
-                                        await event.delete()
+                                    if event.sender_id in Account:await event.delete()
                                     await msg.reply('• **done, profile seted !**')
-                                    os.remove(Fil3)
+                                    os.remove(pic_name)
                             elif event.is_reply and (event.is_group or event.is_channel):
-                                pic_name = pl.create_rend_name(10)
-                                await Client.download_media(msg.media, file=pic_name)
-                                Fil3 = pl.findfile(pic_name, os.getcwd())
-                                pic = await Client.upload_file(os.getcwd()+'/'+Fil3)
+                                pic_name = await Client.download_media(msg.media)
+                                pic = await Client.upload_file(pic_name)
                                 await Client(EditPhotoRequest(event.chat_id, pic))
-                                if event.sender_id in Account:
-                                    await event.delete()
+                                if event.sender_id in Account:await event.delete()
                                 await msg.reply('• **done, profile seted !**')
-                                os.remove(Fil3)
+                                os.remove(pic_name)
                 elif cmd[2] == 'delete':
                     await Client(DeletePhotosRequest([(await Client.get_profile_photos('me'))[0]]))
                     await pl.send_sudo_msg(event, '• **done, a profile deleted !**', Account)
