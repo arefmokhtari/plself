@@ -1,6 +1,5 @@
 #                   [   Plague Dr.  ]
 # - - - - - - - - - - -LIBRarYS- - - - - - - - - - - - #
-from re import L
 from telethon import TelegramClient, events, Button, types, __version__ as tver, errors
 from telethon.tl.functions.messages import ImportChatInviteRequest, CheckChatInviteRequest, HideChatJoinRequestRequest
 from telethon.tl.functions.channels import JoinChannelRequest, LeaveChannelRequest, EditBannedRequest, InviteToChannelRequest, EditPhotoRequest
@@ -1154,7 +1153,7 @@ async def PING(event: events.newmessage.NewMessage.Event):
 #   -» SenD FuckinG Gam3:
 @Client.on(events.NewMessage(pattern = '(G|g)ame', from_users = sudo, func=lambda e:e.raw_text.lower() == 'game'))
 async def SendFGam3(event: events.newmessage.NewMessage.Event):
-    result = await Client.inline_query('gamee', '', entity=event.chat_id)           
+    result = await Client.inline_query('gamee', '', entity=event.chat_id)
     await (rand.choice(result)).click(reply_to=event.id)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» 2 Block && UnBlock:
