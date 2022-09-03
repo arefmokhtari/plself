@@ -395,7 +395,7 @@ async def ReBaSE(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event)
     if len_cmd >= 3 and cmd[0] == 'base' and cmd[1].isdigit():
         await pl.send_sudo_msg(event, pl.Base(event.raw_text[event.raw_text.find(' ', 5)+1:], int(cmd[1])).result(), Account)
-# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  # 
 #   -» MorS#:
 @Client.on(events.NewMessage(pattern = '(M|m)orse', from_users = sudo))
 async def ReMorsE(event: events.newmessage.NewMessage.Event):
@@ -416,77 +416,72 @@ async def RuNCoD3(event: events.newmessage.NewMessage.Event):
     if len_cmd >= 2 and cmds[0] == 'code':
         cmd = cmds[1]
         if cmd == 'py3':
-            file = os.getcwd()+'/data/code/'+'source.py'
+            file = 'data/code/'+'source.py'
             pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
-            code = subprocess.run(['python3', file], capture_output=True, text=True)
-            if code.stderr != '':
-                await pl.send_sudo_msg(event, '• **error:**\n\n`'+code.stderr+'`', Account)
-            else:
-                await pl.send_sudo_msg(event, '• **result:**\n\n`'+code.stdout+'`', Account)
+            try:code = subprocess.run(['python3', file], capture_output=True, text=True, timeout=5)
+            except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**• timeout error !**', Account)
+            else:await pl.send_sudo_msg(event, '• **error:**\n\n`'+code.stderr+'`' if code.stderr else '• **result:**\n\n`'+code.stdout+'`', Account)
         elif cmd == 'py2':
-            file = os.getcwd()+'/data/code/'+'source.py'
+            file = 'data/code/'+'source.py'
             pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
-            code = subprocess.run(['python2', file], capture_output=True, text=True)
-            if code.stderr != '':
-                await pl.send_sudo_msg(event, '• **error:**\n\n`'+code.stderr+'`', Account)
-            else:
-                await pl.send_sudo_msg(event, '• **result:**\n\n`'+code.stdout+'`', Account)
+            try:code = subprocess.run(['python2', file], capture_output=True, text=True, timeout=5)
+            except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**• timeout error !**', Account)
+            else:await pl.send_sudo_msg(event, '• **error:**\n\n`'+code.stderr+'`' if code.stderr else '• **result:**\n\n`'+code.stdout+'`', Account)
         elif cmd == 'js' or cmd == 'javascript':
-            file = os.getcwd()+'/data/code/'+'source.js'
+            file = 'data/code/'+'source.js'
             pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
-            code = subprocess.run(['node', file], capture_output=True, text=True)
-            if code.stderr != '':
-                await pl.send_sudo_msg(event, '• **error:**\n\n`'+code.stderr+'`', Account)
-            else:
-                await pl.send_sudo_msg(event, '• **result:**\n\n`'+code.stdout+'`', Account)
+            try:code = subprocess.run(['node', file], capture_output=True, text=True, timeout=5)
+            except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**• timeout error !**', Account)
+            else:await pl.send_sudo_msg(event, '• **error:**\n\n`'+code.stderr+'`' if code.stderr else '• **result:**\n\n`'+code.stdout+'`', Account)
         elif cmd == 'help':
             await pl.send_sudo_msg(event, '• **cmds :**\n`py3`\n`py2`\n`cpp`\n`c`\n`lua`\n`js`\n`java`', Account)
         elif cmd == 'cpp':
-            file = os.getcwd()+'/data/code/'+'source.cpp'
+            file = 'data/code/'+'source.cpp'
             pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
-            s = subprocess.run(['g++', '-std=c++11', file], capture_output=True, text=True)
-            if s.stderr != '':
-                await pl.send_sudo_msg(event, '• **error:**\n\n`'+s.stderr+'`', Account)
+            try:s = subprocess.run(['g++', '-std=c++17', file], capture_output=True, text=True, timeout=5)
+            except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**• timeout error !**', Account)
             else:
-                code = subprocess.run(['./a.out'], capture_output=True, text=True)
-                await pl.send_sudo_msg(event, '• **result:**\n\n`'+code.stdout+'`', Account)
-                os.remove('a.out')
+                if s.stderr:await pl.send_sudo_msg(event, '• **error:**\n\n`'+s.stderr+'`', Account)
+                else:
+                    try:code = subprocess.run(['./a.out'], capture_output=True, text=True, timeout=5)
+                    except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**• timeout error !**', Account)
+                    else:await pl.send_sudo_msg(event, '• **result:**\n\n`'+code.stdout+'`', Account)
+                    finally:os.remove('a.out')
         elif cmd == 'program':
             try:await pl.myexec(event.raw_text[event.raw_text.find('\n')+1:], event, Client);await pl.send_sudo_msg(event, '• **done !**', Account)
             except Exception as e:await pl.send_sudo_msg(event, str(e), Account)
         elif cmd == 'c':
-            file = os.getcwd()+'/data/code/'+'source.c' 
+            file = 'data/code/'+'source.c' 
             pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
-            s = subprocess.run(['gcc', file, '-o', 'a.out'], capture_output=True, text=True)
-            if s.stderr != '':
-                await pl.send_sudo_msg(event, '• **error:**\n\n`'+s.stderr+'`', Account)
+            try:s = subprocess.run(['gcc', file, '-o', 'a.out'], capture_output=True, text=True, timeout=5)
+            except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**• timeout error !**', Account)
             else:
-                code = subprocess.run(['./a.out'], capture_output=True, text=True)
-                await pl.send_sudo_msg(event, '• **result:**\n\n`'+code.stdout+'`', Account)
-                os.remove('a.out')
-        elif cmd == 'lua':
-            file = os.getcwd()+'/data/code/'+'source.lua'
-            pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
-            code = subprocess.run(['lua', file], capture_output=True, text=True)
-            if code.stderr != '':
-                await pl.send_sudo_msg(event, '• **error:**\n\n`'+code.stderr+'`', Account)
-            else:
-                await pl.send_sudo_msg(event, '• **result:**\n\n`'+code.stdout+'`', Account)
-        elif cmd == 'java':
-            file = os.getcwd()+'/data/code/'+'source.java'
-            pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
-            s = subprocess.run(['javac', file], capture_output=True, text=True)
-            if s.stderr != '':
-                await pl.send_sudo_msg(event, '• **error:**\n\n`'+s.stderr+'`', Account)
-            else:
-                os.system('cp '+os.getcwd()+'/data/code/source.class '+os.getcwd())
-                os.remove(os.getcwd()+'/data/code/'+'source.class')
-                code = subprocess.run(['java', 'source'], capture_output=True, text=True)
-                if code.stderr != '':
-                    await pl.send_sudo_msg(event,  '• **error:**\n\n`'+code.stderr+'`', Account)
+                if s.stderr:await pl.send_sudo_msg(event, '• **error:**\n\n`'+s.stderr+'`', Account)
                 else:
-                    await pl.send_sudo_msg(event,  '• **result:**\n\n`'+code.stdout+'`\n\n• **error:**\n\n`'+code.stderr+'`', Account)
-                os.remove('source.class')
+                    try:code = subprocess.run(['./a.out'], capture_output=True, text=True, timeout=5)
+                    except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**• timeout error !**', Account)
+                    else:await pl.send_sudo_msg(event, '• **result:**\n\n`'+code.stdout+'`', Account)
+                    finally:os.remove('a.out')
+        elif cmd == 'lua':
+            file = 'data/code/'+'source.lua'
+            pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
+            try:code = subprocess.run(['lua', file], capture_output=True, text=True, timeout=5)
+            except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**• timeout error !**', Account)
+            else:await pl.send_sudo_msg(event, '• **error:**\n\n`'+code.stderr+'`' if code.stderr else '• **result:**\n\n`'+code.stdout+'`', Account)
+        elif cmd == 'java':
+            file = 'data/code/'+'source.java'
+            pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
+            try:s = subprocess.run(['javac', file], capture_output=True, text=True, timeout=5)
+            except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**• timeout error !**', Account)
+            else:
+                if s.stderr:await pl.send_sudo_msg(event, '• **error:**\n\n`'+s.stderr+'`', Account)
+                else:
+                    os.system('cp data/code/source.class '+os.getcwd())
+                    os.remove('data/code/'+'source.class')
+                    try:code = subprocess.run(['java', 'source'], capture_output=True, text=True, timeout=5)
+                    except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**• timeout error !**', Account)
+                    else:await pl.send_sudo_msg(event, '• **error:**\n\n`'+code.stderr+'`' if code.stderr else '• **result:**\n\n`'+code.stdout+'`', Account)
+                    finally:os.remove('source.class')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» GeT LyriCZ:
 @Client.on(events.NewMessage(pattern='(L|l)yrics', from_users = sudo))
@@ -624,11 +619,11 @@ async def CheCKDIU(event):
     cmd, len_cmd = pl.get_cmds(event)
     if len_cmd >= 3 and cmd[0] == 'check':
         if cmd[1] == 'username':
-            try:check = f'• **Checking Username** `{cmd[2]}` **On Social Media:**\n'+'            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n'+'\n'.join(['⌬ '+i+' = '+v['stats']+ f'{"[✔️]" if v["link"] else "[✖️]"}' for i, v in req.get('https://www.wirexteam.ga/checker?username='+cmd[2]).json()['checker'].items()])
+            try:check = f'• **Checking Username** `{cmd[2]}` **On Social Media:**\n'+'            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n'+'\n'.join(['⌬ '+i+' = '+v['stats']+ f'{"[✔️]" if v["link"] else "[✖️]"}' for i, v in req.get('https://www.wirexteam.ga/checker?username='+cmd[2], timeout=10).json()['checker'].items()])
             except: check = '• **error !**'
             finally: await pl.send_sudo_msg(event, check, Account)
         elif cmd[1] == 'ip':
-            try: check = f'• **Ip Information For** ( `{cmd[2]}` ):'+'\n            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n'+'\n'.join(['⌬ '+i+' = '+str(v) for i, v in req.get('http://ip-api.com/json/{}?fields=status,message,continent,continentCode,country,countryCode,region,regionName,city,zip,lat,lon,timezone,currency,isp,org,as,query'.format(cmd[2])).json().items()])
+            try: check = f'• **Ip Information For** ( `{cmd[2]}` ):'+'\n            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n'+'\n'.join(['⌬ '+i+' = '+str(v) for i, v in req.get('http://ip-api.com/json/{}?fields=status,message,continent,continentCode,country,countryCode,region,regionName,city,zip,lat,lon,timezone,currency,isp,org,as,query'.format(cmd[2]), timeout=10).json().items()])
             except: check = '• **error !**'
             finally: await pl.send_sudo_msg(event, check, Account)
         elif cmd[1] == 'domain': 
