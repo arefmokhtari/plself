@@ -299,8 +299,8 @@ async def FinDManageR(event: events.newmessage.NewMessage.Event):
                     out = await shazam.recognize_song(filename)
                     if out.get('track'):
                         try:album = out["track"]["sections"][0]["metadata"][0]["text"]
-                        except IndexError:album = 'nill'
-                        msg4send = f'**• music info:**\n**• name:** `{out["track"]["title"]}`\n**• artist:** `{out["track"]["subtitle"]}`\n**• genre:** `{out["track"]["genres"]["primary"]}`\n**• album:** `{album}`'
+                        except IndexError:album = 'None'
+                        msg4send = f'**• music info:**\n**• name:** `{out["track"]["title"]}`\n**• artist:** `{out["track"]["subtitle"]}`\n**• genre:** `{out.get("track", {}).get("genres", {}).get("primary")}`\n**• album:** `{album}`'
                     else:
                         msg4send = '• **not found !**'
                     await _sending_msg.edit(msg4send)
