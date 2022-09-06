@@ -1147,9 +1147,8 @@ async def SpeeDTesT(event: events.newmessage.NewMessage.Event):
 @Client.on(events.NewMessage(pattern = '(P|p)ing', from_users = sudo, func=lambda e:e.raw_text.lower() == 'ping'))
 async def PING(event: events.newmessage.NewMessage.Event):
     TStarT = dt.now()
-    kosmsg = await Client.send_message(event.chat_id, '**-- ping cmd !**')
-    await pl.send_sudo_msg(event, f'• `bot is ON !` **ping {(dt.now()-TStarT).microseconds/1000} ms**', Account)
-    await kosmsg.delete()
+    kosmsg = await pl.send_sudo_msg(event, '• `bot is ON !`', Account)
+    await kosmsg.edit(f'• `bot is ON !` **ping {(dt.now()-TStarT).microseconds/1000} ms**')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» SenD FuckinG Gam3:
 @Client.on(events.NewMessage(pattern = '(G|g)ame', from_users = sudo, func=lambda e:e.raw_text.lower() == 'game'))
