@@ -312,7 +312,7 @@ async def FinDManageR(event: events.newmessage.NewMessage.Event):
                         if cmd[2].isdigit():
                             music_end = int(cmd[2])
                             filename = await Client.download_media(msg)
-                            sound = AudioSegment.from_mp3(filename)
+                            sound = AudioSegment.from_file(filename)
                             sound[0 : music_end * 1000].export(filename)
                             if event.sender_id in Account: await event.delete()
                             await Client.send_file(event.chat_id, filename, reply_to=msg.id)
@@ -322,14 +322,14 @@ async def FinDManageR(event: events.newmessage.NewMessage.Event):
                             music_start = int(cmd[2])
                             music_end = int(cmd[3])
                             filename = await Client.download_media(msg)
-                            sound = AudioSegment.from_mp3(filename)
+                            sound = AudioSegment.from_file(filename)
                             sound[music_start * 1000 : music_end * 1000].export(filename)
                             if event.sender_id in Account: await event.delete()
                             await Client.send_file(event.chat_id, filename, reply_to=msg.id)
                             os.remove(filename)
                     else:
                         filename = await Client.download_media(msg)
-                        sound = AudioSegment.from_mp3(filename)
+                        sound = AudioSegment.from_file(filename)
                         sound[0 : 120000].export(filename)
                         if event.sender_id in Account: await event.delete()
                         await Client.send_file(event.chat_id, filename, reply_to=msg.id)
@@ -425,6 +425,12 @@ async def RuNCoD3(event: events.newmessage.NewMessage.Event):
             file = 'data/code/'+'source.py'
             pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
             try:code = subprocess.run(['python2', file], capture_output=True, text=True, timeout=5)
+            except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**• timeout error !**', Account)
+            else:await pl.send_sudo_msg(event, '• **error:**\n\n`'+code.stderr+'`' if code.stderr else '• **result:**\n\n`'+code.stdout+'`', Account)
+        elif cmd == 'php':
+            file = 'data/code/'+'source.php'
+            pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
+            try:code = subprocess.run(['php', file], capture_output=True, text=True, timeout=5)
             except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**• timeout error !**', Account)
             else:await pl.send_sudo_msg(event, '• **error:**\n\n`'+code.stderr+'`' if code.stderr else '• **result:**\n\n`'+code.stdout+'`', Account)
         elif cmd == 'js' or cmd == 'javascript':
