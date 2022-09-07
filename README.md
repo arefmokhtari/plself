@@ -1,3 +1,6 @@
+*lastest out of version 1.0, now version 0.7 !*
+
+
 # ** plSelF - [ plague Dr .] **
 *- This script is for managing the account and giving features to the account and its sudo !*
 
