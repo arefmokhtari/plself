@@ -26,7 +26,7 @@
 ``` unzip data.zip;rm -rf data.zip```
 
 # install apps:
-```apt install python3```
+```apt install python3.9```
 ```apt install screen```
 ```apt install python3-pip```
 ```apt install redis```
