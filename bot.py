@@ -239,7 +239,7 @@ async def IdProcessing(event: events.newmessage.NewMessage.Event):
                 await pl.send_sudo_msg(event, f'@{chat.username}', Account)
         elif cmd[1][0].isdigit():
             await pl.send_sudo_msg(event, f'[{cmd[1]}](tg://user?id={cmd[1]})', Account)
-        elif event.entities and getattr(event.entities[0], 'user_id'):
+        elif event.entities and getattr(event.entities[0], 'user_id', None):
             await pl.send_sudo_msg(event, f'`{event.entities[0].user_id}`', Account)
     elif event.is_private and event.raw_text.lower() == 'id':
         if event.is_reply:
@@ -250,14 +250,10 @@ async def IdProcessing(event: events.newmessage.NewMessage.Event):
     elif (event.is_group or event.is_channel) and event.raw_text.lower() == 'id':
         if event.is_reply:
             msg = await event.get_reply_message()
-            user = msg.from_id
-            if user:
-                await pl.send_sudo_msg(event, f'`{user}`', Account)
-            #if 'from_id' in msg.to_dict() and msg.from_id != None and 'channel_id' in msg.from_id.to_dict():
-            #    await event.edit('`-100{}`'.format(msg.from_id.channel_id)) if event.sender_id in Account else await event.reply('`-100{}`'.format(msg.from_id.channel_id))                    
-            #elif 'from_id' in msg.to_dict() and msg.from_id == None and 'peer_id' in msg.to_dict() and 'channel_id' in msg.peer_id.to_dict():
-            #    await event.edit('`-100{}`'.format(msg.peer_id.channel_id)) if event.sender_id in Account else await event.reply('`-100{}`'.format(msg.peer_id.channel_id))        
-            else: await pl.send_sudo_msg(event, f'`{msg.from_id.user_id}`', Account)
+            user = getattr(msg.from_id, 'user_id', None) or f'-100{getattr(msg.from_id, "channel_id", None)}'
+            #if user:
+            await pl.send_sudo_msg(event, f'`{user}`', Account)
+            #else: await pl.send_sudo_msg(event, f'`{msg.from_id.user_id}`', Account)
         else: await pl.send_sudo_msg(event, f'`{event.sender_id}`', Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» invalid UseR:
@@ -659,11 +655,12 @@ async def TranslatE(event: events.newmessage.NewMessage.Event):
     await pl.send_sudo_msg(event, Tr.translate(msg_for_tr, dest=event.raw_text[3:5]).text, Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Accounts whose Messag# donot need to be forwarded =| ! :
-@Client.on(events.NewMessage(pattern = '(A|a)cdontsave', from_users = Account))
+@Client.on(events.NewMessage(pattern = '(A|a)cdontsave', from_users = Account, func = lambda e:e.is_private))
 async def DonTSaveMsgInChannel(event: events.newmessage.NewMessage.Event):
     if event.is_private and event.is_reply:
         msg = await event.get_reply_message()
-        if str(msg.peer_id.user_id) not in clir.lrange('DonTCare2MsG', 0, -1):
+        user_id = f'{getattr(msg.from_id, "user_id", "")}'
+        if user_id and user_id not in clir.lrange('DonTCare2MsG', 0, -1):
             clir.lpush('DonTCare2MsG', msg.peer_id.user_id)
     await event.delete()
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
@@ -710,7 +707,7 @@ async def SenDSaVOicE(event: events.newmessage.NewMessage.Event):
     if len_cmd >= 2 and cmd[0] == 'voice':
         if cmd[1] == 'play' and event.is_reply:
             msg = await event.get_reply_message()
-            if msg.media and getattr(msg.media.document, 'attributes') and type(msg.media.document.attributes[0]) is types.DocumentAttributeAudio and msg.media.document.attributes[0].voice:
+            if msg.media and getattr(msg.media.document, 'attributes', None) and type(msg.media.document.attributes[0]) is types.DocumentAttributeAudio and msg.media.document.attributes[0].voice:
                 file = await Client.download_media(msg)
                 txt = pl.voice_to_str(AudioSegment, file)
                 await pl.send_sudo_msg(event, f'{txt}', Account)
@@ -845,7 +842,7 @@ async def MuteAllGP(event: events.newmessage.NewMessage.Event):
             user = None
             if len_cmd == 1 and event.is_reply:
                 user = await event.get_reply_message()
-                user = str(user.from_id)
+                user = f'{getattr(msg.from_id, "user_id", "")}' or f'-100{getattr(msg.from_id, "channel_id", None)}'
                 # this -F code 4 telethon 1.4, not now ...
                 #if not user.from_id: return
                 #user = '-100{}'.format(user.from_id.channel_id) if 'channel_id' in user.from_id.to_dict() else str(user.from_id.user_id)
@@ -871,13 +868,14 @@ async def MuteAllGP(event: events.newmessage.NewMessage.Event):
                     await pl.send_sudo_msg(event, '• **user is SUDO !**', Account)
     elif text == 'mute' and event.sender_id == Account[0] and event.is_private and event.is_reply:
         msg = await event.get_reply_message()
-        if msg.peer_id.user_id == Account:
+        user = f'{getattr(msg.from_id, "user_id", "")}' or f'-100{getattr(msg.from_id, "channel_id", None)}'
+        if int(user) in Account:
             return
-        if str(msg.peer_id.user_id) not in clir.lrange('plMutePVUsEr', 0, -1):
-            clir.lpush('plMutePVUsEr', msg.peer_id.user_id)
-            await event.edit(f'• **user** `{msg.peer_id.user_id}` **has been muted !**')
+        if user not in clir.lrange('plMutePVUsEr', 0, -1):
+            clir.lpush('plMutePVUsEr', user)
+            await event.edit(f'• **user** `{user}` **has been muted !**')
         else:
-            await event.edit(f'• **user** `{msg.peer_id.user_id}` **has been muted bofore !**')
+            await event.edit(f'• **user** `{user}` **has been muted bofore !**')
 @Client.on(events.NewMessage(pattern = '(U|u)nmute', from_users = sudo))
 async def UnMuteAllGP(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event)
@@ -893,9 +891,8 @@ async def UnMuteAllGP(event: events.newmessage.NewMessage.Event):
         elif cmd[0] == 'unmute':
             user = None
             if len_cmd == 1 and event.is_reply:
-                user = str((await event.get_reply_message()).from_id)
-                #if not user.from_id: return
-                #user = '-100{}'.format(user.from_id.channel_id) if 'channel_id' in user.from_id.to_dict() else str(user.from_id.user_id)
+                msg = await event.get_reply_message()
+                user = f'{getattr(msg.from_id, "user_id", "")}' or f'-100{getattr(msg.from_id, "channel_id", None)}'
             elif len_cmd > 1:
                 if cmd[1][0] == '@':
                     user = await Client.get_input_entity(cmd[1])
@@ -943,8 +940,10 @@ async def BaNnedUserInGP(event: events.newmessage.NewMessage.Event):
             await pl.send_sudo_msg(event, f'• **user** `{event.entities[0].user_id}` **has been Banned !**', Account)
     elif event.is_reply and event.raw_text.lower() == 'ban':
         msg = await event.get_reply_message()
-        user = msg.from_id.channel_id if 'channel_id' in msg.from_id.to_dict() else msg.from_id.user_id
-        if user in sudo:
+        user = getattr(msg.from_id, 'user_id', None)
+        if not user:
+            await pl.send_sudo_msg(event, f'**• user id not found !**', Account)
+        elif user in sudo:
             await pl.send_sudo_msg(event, f'• **user** `{user}` **is SUDO !**', Account)
         else:
             try: await Client(EditBannedRequest(event.chat_id, user, ChatBannedRights(until_date=None, view_messages=True)))
@@ -970,7 +969,7 @@ async def BaNnedUserInGP(event: events.newmessage.NewMessage.Event):
             await pl.send_sudo_msg(event, f'• **user** `{event.entities[0].user_id}` **has been unbanned !**', Account)
     elif event.is_reply and event.raw_text.lower() == 'unban':
         msg = await event.get_reply_message()
-        user = msg.from_id.channel_id if 'channel_id' in msg.from_id.to_dict() else msg.from_id.user_id
+        user = getattr(msg.from_id, 'user_id', None)
         try: await Client.edit_permissions(event.chat_id, user, until_date=None, view_messages=True)
         except:
             await pl.send_sudo_msg(event, '• **error !**', Account)
@@ -1162,10 +1161,13 @@ async def ThBlockEdUseR(event: events.newmessage.NewMessage.Event):
     if event.is_reply:
         msg = await event.get_reply_message()
         if event.is_group:
-            await event.edit(f'• **user** `{msg.from_id.user_id}` **has been blocked !**')
-            await Client(BlockRequest(msg.from_id.user_id))
+            user = getattr(msg.from_id, 'user_id', None)
+            if not user: await pl.send_sudo_msg(event, f'**• user id not found !**', Account)
+            else:
+                await Client(BlockRequest(user))
+                await event.edit(f'• **user** `{user}` **has been blocked !**')
         else:
-            await event.edit(f'• **user** `{msg.peer_id.user_id}` **has been blocked !**')
+            await event.edit(f'• **user** `{user}` **has been blocked !**')
             await Client(BlockRequest(msg.peer_id.user_id))
 #   -»
 @Client.on(events.NewMessage(pattern = '(U|u)nblock', from_users = Account, func=lambda e:e.raw_text.lower() == 'unblock'))
@@ -1173,8 +1175,11 @@ async def ThUnBlockEdUseR(event: events.newmessage.NewMessage.Event):
     if event.is_reply:
         msg = await event.get_reply_message()
         if event.is_group:
-            await Client(UnblockRequest(msg.from_id.user_id))
-            await event.edit(f'• **user** `{msg.from_id.user_id}` **has been unblocked !**')
+            user = getattr(msg.from_id, 'user_id', None)
+            if not user: await pl.send_sudo_msg(event, f'**• user id not found !**', Account)
+            else:
+                await Client(UnblockRequest(user))
+                await event.edit(f'• **user** `{user}` **has been unblocked !**')
         else:
             await Client(UnblockRequest(msg.peer_id.user_id))
             await event.edit(f'• **user** `{msg.peer_id.user_id}` **has been unblocked !**')
