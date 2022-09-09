@@ -711,7 +711,7 @@ async def SenDSaVOicE(event: events.newmessage.NewMessage.Event):
                 file = await Client.download_media(msg)
                 try:txt = pl.voice_to_str(AudioSegment, file)
                 except:await pl.send_sudo_msg('**• voice is empty, or it is not persian !**')
-                else:await pl.send_sudo_msg(event, f'{txt}', Account)
+                else:await pl.send_sudo_msg(event, f'{txt}' or '**• is empty !**', Account)
         elif cmd[1] == 'save' and event.is_reply and len_cmd == 3:
             voice_name = cmd[2]
             if voice_name not in clir.hgetall('plVoiCESaVE').keys():
