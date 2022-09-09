@@ -1,4 +1,4 @@
-*lastest out of version 1.0, now version 0.7 !*
+*now version 0.7 !*
 
 
 # ** plSelF - [ plague Dr .] **
@@ -33,9 +33,9 @@
 ```apt install ffmpeg```
 
 # install libs:
-```pip3 install -U -r install.txt```
+```python3.9 -m pip install -U -r install.txt```
 
-*- database manager: run 'plr.py' !*
+*- database manager: run 'python3.9 srcipts/databaseManager.py' !*
 
 # RUN shell script:
 ```screen ./launch.sh```
