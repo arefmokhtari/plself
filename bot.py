@@ -87,7 +87,7 @@ async def check_massag3(event: events.newmessage.NewMessage.Event):
     elif event.is_group:
         chat_id = str(event.chat_id)
         usr = str(event.sender_id)
-        if chat_id in clir.lrange('plMuteAllGP', 0, -1) or (chat_id in clir.hgetall('plMut3UserInPG').keys() and usr in clir.hget('plMut3UserInPG', chat_id).split()):
+        if chat_id in clir.lrange('plMuteAllGP', 0, -1) or(clir.hgetall('plMut3UserInPG').get(chat_id) and usr in clir.hget('plMut3UserInPG', chat_id).split()):
             await event.delete()
         elif chat_id in clir.hgetall('plAddGroPSettinGZ').keys():
             database = js.loads(clir.hget('plAddGroPSettinGZ', chat_id))
@@ -843,7 +843,7 @@ async def MuteAllGP(event: events.newmessage.NewMessage.Event):
             user = None
             if len_cmd == 1 and event.is_reply:
                 user = await event.get_reply_message()
-                user = f'{getattr(msg.from_id, "user_id", "")}' or f'-100{getattr(msg.from_id, "channel_id", None)}'
+                user = f'{getattr(user.from_id, "user_id", "")}' or f'-100{getattr(user.from_id, "channel_id", None)}'
                 # this -F code 4 telethon 1.4, not now ...
                 #if not user.from_id: return
                 #user = '-100{}'.format(user.from_id.channel_id) if 'channel_id' in user.from_id.to_dict() else str(user.from_id.user_id)
