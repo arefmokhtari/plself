@@ -544,13 +544,15 @@ async def QrCoD3(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event)
     if len_cmd >= 2 and cmd[0] == 'qrcode':
         if cmd[1] == 'create' and len_cmd >= 3:
-            (qrcode.make(event.raw_text[14:])).save('QRCode.png')
-            if event.sender_id in Account:
-                await event.delete()
-                await Client.send_file(event.chat_id, 'QRCode.png', caption = event.raw_text[14:])
+            try:(qrcode.make(event.raw_text[14:])).save('QRCode.png')
+            except qrcode.exceptions.DataOverflowError:await pl.send_sudo_msg(event, '**• qrcode size is large !**', Account)
             else:
-                await Client.send_file(event.chat_id, 'QRCode.png', reply_to = event.id, caption = event.raw_text[14:])
-            os.remove('QRCode.png')
+                if event.sender_id in Account:
+                    await event.delete()
+                    await Client.send_file(event.chat_id, 'QRCode.png', caption = event.raw_text[14:])
+                else:
+                    await Client.send_file(event.chat_id, 'QRCode.png', reply_to = event.id, caption = event.raw_text[14:])
+                os.remove('QRCode.png')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» 2 CoiN MarkeT:
 @Client.on(events.NewMessage(pattern = '(C|c)oin', from_users = sudo))
