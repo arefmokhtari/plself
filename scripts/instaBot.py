@@ -18,7 +18,7 @@ class instaBot(instaloader.Instaloader):
         _profile = self.check_profile_id(username)
         self.download_profile(_profile, profile_pic_only=True)
         pic_file = [i for i in os.listdir(_profile.username) if i.endswith('jpg')][0]
-        return {'file':pic_file, 'profile': _profile}
+        return {'file':_profile.username+'/'+pic_file, 'profile': _profile}
     
 
     async def down_story(self, username):
