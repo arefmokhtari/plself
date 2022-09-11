@@ -1,5 +1,6 @@
 #                   [   Plague Dr.  ]
 # - - - - - - - - - - -LIBRarYS- - - - - - - - - - - - #
+from fileinput import filename
 from telethon import TelegramClient, events, Button, types, __version__ as tver, errors
 from telethon.tl.functions.messages import ImportChatInviteRequest, CheckChatInviteRequest, HideChatJoinRequestRequest
 from telethon.tl.functions.channels import JoinChannelRequest, LeaveChannelRequest, EditBannedRequest, InviteToChannelRequest, EditPhotoRequest
@@ -35,12 +36,12 @@ sudo = pl.botc.sudoS
 print(f'{pl.Color.BLACK}\n{pl.Color.BACKGROUND_RED}# ------------- [   Plague Dr.  ] ------------- #{pl.Color.RESET}\n'+pl.Color.DARK_GRAY) 
 bot = TelegramClient(pl.botc.SESSION_DIR+pl.botc.SESSION_API_NAME, pl.botc.API_ID, pl.botc.API_HASH).start(bot_token=pl.botc.BOT_TOKEN)
 clir = pl.bot_redis(pl.botc.REDIS_NUMBER)
-insta = pl.instaBot(pl.botc.INSTAGRAM[0],pl.botc.INSTAGRAM[1], pl.botc.INSTAGRAM[2], pl.botc.SESSION_DIR[:-1])
+# insta = pl.instaBot(pl.botc.INSTAGRAM[0],pl.botc.INSTAGRAM[1], pl.botc.INSTAGRAM[2], pl.botc.SESSION_DIR[:-1])
 Client = TelegramClient(pl.botc.SESSION_DIR+pl.botc.SESSION_AC_NAME, pl.botc.API_ID, pl.botc.API_HASH)
 Client.start()
 group_call_factory = pl.VchatCall(Client)
+print(f'- connect to {pl.botc.SESSION_AC_NAME} session !')
 print('\t- Client && bot is runing ! go FucKyourSelf && Bye.', pl.Color.RESET)
-print(f' {pl.Color.RED}----{pl.Color.RESET}    {pl.Color.BACKGROUND_RED}connet to {pl.botc.SESSION_AC_NAME} account !{pl.Color.RESET}    {pl.Color.RED}----{pl.Color.RESET}')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» CheckING MsG SerVic3 In GP:
 @Client.on(events.Raw(types.UpdateNewChannelMessage, func=lambda e:type(e.message) is types.MessageService))
@@ -148,26 +149,31 @@ async def RMSG_CMD(event:  events.newmessage.NewMessage.Event):
 #   -» InsTa:
 @Client.on(events.NewMessage(pattern = '(I|i)nsta', from_users = sudo))
 async def InsTA(event: events.newmessage.NewMessage.Event):
-    cmd, len_cmd = pl.get_cmds(event)
-    if len_cmd == 3 and cmd[0] == 'insta':
+    cmd, len_cmd = pl.get_cmds(event, False)
+    if len_cmd == 3 and cmd[0].lower() == 'insta':
         if cmd[1] == 'post': 
+            insta = pl.instaBot(pl.botc.INSTAGRAM[0],pl.botc.INSTAGRAM[1], pl.botc.INSTAGRAM[2], pl.botc.SESSION_DIR[:-1])
             file_name = await insta.down_post(cmd[2])
-            Files = [os.getcwd()+'/insta/'+fi for fi in file_name.get('file')]
+            Files = file_name.get('file')
             post = file_name.get('post')
             if len(file_name) >= 1:
                 try:
-                    await Client.send_file(event.chat_id, [os.getcwd()+'/insta/'+fi for fi in file_name], reply_to=event.id, caption = f'• **username :** `{post.owner_username}`\n• **like :** `{post.likes}`\n• **Comments :** `{post.comments}`')
+                    await Client.send_file(event.chat_id, Files, reply_to=event.id, caption = f'• **username :** `{post.owner_username}`\n• **like :** `{post.likes}`\n• **Comments :** `{post.comments}`')
                 except:
                     for f in Files:
                         await Client.send_file(event.chat_id, f, reply_to=event.id, caption = f'• **username :** `{post.owner_username}`\n• **like :** `{post.likes}`\n• **Comments :** `{post.comments}`')
             pl.instaBot.remove_dir('insta')
+            del insta
         elif cmd[1] == 'profile':
+            insta = pl.instaBot(pl.botc.INSTAGRAM[0],pl.botc.INSTAGRAM[1], pl.botc.INSTAGRAM[2], pl.botc.SESSION_DIR[:-1])
             files = await insta.down_profile(cmd[2])
-            fucking_file = files.get('file')
             profile = files.get('profile')
-            await Client.send_file(event.chat_id,os.getcwd()+'/'+profile.username+'/'+fucking_file, reply_to=event.id, caption = f'• **name :** `{profile.full_name}`\n• **bio :** `{profile.biography}`\n• **followers :** `{profile.followers:,}`')
+            fucking_file = files.get('file')
+            await Client.send_file(event.chat_id, fucking_file, reply_to=event.id, caption = f'• **name :** `{profile.full_name}`\n• **bio :** `{profile.biography}`\n• **followers :** `{profile.followers:,}`')
             pl.instaBot.remove_dir(profile.username)
+            del insta
         elif cmd[1] == 'story':
+            insta = pl.instaBot(pl.botc.INSTAGRAM[0],pl.botc.INSTAGRAM[1], pl.botc.INSTAGRAM[2], pl.botc.SESSION_DIR[:-1])
             files = await insta.down_story(cmd[2])
             profile = files.get('profile')
             Files = files.get('file')
@@ -177,6 +183,7 @@ async def InsTA(event: events.newmessage.NewMessage.Event):
                     for f in Files:
                         await Client.send_file(event.chat_id, f, reply_to=event.id)
             pl.instaBot.remove_dir(profile.username)
+            del insta
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Calculator:
 @Client.on(events.NewMessage(pattern = '(C|c)al', from_users = sudo))
