@@ -1,6 +1,5 @@
 #                   [   Plague Dr.  ]
 # - - - - - - - - - - -LIBRarYS- - - - - - - - - - - - #
-from fileinput import filename
 from telethon import TelegramClient, events, Button, types, __version__ as tver, errors
 from telethon.tl.functions.messages import ImportChatInviteRequest, CheckChatInviteRequest, HideChatJoinRequestRequest
 from telethon.tl.functions.channels import JoinChannelRequest, LeaveChannelRequest, EditBannedRequest, InviteToChannelRequest, EditPhotoRequest
@@ -40,7 +39,7 @@ clir = pl.bot_redis(pl.botc.REDIS_NUMBER)
 Client = TelegramClient(pl.botc.SESSION_DIR+pl.botc.SESSION_AC_NAME, pl.botc.API_ID, pl.botc.API_HASH)
 Client.start()
 group_call_factory = pl.VchatCall(Client)
-print(f'- connect to {pl.botc.SESSION_AC_NAME} session !')
+print(f'\t- connect to {pl.botc.SESSION_AC_NAME} session !')
 print('\t- Client && bot is runing ! go FucKyourSelf && Bye.', pl.Color.RESET)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» CheckING MsG SerVic3 In GP:
