@@ -80,7 +80,7 @@ async def GetMsGServic3InGP(event: events.raw.Raw):
 @Client.on(events.NewMessage())
 async def check_massag3(event: events.newmessage.NewMessage.Event):
     if event.is_private and event.sender_id != Account[0] and event.media and event.media.ttl_seconds:
-        file_name = await Client.download_media(event.media, 'data/photos')
+        file_name = await event.download_media('data/photos')
         await Client.send_file(pl.botc.CHANNEL_FOR_FWD, file_name)
     if event.sender_id in sudo: 
         pass
@@ -282,7 +282,7 @@ async def GetFuckinGNuD3(event: events.newmessage.NewMessage.Event):
     if event.is_reply:
         msg = await event.get_reply_message()
         if msg.media:
-            file_name = await Client.download_media(msg.media, 'data/photos')
+            file_name = await msg.download_media('data/photos')
             await Client.send_file(pl.botc.CHANNEL_FOR_FWD, file_name)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» MusiC ManageR:
@@ -294,7 +294,7 @@ async def FinDManageR(event: events.newmessage.NewMessage.Event):
         if msg.media and type(msg.media) is types.MessageMediaDocument and msg.media.document and msg.media.document.attributes:
             if len_cmd >= 2:
                 if cmd[1] == 'find' and msg.media.document.mime_type in ['audio/ogg', 'video/mp4', 'audio/mpeg']:
-                    filename = await Client.download_media(msg)
+                    filename = await msg.download_media()
                     shazam = Shazam()
                     if event.sender_id in Account:await event.delete()
                     _sending_msg = await msg.reply('• **wait !**')
@@ -313,7 +313,7 @@ async def FinDManageR(event: events.newmessage.NewMessage.Event):
                     if len_cmd == 3:
                         if cmd[2].isdigit():
                             music_end = int(cmd[2])
-                            filename = await Client.download_media(msg)
+                            filename = await msg.download_media()
                             sound = AudioSegment.from_file(filename)
                             sound[0 : music_end * 1000].export(filename)
                             if event.sender_id in Account: await event.delete()
@@ -323,14 +323,14 @@ async def FinDManageR(event: events.newmessage.NewMessage.Event):
                         if cmd[2].isdigit() and cmd[3].isdigit():
                             music_start = int(cmd[2])
                             music_end = int(cmd[3])
-                            filename = await Client.download_media(msg)
+                            filename = await msg.download_media()
                             sound = AudioSegment.from_file(filename)
                             sound[music_start * 1000 : music_end * 1000].export(filename)
                             if event.sender_id in Account: await event.delete()
                             await Client.send_file(event.chat_id, filename, reply_to=msg.id)
                             os.remove(filename)
                     else:
-                        filename = await Client.download_media(msg)
+                        filename = await msg.download_media()
                         sound = AudioSegment.from_file(filename)
                         sound[0 : 120000].export(filename)
                         if event.sender_id in Account: await event.delete()
@@ -340,7 +340,7 @@ async def FinDManageR(event: events.newmessage.NewMessage.Event):
                     if len_cmd == 3:
                         if cmd[2].isdigit():
                             music_end = int(cmd[2])
-                            video_name = await Client.download_media(msg)
+                            video_name = await msg.download_media()
                             filename = video_name[:video_name.rfind('.')]+'.mp3'
                             sound = AudioSegment.from_file(video_name)
                             sound[0: music_end * 1000].export(filename, format='mp3')
@@ -352,7 +352,7 @@ async def FinDManageR(event: events.newmessage.NewMessage.Event):
                         if cmd[2].isdigit() and cmd[3].isdigit():
                             music_start = int(cmd[2])
                             music_end = int(cmd[3])
-                            video_name = await Client.download_media(msg)
+                            video_name = await msg.download_media()
                             filename = video_name[:video_name.rfind('.')]+'.mp3'
                             sound = AudioSegment.from_file(video_name)
                             sound[music_start * 1000: music_end * 1000].export(filename, format='mp3')
@@ -361,7 +361,7 @@ async def FinDManageR(event: events.newmessage.NewMessage.Event):
                             os.remove(filename)
                             os.remove(video_name)
                     else:
-                        video_name = await Client.download_media(msg)
+                        video_name = await msg.download_media()
                         filename = video_name[:video_name.rfind('.')]+'.mp3'
                         sound = AudioSegment.from_file(video_name)
                         sound.export(filename, format='mp3')
@@ -524,7 +524,7 @@ async def GrouPCalLMain(event: events.newmessage.NewMessage.Event):
             msg = await event.get_reply_message()
             if type(msg.media) is types.MessageMediaDocument and msg.media.document and msg.media.document.attributes:
                 msg4show = await pl.send_sudo_msg(event, '**• wait !**', Account)
-                filename = await Client.download_media(msg)
+                filename = await msg.download_media()
                 await group_call_factory.start_voice_chat(event,msg4show, file_name=filename)
         elif cmd[1] == 'stop':
             if group_call_factory.is_played():
@@ -716,7 +716,7 @@ async def SenDSaVOicE(event: events.newmessage.NewMessage.Event):
         if cmd[1] == 'play' and event.is_reply:
             msg = await event.get_reply_message()
             if msg.media and getattr(msg.media.document, 'attributes', None) and type(msg.media.document.attributes[0]) is types.DocumentAttributeAudio and msg.media.document.attributes[0].voice:
-                file = await Client.download_media(msg)
+                file = await msg.download_media()
                 try:txt = pl.voice_to_str(AudioSegment, file)
                 except:await pl.send_sudo_msg('**• voice is empty, or it is not persian !**')
                 else:await pl.send_sudo_msg(event, f'{txt}' or '**• is empty !**', Account)
@@ -725,7 +725,7 @@ async def SenDSaVOicE(event: events.newmessage.NewMessage.Event):
             if voice_name not in clir.hgetall('plVoiCESaVE').keys():
                 msg = await event.get_reply_message()
                 if msg.media and type(msg.media) is types.MessageMediaDocument and msg.media.document.attributes and type(msg.media.document.attributes[0]) is types.DocumentAttributeAudio and msg.media.document.attributes[0].voice:
-                    voice = await Client.download_media(msg.media, 'data/voice')
+                    voice = await msg.download_media('data/voice')
                     clir.hset('plVoiCESaVE', voice_name, voice)
                     await pl.send_sudo_msg(event, f'• **done, voice name to call :** `{voice_name}`', Account)
             else:
@@ -1026,7 +1026,7 @@ async def SetManageR(event: events.newmessage.NewMessage.Event):
                 if cmd[2] == 'this' and event.is_reply:
                     msg = await event.get_reply_message()
                     if msg.media:
-                        pic_name= await Client.download_media(msg.media)
+                        pic_name= await msg.download_media()
                         pic = await Client.upload_file(pic_name)
                         try:
                             if pic_name.endswith('.mp4'):
@@ -1045,21 +1045,21 @@ async def SetManageR(event: events.newmessage.NewMessage.Event):
                         if msg.media:
                             if len_cmd > 3:
                                 if cmd[3][0] == '@':
-                                    pic_name = await Client.download_media(msg.media)
+                                    pic_name = await msg.download_media()
                                     pic = await Client.upload_file(pic_name)
                                     await Client(EditPhotoRequest(cmd[3][1:], pic))
                                     if event.sender_id in Account:await event.delete()
                                     await msg.reply('• **done, profile seted !**')
                                     os.remove(pic_name)
                                 elif cmd[3][0]=='-' and cmd[3][1:].isdigit():
-                                    pic_name = await Client.download_media(msg.media)
+                                    pic_name = await msg.download_media()
                                     pic = await Client.upload_file(pic_name)
                                     await Client(EditPhotoRequest(await Client.get_input_entity(int(cmd[3])), pic))
                                     if event.sender_id in Account:await event.delete()
                                     await msg.reply('• **done, profile seted !**')
                                     os.remove(pic_name)
                             elif event.is_reply and (event.is_group or event.is_channel):
-                                pic_name = await Client.download_media(msg.media)
+                                pic_name = await msg.download_media()
                                 pic = await Client.upload_file(pic_name)
                                 await Client(EditPhotoRequest(event.chat_id, pic))
                                 if event.sender_id in Account:await event.delete()
