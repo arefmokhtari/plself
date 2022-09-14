@@ -1199,50 +1199,55 @@ async def check__edited_massag3(event: events.MessageEdited.Event):await check_m
 @Client.on(events.MessageEdited(from_users = sudo, func=lambda e:e.raw_text))
 async def MaiNMessageEdited(event: events.MessageEdited.Event):
     cmd = event.raw_text.split()[0].lower()
-    if event.sender_id in Account:
+    if event.sender_id in acc_sudo:
+        await pl.switch(cmd, {
+            'wow': GetFuckinGNuD3,
+            'antitabchi': GetFuckinGNuD3,
+            'reload': RestartProGraM,
+            'acdontsave': DonTSaveMsgInChannel,
+            'join': joinchat,
+            'left': leftchat,
+            'info': SeYInFO,
+            'set': SetManageR,
+            'voice': SenDSaVOicE,
+            'file': SenDFuCKinGFilE,
+            'set': SetManageR,
+            'block': ThBlockEdUseR,
+            'unblock': ThUnBlockEdUseR,
+        }, pl.empty)(event)
         #if cmd == 'flood':await FloodSpaM(event)
-        if cmd == 'wow':await GetFuckinGNuD3(event)
-        elif cmd == 'antitabchi':await GetFuckinGNuD3(event)
-        elif cmd == 'reload':await RestartProGraM(event)
-        elif cmd == 'acdontsave':await DonTSaveMsgInChannel(event)
-        elif cmd == 'join':await joinchat(event)
-        elif cmd == 'left':await leftchat(event)
-        elif cmd == 'info':await SeYInFO(event)
-        elif cmd == 'voice':await SenDSaVOicE(event)
-        elif cmd == 'file':await SenDFuCKinGFilE(event)
-        elif cmd == 'set':await SetManageR(event)
-        elif cmd == 'block':await ThBlockEdUseR(event)
-        elif cmd == 'unblock':await ThUnBlockEdUseR(event)
         #elif cmd == 'turn':await TurNFuckinGOff(event)
-    if cmd == 'ping':await PING(event)
-    elif cmd == 'code':await RuNCoD3(event)
-    elif cmd == 'pin':await PINMessaG3(event)
-    elif cmd == 'rmsg':await RMSG_CMD(event)
-    elif cmd == 'insta':await InsTA(event)
-    elif cmd == 'cal':await GeTCal(event)
-    elif cmd == 'music':await FinDManageR(event)
-    elif cmd == 'id':await IdProcessing(event)
-    elif cmd == 'invite':await FuckinGInvalidUseR(event)
-    elif cmd == 'base':await ReBaSE(event)
-    elif cmd == 'morse':await ReMorsE(event)
-    elif cmd == 'help':await SendHelP(event)
-    elif cmd == 'lyrics':await GetLyricZ(event)
-    elif cmd == 'vchat':await GrouPCalLMain(event)
-    elif cmd == 'qrcode':await QrCoD3(event)
+    await pl.switch(cmd, {
+        'ping': PING,
+        'code': RuNCoD3,
+        'pin': PINMessaG3,
+        'rmsg': RMSG_CMD,
+        'insta': InsTA,
+        'cal': GeTCal,
+        'music': FinDManageR,
+        'id': IdProcessing,
+        'invite': FuckinGInvalidUseR,
+        'base': ReBaSE,
+        'morse': ReMorsE,
+        'help': SendHelP,
+        'lyrics': GetLyricZ,
+        'vchat': GrouPCalLMain,
+        'qrcode': QrCoD3,
+        'check': CheCKDIU,
+        'time': SeYTime,
+        'tr': TranslatE,
+        'del': DeleteMessag3,
+        'mute': MuteAllGP,
+        'unmute': UnMuteAllGP,
+        'ban': BaNnedUserInGP,
+        'unban': BaNnedUserInGP,
+        'speedtest': SpeeDTesT,
+        'game': SendFGam3,
+        'add': AddGrouP,
+        'rem': RemGrouP,
+        'panel': PANELAPI,
+    }, pl.empty)(event)
     #elif cmd == 'proxy':await GetProxY(event)
-    elif cmd == 'check':await CheCKDIU(event)
-    elif cmd == 'time':await SeYTime(event)
-    elif cmd == 'tr':await TranslatE(event)
-    elif cmd == 'del':await DeleteMessag3(event)
-    elif cmd == 'mute':await MuteAllGP(event)
-    elif cmd == 'unmute':await UnMuteAllGP(event)
-    elif cmd == 'ban':await BaNnedUserInGP(event)
-    elif cmd == 'unban':await BaNnedUserInGP(event)
-    elif cmd == 'speedtest':await SpeeDTesT(event)
-    elif cmd == 'game':await SendFGam3(event)
-    elif cmd == 'add':await AddGrouP(event)
-    elif cmd == 'rem':await RemGrouP(event)
-    elif cmd == 'panel':await PANELAPI(event)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» There is nothing to say here:
 '''

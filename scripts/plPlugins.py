@@ -122,6 +122,9 @@ BOT_GROUP_DATABASE = {
     'lock_location':False,'lock_contact':False,'lock_caption':False,'lock_contact':False,'lock_caption':False
 }
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+async def empty(event):
+    pass
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 def voice_to_str(AudioSegment, file, language = 'fa-IR'):
     voice = AudioSegment.from_ogg(file)
     filename = file[:file.rfind('.')] + '.wav'
