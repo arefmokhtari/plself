@@ -122,7 +122,7 @@ BOT_GROUP_DATABASE = {
     'lock_location':False,'lock_contact':False,'lock_caption':False,'lock_contact':False,'lock_caption':False
 }
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
-async def empty(event):
+async def empty_async(event):
     pass
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 def voice_to_str(AudioSegment, file, language = 'fa-IR'):

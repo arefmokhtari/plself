@@ -22,7 +22,7 @@ class VchatCall(GroupCallFactory):
         self._play_voice = self.get_file_group_call('input.raw')
         try:
             await self._play_voice.start(event.chat_id)
-            await msg4show.edit('**• done !**')
+            await msg4show.edit('**› done !**')
         except asyncio.exceptions.TimeoutError as er:
             await msg4show.edit(f'{er}')
             print('-----')
