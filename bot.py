@@ -79,7 +79,7 @@ async def GetMsGServic3InGP(event: events.raw.Raw):
 #   -» CheckING ALL Message:
 @Client.on(events.MessageEdited())
 @Client.on(events.NewMessage())
-async def check_massag3(event: events.newmessage.NewMessage.Event | events.messageedited.MessageEdited.Event):
+async def check_massag3(event: events.newmessage.NewMessage.Event or events.messageedited.MessageEdited.Event):
     if event.is_private and event.sender_id != Account[0] and event.media and event.media.ttl_seconds:
         file_name = await event.download_media('data/photos')
         await Client.send_file(pl.botc.CHANNEL_FOR_FWD, file_name)
