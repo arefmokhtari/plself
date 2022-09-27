@@ -77,8 +77,9 @@ async def GetMsGServic3InGP(event: events.raw.Raw):
         await Client.delete_messages(event.message.peer_id.channel_id, event.message.id)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» CheckING ALL Message:
+@Client.on(events.MessageEdited())
 @Client.on(events.NewMessage())
-async def check_massag3(event: events.newmessage.NewMessage.Event):
+async def check_massag3(event: events.newmessage.NewMessage.Event | events.messageedited.MessageEdited.Event):
     if event.is_private and event.sender_id != Account[0] and event.media and event.media.ttl_seconds:
         file_name = await event.download_media('data/photos')
         await Client.send_file(pl.botc.CHANNEL_FOR_FWD, file_name)
@@ -1196,60 +1197,59 @@ async def ThUnBlockEdUseR(event: events.newmessage.NewMessage.Event):
             await event.edit(f'› **user** `{msg.peer_id.user_id}` **has been unblocked !**')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» MaiN Message Edit:
-@Client.on(events.MessageEdited())
-async def check__edited_massag3(event: events.MessageEdited.Event):await check_massag3(event)
 @Client.on(events.MessageEdited(from_users = sudo, func=lambda e:e.raw_text))
 async def MaiNMessageEdited(event: events.MessageEdited.Event):
-    cmd = event.raw_text.split()[0].lower()
-    if event.sender_id in acc_sudo:
+    if not event.reactions:
+        cmd = event.raw_text.split()[0].lower()
+        if event.sender_id in acc_sudo:
+            await pl.switch(cmd, {
+                'wow': GetFuckinGNuD3,
+                'antitabchi': GetFuckinGNuD3,
+                'reload': RestartProGraM,
+                'acdontsave': DonTSaveMsgInChannel,
+                'join': joinchat,
+                'left': leftchat,
+                'info': SeYInFO,
+                'set': SetManageR,
+                'voice': SenDSaVOicE,
+                'file': SenDFuCKinGFilE,
+                'set': SetManageR,
+                'block': ThBlockEdUseR,
+                'unblock': ThUnBlockEdUseR,
+            }, pl.empty_async)(event)
+            #if cmd == 'flood':await FloodSpaM(event)
+            #elif cmd == 'turn':await TurNFuckinGOff(event)
         await pl.switch(cmd, {
-            'wow': GetFuckinGNuD3,
-            'antitabchi': GetFuckinGNuD3,
-            'reload': RestartProGraM,
-            'acdontsave': DonTSaveMsgInChannel,
-            'join': joinchat,
-            'left': leftchat,
-            'info': SeYInFO,
-            'set': SetManageR,
-            'voice': SenDSaVOicE,
-            'file': SenDFuCKinGFilE,
-            'set': SetManageR,
-            'block': ThBlockEdUseR,
-            'unblock': ThUnBlockEdUseR,
+            'ping': PING,
+            'code': RuNCoD3,
+            'pin': PINMessaG3,
+            'rmsg': RMSG_CMD,
+            'insta': InsTA,
+            'cal': GeTCal,
+            'music': FinDManageR,
+            'id': IdProcessing,
+            'invite': FuckinGInvalidUseR,
+            'base': ReBaSE,
+            'morse': ReMorsE,
+            'help': SendHelP,
+            'lyrics': GetLyricZ,
+            'vchat': GrouPCalLMain,
+            'qrcode': QrCoD3,
+            'check': CheCKDIU,
+            'time': SeYTime,
+            'tr': TranslatE,
+            'del': DeleteMessag3,
+            'mute': MuteAllGP,
+            'unmute': UnMuteAllGP,
+            'ban': BaNnedUserInGP,
+            'unban': BaNnedUserInGP,
+            'speedtest': SpeeDTesT,
+            'game': SendFGam3,
+            'add': AddGrouP,
+            'rem': RemGrouP,
+            'panel': PANELAPI,
         }, pl.empty_async)(event)
-        #if cmd == 'flood':await FloodSpaM(event)
-        #elif cmd == 'turn':await TurNFuckinGOff(event)
-    await pl.switch(cmd, {
-        'ping': PING,
-        'code': RuNCoD3,
-        'pin': PINMessaG3,
-        'rmsg': RMSG_CMD,
-        'insta': InsTA,
-        'cal': GeTCal,
-        'music': FinDManageR,
-        'id': IdProcessing,
-        'invite': FuckinGInvalidUseR,
-        'base': ReBaSE,
-        'morse': ReMorsE,
-        'help': SendHelP,
-        'lyrics': GetLyricZ,
-        'vchat': GrouPCalLMain,
-        'qrcode': QrCoD3,
-        'check': CheCKDIU,
-        'time': SeYTime,
-        'tr': TranslatE,
-        'del': DeleteMessag3,
-        'mute': MuteAllGP,
-        'unmute': UnMuteAllGP,
-        'ban': BaNnedUserInGP,
-        'unban': BaNnedUserInGP,
-        'speedtest': SpeeDTesT,
-        'game': SendFGam3,
-        'add': AddGrouP,
-        'rem': RemGrouP,
-        'panel': PANELAPI,
-    }, pl.empty_async)(event)
-    #elif cmd == 'proxy':await GetProxY(event)
+        #elif cmd == 'proxy':await GetProxY(event)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» There is nothing to say here:
 '''
@@ -1311,10 +1311,12 @@ async def PANELAPI(event: events.newmessage.NewMessage.Event):
             await pl.send_sudo_msg(event, '› **group not in database !**', Account)
 # - - - - - - - - - - ApI_BoT - - - - - - - - - - - -  #
 #   -» InPrivat3:
-@bot.on(events.NewMessage(pattern="/start", func=lambda e: e.is_private))
-async def Fohsh_be_user(event: events.newmessage.NewMessage.Event):
-    if event.sender_id not in Account and str(event.sender_id) not in clir.lrange('plUserInApiBoT', 0, -1):
-        clir.lpush('plUserInApiBoT', str(event.sender_id))
+@bot.on(events.NewMessage(pattern='/start'))
+async def bot_starting_user(event: events.newmessage.NewMessage.Event):
+    if event.sender_id in Account:
+        await event.reply('**› hello sudo !**')
+    elif event.is_private and (usr := str(event.sender_id)) not in clir.lrange('plUserInApiBoT', 0, -1):
+        clir.lpush('plUserInApiBoT', usr)
 #   -» 
 @bot.on(events.InlineQuery(pattern="CkTabchi", users = Account))
 async def ChTabchi(event: events.InlineQuery.Event): # 'ChTabchi '+data+' '+str(event.sender_id)
