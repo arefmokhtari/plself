@@ -1313,7 +1313,7 @@ async def PANELAPI(event: events.newmessage.NewMessage.Event):
 #   -» InPrivat3:
 @bot.on(events.NewMessage(pattern='/start'))
 async def bot_starting_user(event: events.newmessage.NewMessage.Event):
-    if event.sender_id in Account:
+    if event.sender_id in sudo:
         await event.reply('**› hello sudo !**')
     elif event.is_private and (usr := str(event.sender_id)) not in clir.lrange('plUserInApiBoT', 0, -1):
         clir.lpush('plUserInApiBoT', usr)
