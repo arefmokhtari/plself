@@ -418,32 +418,8 @@ async def RuNCoD3(event: events.newmessage.NewMessage.Event):
     cmds, len_cmd = pl.get_cmds(event)
     if len_cmd >= 2 and cmds[0] == 'code':
         cmd = cmds[1]
-        if cmd == 'py3':
-            file = 'data/code/'+'source.py'
-            pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
-            try:code = subprocess.run(['python3', file], capture_output=True, text=True, timeout=5)
-            except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**› timeout error !**', Account)
-            else:await pl.send_sudo_msg(event, '› **error:**\n\n`'+code.stderr+'`' if code.stderr else '› **result:**\n\n`'+code.stdout+'`', Account)
-        elif cmd == 'py2':
-            file = 'data/code/'+'source.py'
-            pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
-            try:code = subprocess.run(['python2', file], capture_output=True, text=True, timeout=5)
-            except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**› timeout error !**', Account)
-            else:await pl.send_sudo_msg(event, '› **error:**\n\n`'+code.stderr+'`' if code.stderr else '› **result:**\n\n`'+code.stdout+'`', Account)
-        elif cmd == 'php':
-            file = 'data/code/'+'source.php'
-            pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
-            try:code = subprocess.run(['php', file], capture_output=True, text=True, timeout=5)
-            except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**› timeout error !**', Account)
-            else:await pl.send_sudo_msg(event, '› **error:**\n\n`'+code.stderr+'`' if code.stderr else '› **result:**\n\n`'+code.stdout+'`', Account)
-        elif cmd == 'js' or cmd == 'javascript':
-            file = 'data/code/'+'source.js'
-            pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
-            try:code = subprocess.run(['node', file], capture_output=True, text=True, timeout=5)
-            except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**› timeout error !**', Account)
-            else:await pl.send_sudo_msg(event, '› **error:**\n\n`'+code.stderr+'`' if code.stderr else '› **result:**\n\n`'+code.stdout+'`', Account)
-        elif cmd == 'help':
-            await pl.send_sudo_msg(event, '› **cmds :**\n`py3`\n`py2`\n`cpp`\n`c`\n`lua`\n`js`\n`java`', Account)
+        if cmd == 'help':
+            await pl.send_sudo_msg(event, '› **cmds :**\n`py3`\n`py2`\n`php`\n`cpp`\n`c`\n`lua`\n`js`\n`java`', Account)
         elif cmd == 'cpp':
             file = 'data/code/'+'source.cpp'
             pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
@@ -471,12 +447,6 @@ async def RuNCoD3(event: events.newmessage.NewMessage.Event):
                     except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**› timeout error !**', Account)
                     else:await pl.send_sudo_msg(event, '› **result:**\n\n`'+code.stdout+'`', Account)
                     finally:os.remove('a.out')
-        elif cmd == 'lua':
-            file = 'data/code/'+'source.lua'
-            pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
-            try:code = subprocess.run(['lua', file], capture_output=True, text=True, timeout=5)
-            except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**› timeout error !**', Account)
-            else:await pl.send_sudo_msg(event, '› **error:**\n\n`'+code.stderr+'`' if code.stderr else '› **result:**\n\n`'+code.stdout+'`', Account)
         elif cmd == 'java':
             file = 'data/code/'+'source.java'
             pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
@@ -491,6 +461,16 @@ async def RuNCoD3(event: events.newmessage.NewMessage.Event):
                     except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**› timeout error !**', Account)
                     else:await pl.send_sudo_msg(event, '› **error:**\n\n`'+code.stderr+'`' if code.stderr else '› **result:**\n\n`'+code.stdout+'`', Account)
                     finally:os.remove('source.class')
+        else:
+            await pl.run_interpreter_code(
+                subprocess.run,
+                {'lua':'data/code/source.lua', 'py3':'data/code/source.py', 'py2':'data/code/source.py', 'php':'data/code/source.php', 'js':'data/code/source.js', 'javascript':'data/code/source.js','node':'data/code/source.js', 'nodejs':'data/code/source.js'}.get(cmd),
+                {'lua':'lua', 'py3':'python3', 'py2':'python2', 'php':'php', 'js':'node', 'javascript':'node', 'node':'node', 'nodejs':'node'}.get(cmd),
+                event.raw_text[event.raw_text.find('\n')+1:],
+                subprocess.TimeoutExpired,
+                event,
+                Account
+            )
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» GeT LyriCZ:
 @Client.on(events.NewMessage(pattern='(L|l)yrics', from_users = sudo))
