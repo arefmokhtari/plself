@@ -137,3 +137,16 @@ def voice_to_str(AudioSegment, file, language = 'fa-IR'):
     os.remove(filename)
     return text
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+async def setup_data(database: dict, key, clir, js, event, panel):
+    if database.get(key, None) != None:
+        database[key] = not database[key]
+        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
+        await panel(event)
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+async def run_interpreter_code(run, file, lang_cmd, code, TimeoutExpired, event, Account):
+    if lang_cmd and file:
+        edit_source_run(code, file)
+        try:code = run([lang_cmd, file], capture_output=True, text=True, timeout=5)
+        except TimeoutExpired: await send_sudo_msg(event, '**› timeout error !**', Account)
+        else:await send_sudo_msg(event, '› **error:**\n\n`'+code.stderr+'`' if code.stderr else '› **result:**\n\n`'+code.stdout+'`', Account)
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
