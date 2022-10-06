@@ -1421,7 +1421,7 @@ async def panel_2(event: events.InlineQuery.Event):
         ),
         (
             Button.inline(f"°› Caption [{'✔️' if database['lock_caption'] else '✖️'}] ›°", data="lock_caption"),
-            Button.inline(f"°› chT CH [{'✔️' if database['gp_Ch'] else '✖️'}] ›°", data="gpchat_ch"),
+            Button.inline(f"°› chT CH [{'✔️' if database['gp_Ch'] else '✖️'}] ›°", data="gp_Ch"),
         ),
         (Button.inline("[ ↻ ]", data="gpl1"),),
         (Button.inline(f"°› BacK ›°", data="bk_panel"),),
@@ -1450,26 +1450,38 @@ async def main_call(event: events.CallbackQuery.Event):
         else : await event.answer('برای تو نیستش.', alert= True)
     elif event.query.user_id in sudo:
         try:
-            if event.data == b"gpl1": 
-                return await panel_1(event)
-            elif event.data == b"gpl2":
-                return await panel_2(event)
-            elif event.data == b"bk_panel":
-                return await pl_main(event)
-            elif event.data == b"exitpl":
+            if event.data == b"exitpl":
                 return await event.edit('**› panel was closed !**')
             elif event.data == b"list_mute_pv":
                 return await event.edit('Muted User in Pv :'+' - '.join(clir.lrange('plMutePVUsEr', 0, -1)),buttons=buttons)
             elif event.data == b"list_mute_gp":
                 return await event.edit('Muted User in GrouP :',clir.hgetall('plMut3UserInPG'),buttons=buttons)
-            elif event.data == b"lock_link" or event.data == b"lock_photo" or event.data == b"lock_stiker" or event.data == b"lock_gif" or event.data == b"lock_tg" or event.data == b"lock_game":
-                return await main_call(event)
-            elif  event.data == b"lock_dsh" or event.data == b"lock_voice" or event.data == b"lock_forward" or event.data == b"lock_video" or event.data == b"lock_via" or event.data == b"lock_music":
-                return await main_call(event)
-            elif  event.data == b"lock_file" or event.data == b"lock_bot" or event.data == b"lock_location" or event.data == b"gpchat_ch" or event.data == b"lock_contact" or event.data == b"lock_caption":
-                return await main_call(event)
-            elif event.data.split()[0] == b"tban" or event.data.split()[0] == b"tunrt": 
-                return await cktabchi(event)
+            else:
+                await pl.switch(event.data,{
+                    b"gpl1":panel_1,
+                    b"gpl2":panel_2,
+                    b"bk_panel":pl_main,
+                    b"lock_link":main_call,
+                    b"lock_photo":main_call,
+                    b"lock_stiker":main_call,
+                    b"lock_gif":main_call,
+                    b"lock_tg":main_call,
+                    b"lock_game":main_call,
+                    b"lock_dsh":main_call,
+                    b"lock_voice":main_call,
+                    b"lock_forward":main_call,
+                    b"lock_video":main_call,
+                    b"lock_via":main_call,
+                    b"lock_music":main_call,
+                    b"lock_file":main_call,
+                    b"lock_bot":main_call,
+                    b"lock_location":main_call,
+                    b"gp_Ch":main_call,
+                    b"lock_contact":main_call,
+                    b"lock_caption":main_call,
+                    b"tban":cktabchi,
+                    b"tunrt":cktabchi,
+                }, pl.empty_async)(event)
         except MessageNotModifiedError as e:
             await event.answer('اهسته تر', alert= True)  
     else:
@@ -1478,170 +1490,26 @@ async def main_call(event: events.CallbackQuery.Event):
     database = clir.hget('plAddGroPSettinGZ', str(event.chat_id))
     if database == None: return
     else: database = js.loads(database)
-    if event.query.user_id in sudo: 
-            try: 
-                if event.data == b"lock_link": 
-                    if database['lock_link']:
-                        database['lock_link'] = False
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_1(event)
-                    else:
-                        database['lock_link'] = True
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_1(event)
-                elif event.data == b"lock_photo":
-                    if database['lock_photo']:
-                        database['lock_photo'] = False
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_1(event)
-                    else:
-                        database['lock_photo'] = True
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_1(event)
-                elif event.data == b"lock_stiker":
-                    if database['lock_stiker']:
-                        database['lock_stiker'] = False
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_1(event)
-                    else:
-                        database['lock_stiker'] = True
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_1(event)
-                elif event.data == b"lock_gif":
-                    if database['lock_gif']:
-                        database['lock_gif'] = False
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_1(event)
-                    else:
-                        database['lock_gif'] = True
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_1(event)
-                elif event.data == b"lock_tg":
-                    if database['lock_tg']:
-                        database['lock_tg'] = False
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        await panel_1(event)
-                    else:
-                        database['lock_tg'] = True
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_1(event)
-                elif event.data == b"lock_game":
-                    if database['lock_game']:
-                        database['lock_game'] = False
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_1(event)
-                    else:
-                        database['lock_game'] = True
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_1(event)
-                elif event.data == b"lock_dsh":
-                    if database['lock_dsh']:
-                        database['lock_dsh'] = False
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_1(event)
-                    else:
-                        database['lock_dsh'] = True
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_1(event)
-                elif event.data == b"lock_voice":
-                    if database['lock_voice']:
-                        database['lock_voice'] = False
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_1(event)
-                    else:
-                        database['lock_voice'] = True
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_1(event)
-                elif event.data == b"lock_forward":
-                    if database['lock_forward']:
-                        database['lock_forward'] = False
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_1(event)
-                    else:
-                        database['lock_forward'] = True
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        await panel_1(event)
-                elif event.data == b"lock_video":
-                    if database['lock_video']:
-                        database['lock_video'] = False
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_1(event)
-                    else:
-                        database['lock_video'] = True
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_1(event)
-                elif event.data == b"lock_via":
-                    if database['lock_via']:
-                        database['lock_via'] = False
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_2(event)
-                    else:
-                        database['lock_via'] = True
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_2(event)
-                elif event.data == b"lock_music":
-                    if database['lock_music']:
-                        database['lock_music'] = False
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_2(event)
-                    else:
-                        database['lock_music'] = True
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_2(event)
-                elif event.data == b"lock_file":
-                    if database['lock_file']:
-                        database['lock_file'] = False
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_2(event)
-                    else:
-                        database['lock_file'] = True
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_2(event)
-                elif event.data == b"lock_bot":
-                    if database['lock_bot']:
-                        database['lock_bot'] = False
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_2(event)
-                    else:
-                        database['lock_bot'] = True
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_2(event)
-                elif event.data == b"lock_location":
-                    if database['lock_location']:
-                        database['lock_location'] = False
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_2(event)
-                    else:
-                        database['lock_location'] = True
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_2(event)
-                elif event.data == b"gpchat_ch":
-                    if database['gp_Ch']:
-                        database['gp_Ch'] = False
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_2(event)
-                    else:
-                        database['gp_Ch'] = True
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_2(event)
-                elif event.data == b"lock_contact":
-                    if database['lock_contact']:
-                        database['lock_contact'] = False
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_2(event)
-                    else:
-                        database['lock_contact'] = True
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_2(event)
-                elif event.data == b"lock_caption":
-                    if database['lock_caption']:
-                        database['lock_caption'] = False
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_2(event)
-                    else:
-                        database['lock_caption'] = True
-                        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-                        return await panel_2(event)   
+    if event.query.user_id in sudo:
+            try:await pl.setup_data(
+                    database, 
+                    key := event.data.decode('utf-8'), 
+                    clir, 
+                    js, 
+                    event,
+                    panel_1 if key in [
+                        "lock_link",
+                        "lock_photo",
+                        "lock_stiker",
+                        "lock_gif",
+                        "lock_tg",
+                        "lock_game",
+                        "lock_dsh",
+                        "lock_voice",
+                        "lock_forward",
+                        "lock_video",
+                    ] else panel_2
+                ) 
             except MessageNotModifiedError as e:
                 await event.answer('اهسته تر',alert= True)  
     else:

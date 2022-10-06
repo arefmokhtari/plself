@@ -137,3 +137,9 @@ def voice_to_str(AudioSegment, file, language = 'fa-IR'):
     os.remove(filename)
     return text
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+async def setup_data(database: dict, key, clir, js, event, panel):
+    if database.get(key, None) != None:
+        database[key] = not database[key]
+        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
+        await panel(event)
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
