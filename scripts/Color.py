@@ -19,6 +19,9 @@ class Color:
     LIGHT_MAGENTA = '\x1b[95m'
     LIGHT_CYAN = '\x1b[96m'
     #
-    BACKGROUND_RED = '\x1b[41m'
-    BACKGROUND_GRAY = '\x1b[100m'
+    BG_RED = '\x1b[41m'
+    BG_GRAY = '\x1b[100m'
+    BG_CYAN = '\x1b[46m'
+    #
+    BOLD = '\x1b[1m'
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #

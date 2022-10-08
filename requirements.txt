@@ -1,6 +1,7 @@
 telethon
-pytgcalls
 redis
+colorlog
+py-tgcalls
 googletrans==3.1.0a0
 captcha
 speedtest-cli

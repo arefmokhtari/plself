@@ -1,7 +1,7 @@
 #                   [   Plague Dr.  ]
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
-from telethon.sync import TelegramClient, events
-from plConfig import botc
+from telethon.sync import TelegramClient
+from plConfig import Conf
 from Color import Color
 from plPlugins import switch
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
@@ -95,11 +95,11 @@ class MyCli(TelegramClient):
 # - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 if __name__ == '__main__':
-    print(f'{Color.BLACK}\n{Color.BACKGROUND_RED}# ------------- [   Plague Dr.  ] ------------- #{Color.RESET}\n'+Color.DARK_GRAY)
+    print(f'{Color.BLACK}\n{Color.BG_RED}# ------------- [   Plague Dr.  ] ------------- #{Color.RESET}\n'+Color.DARK_GRAY)
     session_name = input(f'{Color.CYAN}- enter session name = {Color.RESET}')
-    MyCli(botc.SESSION_DIR+session_name, botc.API_ID, botc.API_HASH)
+    MyCli(Conf.SESSION_DIR+session_name, Conf.API_ID, Conf.API_HASH)
 else:
-    print(f'{Color.BLACK}\n{Color.BACKGROUND_RED}# ------------- [   Plague Dr.  ] ------------- #{Color.RESET}\n'+Color.DARK_GRAY)
+    print(f'{Color.BLACK}\n{Color.BG_RED}# ------------- [   Plague Dr.  ] ------------- #{Color.RESET}\n'+Color.DARK_GRAY)
     print('\n\n- this is a test script to handle some functionality !')
     print('\n- to run, go to "plself" dir and enter cmd: "python3 scripts/manager.py" !')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #

@@ -2,15 +2,15 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 from telethon.sync import TelegramClient
 from telethon.tl.functions.messages import GetMessagesViewsRequest
-from plConfig import botc
+from plConfig import Conf
 from Color import Color
 import os
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-print(f'{Color.BLACK}\n{Color.BACKGROUND_RED}# ------------- [   Plague Dr.  ] ------------- #{Color.RESET}\n') 
-api_id = botc.API_ID
-api_hash = botc.API_HASH
+print(f'{Color.BLACK}\n{Color.BG_RED}# ------------- [   Plague Dr.  ] ------------- #{Color.RESET}\n') 
+api_id = Conf.API_ID
+api_hash = Conf.API_HASH
 print(Color.BLUE,'* '*10,Color.RED)
-for m in os.listdir(botc.SESSION_DIR):
+for m in os.listdir(Conf.SESSION_DIR):
     print(m[:m.rfind('.')])
 print(Color.BLUE,'* '*10,Color.RESET)
 chats = input(Color.GRAY+'- enter sessions = '+Color.RESET).split()
@@ -27,5 +27,5 @@ def main(peer):
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 if __name__ == '__main__':
     for chat in chats:
-        main(botc.SESSION_DIR+chat)
+        main(Conf.SESSION_DIR+chat)
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - #

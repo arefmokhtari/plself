@@ -12,6 +12,7 @@ from telethon.errors.rpcerrorlist import MessageNotModifiedError
 from telethon.utils import pack_bot_file_id
 from googletrans import Translator
 from shazamio import Shazam
+from pytgcalls.exceptions import NoActiveGroupCall, GroupCallNotFound
 import qrcode
 from phonenumbers import geocoder, carrier, parse as FuckingPhone
 from whois import whois
@@ -19,28 +20,35 @@ from pwd import getpwuid
 import scripts as pl
 import os, sys, subprocess
 import json as js
-import random as rand 
+import logging, time
+import random as rand
 from datetime import datetime as dt
-from captcha.image import ImageCaptcha 
-from apscheduler.schedulers.asyncio import AsyncIOScheduler 
+from captcha.image import ImageCaptcha
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import requests as req
 from psutil import Process
 from pydub import AudioSegment
+from scripts.utils.Logger import Logging
 # - - - - - - - - - - - ValueS - - - - - - - - - - - - #
-Account = pl.botc.acc_sudo 
-acc_sudo = pl.botc.main_sudo
-sudo = pl.botc.sudoS
-#phone = '+989360145942'
+Account = pl.Conf.acc_sudo
+acc_sudo = pl.Conf.main_sudo
+sudo = pl.Conf.sudoS
+# phone = '+989360145942'
+pl.check_data_dir()
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
-print(f'{pl.Color.BLACK}\n{pl.Color.BACKGROUND_RED}# ------------- [   Plague Dr.  ] ------------- #{pl.Color.RESET}\n'+pl.Color.DARK_GRAY) 
-bot = TelegramClient(pl.botc.SESSION_DIR+pl.botc.SESSION_API_NAME, pl.botc.API_ID, pl.botc.API_HASH).start(bot_token=pl.botc.BOT_TOKEN)
-clir = pl.bot_redis(pl.botc.REDIS_NUMBER)
-# insta = pl.instaBot(pl.botc.INSTAGRAM[0],pl.botc.INSTAGRAM[1], pl.botc.INSTAGRAM[2], pl.botc.SESSION_DIR[:-1])
-Client = TelegramClient(pl.botc.SESSION_DIR+pl.botc.SESSION_AC_NAME, pl.botc.API_ID, pl.botc.API_HASH)
+logger = Logging("UserBot", logging.DEBUG)
+print(f'{pl.Color.BLACK}\n{pl.Color.BG_RED}# ------------- [   Plague Dr.  ] ------------- #{pl.Color.RESET}\n' + pl.Color.DARK_GRAY)
+bot = TelegramClient(pl.Conf.SESSION_DIR + pl.Conf.SESSION_API_NAME, pl.Conf.API_ID, pl.Conf.API_HASH).start(bot_token=pl.Conf.BOT_TOKEN)
+logger.info("Api Bot is Running...")
+clir = pl.bot_redis(pl.Conf.REDIS_NUMBER)
+logger.info("Redis is Running...")
+# insta = pl.instaBot(pl.Conf.INSTAGRAM[0], pl.Conf.INSTAGRAM[1], pl.Conf.INSTAGRAM[2], pl.Conf.SESSION_DIR[:-1])
+Client = TelegramClient(pl.Conf.SESSION_DIR + pl.Conf.SESSION_AC_NAME, pl.Conf.API_ID, pl.Conf.API_HASH, base_logger=logger)
 Client.start()
+logger.info("UserBot is Running...")
 group_call_factory = pl.VchatCall(Client)
-print(f'\t- connect to {pl.botc.SESSION_AC_NAME} session !')
-print('\t- Client && bot is runing ! go FucKyourSelf && Bye.', pl.Color.RESET)
+print('\t- PlSelf Started successfully!', pl.Color.RESET)
+print(f' {pl.Color.RED}----{pl.Color.RESET}    {pl.Color.BG_CYAN}{pl.Color.BOLD} Connected as {pl.Conf.SESSION_AC_NAME} ! {pl.Color.RESET}    {pl.Color.RED}----{pl.Color.RESET}')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» CheckING MsG SerVic3 In GP:
 @Client.on(events.Raw(types.UpdateNewChannelMessage, func=lambda e:type(e.message) is types.MessageService))
@@ -57,7 +65,7 @@ async def GetMsGServic3InGP(event: events.raw.Raw):
             data = pl.create_rend_name(4) 
             image.generate(data) 
             image.write(data, data+'.jpg')
-            result = await Client.inline_query(pl.botc.BOT_USERNAME, 'CkTabchi '+data+' '+str(event.message.from_id), entity=event.message.peer_id.channel_id)
+            result = await Client.inline_query(pl.Conf.BOT_USERNAME, 'CkTabchi '+data+' '+str(event.message.from_id), entity=event.message.peer_id.channel_id)
             await result[0].click() 
         elif type_message == types.MessageActionChatAddUser:
             for users in event.message.action.users:
@@ -69,7 +77,7 @@ async def GetMsGServic3InGP(event: events.raw.Raw):
                 data = pl.create_rend_name(4) 
                 image.generate(data) 
                 image.write(data, data+'.jpg')
-                result = await Client.inline_query(pl.botc.BOT_USERNAME, 'CkTabchi '+data+' '+str(users), entity=event.message.peer_id.channel_id)
+                result = await Client.inline_query(pl.Conf.BOT_USERNAME, 'CkTabchi '+data+' '+str(users), entity=event.message.peer_id.channel_id)
                 await result[0].click() 
     #if (chat_id in list(clir.hgetall('plAddGroPSettinGZ').keys()) and js.loads(clir.hget('plAddGroPSettinGZ', chat_id))['lock_tg']) and'action' in event.message.to_dict() and type_message is types.MessageActionChatAddUser:
     #    pass
@@ -82,7 +90,7 @@ async def GetMsGServic3InGP(event: events.raw.Raw):
 async def check_massag3(event: events.newmessage.NewMessage.Event or events.messageedited.MessageEdited.Event):
     if event.is_private and event.sender_id != Account[0] and event.media and event.media.ttl_seconds:
         file_name = await event.download_media('data/photos')
-        await Client.send_file(pl.botc.CHANNEL_FOR_FWD, file_name)
+        await Client.send_file(pl.Conf.CHANNEL_FOR_FWD, file_name)
     if event.sender_id in sudo: 
         pass
     elif event.is_group:
@@ -107,23 +115,23 @@ async def check_massag3(event: events.newmessage.NewMessage.Event or events.mess
                 if get_user == None:
                     if clir.get('plForWardSendOrno'):
                         clir.setex('acdontsave:'+sender_id+':pl', 86400, 1)
-                        await Client.forward_messages(pl.botc.CHANNEL_FOR_FWD, event.message)
+                        await Client.forward_messages(pl.Conf.CHANNEL_FOR_FWD, event.message)
                 else:
                     if get_user < 15:
                         if clir.get('plForWardSendOrno'):
                             clir.setex('acdontsave:'+sender_id+':pl', 86400, get_user+1)
-                            await Client.forward_messages(pl.botc.CHANNEL_FOR_FWD, event.message)
+                            await Client.forward_messages(pl.Conf.CHANNEL_FOR_FWD, event.message)
             await event.delete()
         elif sender_id not in clir.lrange('DonTCare2MsG', 0, -1) and not await pl.userisbot(clir, event):
             if get_user == None:
                 if clir.get('plForWardSendOrno'):
                     clir.setex('acdontsave:'+sender_id+':pl', 86400, 1)
-                    await Client.forward_messages(pl.botc.CHANNEL_FOR_FWD, event.message)
+                    await Client.forward_messages(pl.Conf.CHANNEL_FOR_FWD, event.message)
             else:
                 if get_user < 15:
                     if clir.get('plForWardSendOrno'):
                         clir.setex('acdontsave:'+sender_id+':pl', 86400, get_user+1)
-                        await Client.forward_messages(pl.botc.CHANNEL_FOR_FWD, event.message)
+                        await Client.forward_messages(pl.Conf.CHANNEL_FOR_FWD, event.message)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» RMSG MSG:
 @Client.on(events.NewMessage(pattern = '(R|r)msg', from_users = sudo))
@@ -152,7 +160,7 @@ async def InsTA(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event, False)
     if len_cmd == 3 and cmd[0].lower() == 'insta':
         if cmd[1] == 'post': 
-            insta = pl.instaBot(pl.botc.INSTAGRAM[0],pl.botc.INSTAGRAM[1], pl.botc.INSTAGRAM[2], pl.botc.SESSION_DIR[:-1])
+            insta = pl.instaBot(pl.Conf.INSTAGRAM[0],pl.Conf.INSTAGRAM[1], pl.Conf.INSTAGRAM[2], pl.Conf.SESSION_DIR[:-1])
             file_name = await insta.down_post(cmd[2])
             Files = file_name.get('file')
             post = file_name.get('post')
@@ -165,7 +173,7 @@ async def InsTA(event: events.newmessage.NewMessage.Event):
             pl.instaBot.remove_dir('insta')
             del insta
         elif cmd[1] == 'profile':
-            insta = pl.instaBot(pl.botc.INSTAGRAM[0],pl.botc.INSTAGRAM[1], pl.botc.INSTAGRAM[2], pl.botc.SESSION_DIR[:-1])
+            insta = pl.instaBot(pl.Conf.INSTAGRAM[0],pl.Conf.INSTAGRAM[1], pl.Conf.INSTAGRAM[2], pl.Conf.SESSION_DIR[:-1])
             files = await insta.down_profile(cmd[2])
             profile = files.get('profile')
             fucking_file = files.get('file')
@@ -173,7 +181,7 @@ async def InsTA(event: events.newmessage.NewMessage.Event):
             pl.instaBot.remove_dir(profile.username)
             del insta
         elif cmd[1] == 'story':
-            insta = pl.instaBot(pl.botc.INSTAGRAM[0],pl.botc.INSTAGRAM[1], pl.botc.INSTAGRAM[2], pl.botc.SESSION_DIR[:-1])
+            insta = pl.instaBot(pl.Conf.INSTAGRAM[0],pl.Conf.INSTAGRAM[1], pl.Conf.INSTAGRAM[2], pl.Conf.SESSION_DIR[:-1])
             files = await insta.down_story(cmd[2])
             profile = files.get('profile')
             Files = files.get('file')
@@ -261,7 +269,15 @@ async def IdProcessing(event: events.newmessage.NewMessage.Event):
             #if user:
             await pl.send_sudo_msg(event, f'`{user}`', Account)
             #else: await pl.send_sudo_msg(event, f'`{msg.from_id.user_id}`', Account)
-        else: await pl.send_sudo_msg(event, f'`{event.sender_id}`', Account)
+        else: # await pl.send_sudo_msg(event, f'`{event.sender_id}`', Account)
+            mg = event.chat.megagroup
+            await pl.send_sudo_msg(event,
+                                   '**✘ Chat Info**\n\n'
+                                   f'**Chat Id:** `{event.chat_id}`\n'
+                                   f'**Your Id:** `{event.sender_id}`\n'
+                                   f'**Access Hash** `{event.chat.access_hash}`\n'
+                                   f'**Chat Type:** `{"SuperGroup" if mg else "Group" if event.is_group else "Channel"}`'
+                                   , Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» invalid UseR:
 @Client.on(events.NewMessage(pattern = '(I|i)nvite', from_users = sudo))
@@ -284,7 +300,7 @@ async def GetFuckinGNuD3(event: events.newmessage.NewMessage.Event):
         msg = await event.get_reply_message()
         if msg.media:
             file_name = await msg.download_media('data/photos')
-            await Client.send_file(pl.botc.CHANNEL_FOR_FWD, file_name)
+            await Client.send_file(pl.Conf.CHANNEL_FOR_FWD, file_name)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» MusiC ManageR:
 @Client.on(events.NewMessage(pattern='(M|m)usic', from_users=sudo))
@@ -490,27 +506,145 @@ async def GetLyricZ(event: events.newmessage.NewMessage.Event):
     await pl.send_sudo_msg(event, lyr, Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» vchat ManageR:
-@Client.on(events.NewMessage(pattern = '(V|v)chat', from_users = sudo, func=lambda e:e.is_group | e.is_channel))
+
+download_progresses = {}
+
+async def vc_progress(current, total, message, chat_id):
+    if chat_id not in download_progresses.keys():
+        download_progresses[chat_id] = time.time() - 5
+    if time.time() - download_progresses[chat_id] > 5:
+        try:
+            await message.edit(f"**• Downloading:** `{current * 100 / total:.1f}`%")
+        except:
+            pass
+        download_progresses[chat_id] = time.time()
+
+
+@Client.on(events.NewMessage(pattern=f'{pl.Conf.COMMAND_PREFIX}(V|v)c', from_users=sudo,
+                             func=lambda e: e.is_group | e.is_channel))
 async def GrouPCalLMain(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event)
-    if len_cmd == 2 and cmd[0] == 'vchat':
-        if cmd[1] == 'create':
-            try:await Client(CreateGroupCallRequest(event.chat_id))
-            except errors.rpcbaseerrors.BadRequestError:await pl.send_sudo_msg(event, '**› voice chat ending, please request again !**', Account)
-            else:await pl.send_sudo_msg(event, '**› voice chat was created !**', Account)
+    if len_cmd == 1:
+        await pl.send_sudo_msg(event,
+                               f'**Command :** `{pl.Conf.COMMAND_PREFIX}vc`\n\n**✘  Intro :** `Manage voice chat in group.`\n\n**✘  Usage :** \n\t`{pl.Conf.COMMAND_PREFIX}vc start`\n\t`{pl.Conf.COMMAND_PREFIX}vc stop`\n\t`{pl.Conf.COMMAND_PREFIX}vc join`\n\t`{pl.Conf.COMMAND_PREFIX}vc play <reply to audio>`\n\t`{pl.Conf.COMMAND_PREFIX}vc radio`',
+                               Account)
+        return
+
+    if len_cmd == 2:
+        if cmd[1] == 'start':
+            try:
+                await Client(CreateGroupCallRequest(event.chat_id))
+            except errors.rpcbaseerrors.BadRequestError as e:
+                print(e)
+                await pl.send_sudo_msg(event, '**• voice chat ending, please request again !**', Account)
+            else:
+                await pl.send_sudo_msg(event, '**• voice chat was created !**', Account)
         elif cmd[1] == 'join':
             chat = await event.get_chat()
-            await Client(JoinGroupCallRequest(types.InputGroupCall(chat.id, chat.access_hash), await Client.get_entity('me'), params=types.DataJSON(data=js.dumps('{"enable_vp8_encoder":true}'))))
+            await Client(
+                JoinGroupCallRequest(types.InputGroupCall(int(chat.id), int(chat.access_hash)),
+                                     await Client.get_entity('me'),
+                                     params=types.DataJSON(data=js.dumps('{"enable_vp8_encoder":true}'))))
         elif cmd[1] == 'play' and event.is_reply:
+
             msg = await event.get_reply_message()
             if type(msg.media) is types.MessageMediaDocument and msg.media.document and msg.media.document.attributes:
-                msg4show = await pl.send_sudo_msg(event, '**› wait !**', Account)
-                filename = await msg.download_media()
-                await group_call_factory.start_voice_chat(event,msg4show, file_name=filename)
+                if event.chat.call_active:
+                    msg4show = await pl.send_sudo_msg(event, '**• wait !**', Account)
+                    filename = await Client.download_media(msg,
+                                                           progress_callback=lambda c, t: vc_progress(c, t, msg4show,
+                                                                                                      event.chat_id))
+                    try:
+                        await group_call_factory.vc_play_local(event, filename, msg4show)
+                        del download_progresses[event.chat_id]
+                        return
+                    except NoActiveGroupCall:
+                        pass
+
+                await pl.send_sudo_msg(event,
+                                       '**• voice chat not found !\n\nstart voice chat using command "`.vc start`"**',
+                                       Account)
+
         elif cmd[1] == 'stop':
-            if group_call_factory.is_played():
-                await group_call_factory.stop_voice_chat()
-                await pl.send_sudo_msg(event, '**› done !**', Account)
+            msg4show = await pl.send_sudo_msg(event, '**• Wait...**', Account)
+            await group_call_factory.vc_stop(event.chat_id)
+            if event.chat.call_active:
+                try:
+                    await group_call_factory.vchat.leave_group_call(event.chat_id)
+                except:
+                    pass
+            await msg4show.edit('**• Voice Chat stopped successfully**')
+
+        elif cmd[1] == 'radio':
+            result = await Client.inline_query(pl.Conf.BOT_USERNAME, 'radiopanel', entity=event.chat_id)
+            await result[0].click()
+            try:
+                await event.delete()
+            except:
+                pass
+
+        elif cmd[1] == 'pause':
+            if event.chat.call_active:
+                vcall = await group_call_factory.vchat.get_call(event.chat_id)
+                if vcall.is_playing:
+                    await group_call_factory.vchat.pause_stream(event.chat_id)
+                    await pl.send_sudo_msg(event, '**• The stream has been successfully paused**', Account)
+                else:
+                    await pl.send_sudo_msg(event, '**• There is no audio playing !**', Account)
+            else:
+                await pl.send_sudo_msg(event,
+                                       '**• voice chat not found !\n\nstart voice chat using command "`.vc start`"**',
+                                       Account)
+
+        elif cmd[1] == 'resume':
+            if event.chat.call_active:
+                vcall = await group_call_factory.vchat.get_call(event.chat_id)
+                if vcall.is_playing:
+                    await pl.send_sudo_msg(event, '**• Stream already playing!**', Account)
+                else:
+                    await group_call_factory.vchat.resume_stream(event.chat_id)
+                    await pl.send_sudo_msg(event, '**• The stream has been successfully resumed**', Account)
+            else:
+                await pl.send_sudo_msg(event,
+                                       '**• voice chat not found !\n\nstart voice chat using command "`.vc start`"**',
+                                       Account)
+
+
+@bot.on(events.InlineQuery(pattern="radiopanel", users=Account))
+async def radioPanel(event: events.InlineQuery.Event):
+    builder = event.builder
+    result = builder.article(
+        title="Radio Panel",
+        text="**Welcome to Radio Panel**\n\nChoose from the following options:\n\n‌",
+        buttons=[
+            [Button.inline("Radio Stations 🎙", data="radio.stations")],
+            [Button.inline("Radio Settings ⚙️", data="radio.settings")],
+            [Button.inline("Close", data="radio.close")],
+        ],
+        description="Radio Panel",
+    )
+    await event.answer([result])
+
+
+@bot.on(events.InlineQuery(pattern="radio.stream.load.", users=Account))
+async def radioStreamLoad(event: events.InlineQuery.Event):
+    builder = event.builder
+    query = event.text[18:]
+
+    _stream_title = pl.get_playing_stream_title(query)
+    result = builder.article(
+        title="Radio Stream",
+        text=f'**• [Radio]({query}) started !**\n\n'
+             f'**Currently playing**: __{_stream_title}__',
+        buttons=[
+            [Button.inline("Stop", data="radio.stream.stop")],
+            [Button.inline("Close", data="radio.close")],
+        ],
+        description="Radio Stream",
+    )
+    await event.answer([result])
+
+
 '''
 @Client.on(events.NewMessage(pattern = '(V|v)chat', from_users = sudo))
 async def GrouPCalLMain(event: events.newmessage.NewMessage.Event):
@@ -609,7 +743,7 @@ async def GetProxY(event: events.newmessage.NewMessage.Event):
 async def CheCKDIU(event):
     cmd, len_cmd = pl.get_cmds(event)
     if len_cmd >= 3 and cmd[0] == 'check':
-        if cmd[1] == 'username':
+        if False: #cmd[1] == 'username': # need to check ... later !
             try:check = f'› **Checking Username** `{cmd[2]}` **On Social Media:**\n'+'            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n'+'\n'.join(['⌬ '+i+' = '+v['stats']+ f'{"[✔️]" if v["link"] else "[✖️]"}' for i, v in req.get('https://www.wirexteam.ga/checker?username='+cmd[2], timeout=10).json()['checker'].items()])
             except: check = '› **error !**'
             finally: await pl.send_sudo_msg(event, check, Account)
@@ -684,7 +818,7 @@ async def joinchat(event: events.newmessage.NewMessage.Event):
 async def SeYInFO(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event)
     if event.raw_text.lower() == 'info': 
-        await pl.send_sudo_msg(event, f'› **info plSelf** `v.{pl.botc.version}` :\n\n› **sudos :** `{len(sudo)}`\n› **PV user :** `{len(clir.lrange("plAcUserInPV",0 ,-1))}`\n› **user :** `{getpwuid(os.getuid())[0]}`\n› **used RAM:** `{int(((Process(os.getpid()).memory_full_info().rss)/1024)/1024)}MB`\n› **python3 version :** `{sys.version.split()[0]}`\n› **telethon version :** `{tver}`\n', Account)
+        await pl.send_sudo_msg(event, f'› **info plSelf** `v.{pl.Conf.version}` :\n\n› **sudos :** `{len(sudo)}`\n› **PV user :** `{len(clir.lrange("plAcUserInPV",0 ,-1))}`\n› **user :** `{getpwuid(os.getuid())[0]}`\n› **used RAM:** `{int(((Process(os.getpid()).memory_full_info().rss)/1024)/1024)}MB`\n› **python3 version :** `{sys.version.split()[0]}`\n› **telethon version :** `{tver}`\n', Account)
     elif len_cmd > 1 and cmd[0] == 'info' and cmd[1] == 'pv':
         c = pl.Counter()
         await pl.send_sudo_msg(event, '› **user in pv:**\n\n'+'\n'.join(map(lambda s:f'{c.get_num()} - [{s}](tg://user?id={s})', clir.lrange('plAcUserInPV',0 ,-1))), Account)
@@ -743,7 +877,7 @@ async def SenDFuCKinGFilE(event: events.newmessage.NewMessage.Event):
             if file_name not in clir.hgetall('plFuCKInGFilESaVE').keys():
                 msg = await event.get_reply_message()
                 if msg.media:
-                    await Client.send_file(pl.botc.BOT_USERNAME, msg.media, caption=f'kosfile {file_name}')
+                    await Client.send_file(pl.Conf.BOT_USERNAME, msg.media, caption=f'kosfile {file_name}')
                     #clir.hset('plFuCKInGFilESaVE', file_name, pack_bot_file_id(msg.media))
                     await pl.send_sudo_msg(event, f'› **done, voice name to call :** `{file_name}`', Account)
             else:
@@ -766,10 +900,10 @@ async def SenDFuCKinGFilE(event: events.newmessage.NewMessage.Event):
                     reply_to = event.reply_to.reply_to_msg_id
                 elif event.sender_id not in Account:
                     reply_to = event.id
-                await Client.send_message(pl.botc.BOT_USERNAME, f'kosfile {file_name} {event.chat_id} {reply_to}')
+                await Client.send_message(pl.Conf.BOT_USERNAME, f'kosfile {file_name} {event.chat_id} {reply_to}')
                 if event.sender_id in Account:
                     await event.delete()
-@Client.on(events.NewMessage(pattern = 'kosnanatmary', from_users=pl.botc.BOT_USERNAME)) # good pattern 
+@Client.on(events.NewMessage(pattern = 'kosnanatmary', from_users=pl.Conf.BOT_USERNAME)) # good pattern 
 async def KosNaNatMary(event: events.newmessage.NewMessage.Event):
     if event.media:
         cmd = event.raw_text.split()
@@ -1259,7 +1393,7 @@ async def RemGrouP(event: events.newmessage.NewMessage.Event):
 #   -» BoT H3lp:
 @Client.on(events.NewMessage(pattern = '(H|h)elp', from_users = sudo, func=lambda e:e.raw_text.lower() == 'help'))
 async def SendHelP(event: events.newmessage.NewMessage.Event):
-    await pl.send_sudo_msg(event, pl.botc.STR_HELP_BOT, Account)
+    await pl.send_sudo_msg(event, pl.Conf.STR_HELP_BOT, Account)
     '''
     try: 
         if event.sender_id in Account: 
@@ -1279,11 +1413,11 @@ async def PANELAPI(event: events.newmessage.NewMessage.Event):
         if str(event.chat_id) in clir.hgetall('plAddGroPSettinGZ'):
             try: 
                 if event.sender_id in Account: 
-                    result = await Client.inline_query(pl.botc.BOT_USERNAME, 'panel', entity=event.chat_id)
+                    result = await Client.inline_query(pl.Conf.BOT_USERNAME, 'panel', entity=event.chat_id)
                     await result[0].click()
                     await event.delete()
                 else:
-                    result = await Client.inline_query(pl.botc.BOT_USERNAME, 'panel', entity=event.chat_id)
+                    result = await Client.inline_query(pl.Conf.BOT_USERNAME, 'panel', entity=event.chat_id)
                     await result[0].click(reply_to=event.id)
             except Exception as e:
                 await pl.send_sudo_msg(event, f'› **error :** {e}', Account)
@@ -1436,6 +1570,43 @@ async def main_call(event: events.CallbackQuery.Event):
                 return await event.edit('Muted User in Pv :'+' - '.join(clir.lrange('plMutePVUsEr', 0, -1)),buttons=buttons)
             elif event.data == b"list_mute_gp":
                 return await event.edit('Muted User in GrouP :',clir.hgetall('plMut3UserInPG'),buttons=buttons)
+            elif event.data == b"radio.stations":
+                return await radio_stations(event)
+            elif event.data.startswith(b"radio.play."):
+                station = event.data.decode()[11:]
+                stations = pl.Conf.RADIO_STATIONS
+                await event.edit(f"**✘ Loading** \n`{station}`")
+                await group_call_factory.vc_play_live_audio(event, stations[station], Client)
+                text = f'<b>✘ Radio started !</b>\n• <u>{station}</u>\n\n'
+                await event.edit(text,
+                                 buttons=[
+                                     [Button.inline("Stop", data="radio.stream.stop")],
+                                     [Button.inline("Close", data="radio.close")],
+                                 ], parse_mode="html")
+                _stream_title = pl.get_playing_stream_title(stations[station])
+                text = text + \
+                       f'<b>• Currently playing</b>:\n\t <i>{_stream_title}</i>'
+                await event.edit(text,
+                                 buttons=[
+                                     [Button.inline("Stop", data="radio.stream.stop")],
+                                     [Button.inline("Close", data="radio.close")],
+                                 ], parse_mode="html")
+
+            elif event.data == b"radio.stream.stop":
+                await group_call_factory.vc_stop(event.chat_id)
+                await event.edit("• Radio Stream Stopped •",
+                                 buttons=[(Button.inline("°• [ BacK ] •°", data="radio.menu.main"))])
+            elif event.data == b"radio.close":
+                await event.answer("• Radio Panel Closed •")
+                await Client.delete_messages(event.chat_id, event.message_id)
+
+            elif event.data == b"radio.menu.main":
+                await event.edit("**Welcome to Radio Panel**\n\nChoose from the following options:\n\n‌",
+                                 buttons=[
+                                     [Button.inline("Radio Stations 🎙", data="radio.stations")],
+                                     [Button.inline("Radio Settings ⚙️", data="radio.settings")],
+                                     [Button.inline("Close", data="radio.close")],
+                                 ])
             else:
                 await pl.switch(event.data,{
                     b"gpl1":panel_1,
@@ -1494,6 +1665,16 @@ async def main_call(event: events.CallbackQuery.Event):
                 await event.answer('اهسته تر',alert= True)  
     else:
          await event.answer('-You do not have this access!') 
+
+async def radio_stations(event: events.CallbackQuery.Event):
+    stations = pl.Conf.RADIO_STATIONS
+    buttons = []
+    for station in stations.keys():
+        buttons.append([Button.inline(station, data=f"radio.play.{station}")])
+
+    await event.edit("**✘ Radio Stations**\n\n‌", buttons=buttons)
+
+
 async def cktabchi(event: events.CallbackQuery.Event): 
     if str(event.chat_id) in clir.hgetall('AnTITABCiE').keys():
         database = js.loads(clir.hget('AnTITABCiE', str(event.chat_id)))
