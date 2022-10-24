@@ -123,7 +123,7 @@ BOT_GROUP_DATABASE = {
 }
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 async def empty_async(event):
-    pass
+    return True
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 def voice_to_str(AudioSegment, file, language = 'fa-IR'):
     voice = AudioSegment.from_ogg(file)

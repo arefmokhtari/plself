@@ -26,7 +26,7 @@ from datetime import datetime as dt
 from captcha.image import ImageCaptcha
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import requests as req
-from psutil import Process
+import psutil
 from pydub import AudioSegment
 from scripts.utils.Logger import Logging
 # - - - - - - - - - - - ValueS - - - - - - - - - - - - #
@@ -92,10 +92,10 @@ async def check_massag3(event: events.newmessage.NewMessage.Event or events.mess
         file_name = await event.download_media('data/photos')
         await Client.send_file(pl.Conf.CHANNEL_FOR_FWD, file_name)
     if event.sender_id in sudo:
-        if (type_event := type(event)) is events.newmessage.NewMessage.Event or (type_event is events.messageedited.MessageEdited.Event and not event.reactions):
+        if event.raw_text and ((type_event := type(event)) is events.newmessage.NewMessage.Event or (type_event is events.messageedited.MessageEdited.Event and not event.reactions)):
             cmd, _ = pl.get_cmds(event)
             if event.sender_id in acc_sudo:
-                await pl.switch(cmd[0], {
+                if await pl.switch(cmd[0], {
                     'wow': GetFuckinGNuD3,
                     'reload': RestartProGraM,
                     'acdontsave': DonTSaveMsgInChannel,
@@ -105,42 +105,43 @@ async def check_massag3(event: events.newmessage.NewMessage.Event or events.mess
                     'file': SenDFuCKinGFilE,
                     'left': leftchat,
                     'set': SetManageR,
+                    'turn': TurNFuckinGOff,
+                }, pl.empty_async)(event):
+                    await pl.switch(cmd[0], {
+                        'rmsg': RMSG_CMD,
+                        'insta': InsTA,
+                        'cal': GeTCal,
+                        'id': IdProcessing,
+                        'invite': FuckinGInvalidUseR,
+                        'music': FinDManageR,
+                        'antitabchi': SeTAntITabCHI,
+                        'base': ReBaSE,
+                        'morse': ReMorsE,
+                        'code': RuNCoD3,
+                        'lyrics': GetLyricZ,
+                        'vc': GrouPCalLMain,
+                        'qrcode': QrCoD3,
+                        'coin': SetCoiNManaGeR,
+                        'check': CheCKDIU,
+                        'time': SeYTime,
+                        'tr': TranslatE,
+                        'del': DeleteMessag3,
+                        'mute': MuteAllGP,
+                        'unmute': UnMuteAllGP,
+                        'ban': BaNnedUserInGP,
+                        'unban': BaNnedUserInGP,
+                        'pin': PINMessaG3,
+                        'unpin': UnPINMessaG3,
+                        'speedtest': SpeeDTesT,
+                        'ping': PING,
+                        'game': SendFGam3,
+                        'block': ThBlockEdUseR,
+                        'unblock': ThUnBlockEdUseR,
+                        'add': AddGrouP,
+                        'rem': RemGrouP,
+                        'help': SendHelP,
+                        'panel': PANELAPI,
                     }, pl.empty_async)(event)
-            await pl.switch(cmd[0], {
-                'rmsg': RMSG_CMD,
-                'insta': InsTA,
-                'cal': GeTCal,
-                'id': IdProcessing,
-                'invite': FuckinGInvalidUseR,
-                'music': FinDManageR,
-                'antitabchi': SeTAntITabCHI,
-                'base': ReBaSE,
-                'morse': ReMorsE,
-                'code': RuNCoD3,
-                'lyrics': GetLyricZ,
-                'vc': GrouPCalLMain,
-                'qrcode': QrCoD3,
-                'coin': SetCoiNManaGeR,
-                'check': CheCKDIU,
-                'time': SeYTime,
-                'tr': TranslatE,
-                'del': DeleteMessag3,
-                'mute': MuteAllGP,
-                'unmute': UnMuteAllGP,
-                'ban': BaNnedUserInGP,
-                'unban': BaNnedUserInGP,
-                'pin': PINMessaG3,
-                'unpin': UnPINMessaG3,
-                'speedtest': SpeeDTesT,
-                'ping': PING,
-                'game': SendFGam3,
-                'block': ThBlockEdUseR,
-                'unblock': ThUnBlockEdUseR,
-                'add': AddGrouP,
-                'rem': RemGrouP,
-                'help': SendHelP,
-                'panel': PANELAPI,
-            }, pl.empty_async)(event)
     elif event.is_group:
         chat_id = str(event.chat_id)
         usr = str(event.sender_id)
@@ -825,7 +826,7 @@ async def joinchat(event: events.newmessage.NewMessage.Event):
 async def SeYInFO(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event)
     if event.raw_text.lower() == 'info': 
-        await pl.send_sudo_msg(event, f'› **info plSelf** `v.{pl.Conf.version}` :\n\n› **sudos :** `{len(sudo)}`\n› **PV user :** `{len(clir.lrange("plAcUserInPV",0 ,-1))}`\n› **user :** `{getpwuid(os.getuid())[0]}`\n› **used RAM:** `{int(((Process(os.getpid()).memory_full_info().rss)/1024)/1024)}MB`\n› **python3 version :** `{sys.version.split()[0]}`\n› **telethon version :** `{tver}`\n', Account)
+        await pl.send_sudo_msg(event, f'› **info plSelf** `v.{pl.Conf.version}` :\n\n› **sudos :** `{len(sudo)}`\n› **PV user :** `{len(clir.lrange("plAcUserInPV",0 ,-1))}`\n› **user :** `{getpwuid(os.getuid())[0]}`\n› **used RAM:** `{int(((psutil.Process(os.getpid()).memory_full_info().rss)/1024)/1024)}/{"%.3f"%(((psutil.virtual_memory().total)/1024)/1024)}MB`\n› **process:** `{os.getpid()}` **-** `{os.getppid()}`\n› **python3 version :** `{sys.version.split()[0]}`\n› **telethon version :** `{tver}`\n› **os:** `{subprocess.check_output(["lsb_release","-is"]).decode("utf-8").lower()}`', Account)
     elif len_cmd > 1 and cmd[0] == 'info' and cmd[1] == 'pv':
         c = pl.Counter()
         await pl.send_sudo_msg(event, '› **user in pv:**\n\n'+'\n'.join(map(lambda s:f'{c.get_num()} - [{s}](tg://user?id={s})', clir.lrange('plAcUserInPV',0 ,-1))), Account)
@@ -1302,12 +1303,10 @@ async def ThUnBlockEdUseR(event: events.newmessage.NewMessage.Event):
             await event.edit(f'› **user** `{msg.peer_id.user_id}` **has been unblocked !**')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» There is nothing to say here:
-'''
+
 async def TurNFuckinGOff(event: events.newmessage.NewMessage.Event):
     await event.edit('› **bot went offline !**') if event.sender_id in Account else await event.reply('› **bot went offline !**')
-    await bot.disconnect()
-    await Client.disconnect()
-    #insta.close()'''
+    os.system(f'kill {os.getppid()}')
 # - - - - - Anti-spam settings in the group - - - - -  #
 #   -» Add GrouP 2 ReDis:
 async def AddGrouP(event: events.newmessage.NewMessage.Event):
