@@ -1,4 +1,3 @@
-*lastest out of version 1.0, now version 0.7 !*
 
 # ** plSelF - [ plague Dr .] **
 
