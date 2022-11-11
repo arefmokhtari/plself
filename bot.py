@@ -94,7 +94,7 @@ async def check_massag3(event: events.newmessage.NewMessage.Event or events.mess
     if event.sender_id in sudo:
         if event.raw_text and ((type_event := type(event)) is events.newmessage.NewMessage.Event or (type_event is events.messageedited.MessageEdited.Event and not event.reactions)):
             cmd, _ = pl.get_cmds(event)
-            if event.sender_id in acc_sudo and await pl.switch(cmd[0], {
+            if event.sender_id in acc_sudo and not await pl.switch(cmd[0], {
                 'wow': GetFuckinGNuD3,
                 'reload': RestartProGraM,
                 'acdontsave': DonTSaveMsgInChannel,
