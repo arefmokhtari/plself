@@ -1,7 +1,7 @@
 #                   [   Plague Dr.  ]
 # - - - - - - - - - - -LIBRarYS- - - - - - - - - - - - #
 from telethon import TelegramClient, events, Button, types, __version__ as tver, errors
-from telethon.tl.functions.messages import ImportChatInviteRequest, CheckChatInviteRequest, HideChatJoinRequestRequest
+from telethon.tl.functions.messages import ImportChatInviteRequest, CheckChatInviteRequest # , HideChatJoinRequestRequest
 from telethon.tl.functions.channels import JoinChannelRequest, LeaveChannelRequest, EditBannedRequest, InviteToChannelRequest, EditPhotoRequest
 from telethon.tl.functions.contacts import BlockRequest, UnblockRequest
 from telethon.tl.types import InputPeerChannel, InputPeerUser, ChatBannedRights
@@ -12,7 +12,7 @@ from telethon.errors.rpcerrorlist import MessageNotModifiedError
 from telethon.utils import pack_bot_file_id
 from googletrans import Translator
 from shazamio import Shazam
-from pytgcalls.exceptions import NoActiveGroupCall, GroupCallNotFound
+from pytgcalls.exceptions import NoActiveGroupCall
 import qrcode
 from phonenumbers import geocoder, carrier, parse as FuckingPhone
 from whois import whois
@@ -37,7 +37,7 @@ sudo = pl.Conf.sudoS
 pl.check_data_dir()
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 logger = Logging("UserBot", logging.DEBUG)
-print(f'{pl.Color.BLACK}\n{pl.Color.BG_RED}# ------------- [   Plague Dr.  ] ------------- #{pl.Color.RESET}\n' + pl.Color.DARK_GRAY)
+print(f'{pl.Color.BLACK}\n{pl.Color.BG_RED}\t# {" [   Plague Dr.  ] ":-^46} #{pl.Color.RESET}\n')
 bot = TelegramClient(pl.Conf.SESSION_DIR + pl.Conf.SESSION_API_NAME, pl.Conf.API_ID, pl.Conf.API_HASH).start(bot_token=pl.Conf.BOT_TOKEN)
 logger.info("Api Bot is Running...")
 clir = pl.bot_redis(pl.Conf.REDIS_NUMBER)
@@ -51,38 +51,42 @@ print('\t- PlSelf Started successfully!', pl.Color.RESET)
 print(f' {pl.Color.RED}----{pl.Color.RESET}    {pl.Color.BG_CYAN}{pl.Color.BOLD} Connected as {pl.Conf.SESSION_AC_NAME} ! {pl.Color.RESET}    {pl.Color.RED}----{pl.Color.RESET}')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» CheckING MsG SerVic3 In GP:
-@Client.on(events.Raw(types.UpdateNewChannelMessage, func=lambda e:type(e.message) is types.MessageService))
-async def GetMsGServic3InGP(event: events.raw.Raw):
-    chat_id = '-100'+str(event.message.peer_id.channel_id)
-    type_message = type(event.message.action)
-    if chat_id in clir.hgetall('AnTITABCiE').keys():
+@Client.on(events.ChatAction())
+async def GetMsGServic3InGP(event: events.chataction.ChatAction.Event):
+    chat_id, user_id = event.action_message.peer_id.channel_id, event.action_message.from_id.user_id
+    chat_id_str = '-100'+str(chat_id)
+    type_message = type(event.action_message.action)
+    
+    if chat_id_str in clir.lrange('plMuteAllGP', 0, -1) or (chat_id_str in list(clir.hgetall('plAddGroPSettinGZ').keys()) \
+        and js.loads(clir.hget('plAddGroPSettinGZ', chat_id_str))['service']):
+        await Client.delete_messages(chat_id, event.action_message.id)
+    
+    if chat_id_str in clir.hgetall('AnTITABCiE').keys():
         if type_message == types.MessageActionChatJoinedByLink:
-            await Client.edit_permissions(event.message.peer_id.channel_id, event.message.from_id, 
+            await Client.edit_permissions(chat_id, user_id, 
                 view_messages = True,
                 send_messages = False,
             )
             image = ImageCaptcha(width = 180, height = 90)
             data = pl.create_rend_name(4) 
             image.generate(data) 
-            image.write(data, data+'.jpg')
-            result = await Client.inline_query(pl.Conf.BOT_USERNAME, 'CkTabchi '+data+' '+str(event.message.from_id), entity=event.message.peer_id.channel_id)
+            image.write(data, data+'.png')
+            result = await Client.inline_query(pl.Conf.BOT_USERNAME, f'CkTabchi {data} {user_id}', entity=chat_id)
             await result[0].click() 
         elif type_message == types.MessageActionChatAddUser:
-            for users in event.message.action.users:
-                await Client.edit_permissions(event.message.peer_id.channel_id, users, 
+            for users in event.action_message.action.users:
+                await Client.edit_permissions(chat_id, users, 
                 view_messages = True,
                 send_messages = False,
                 )
                 image = ImageCaptcha(width = 180, height = 90)
                 data = pl.create_rend_name(4) 
                 image.generate(data) 
-                image.write(data, data+'.jpg')
-                result = await Client.inline_query(pl.Conf.BOT_USERNAME, 'CkTabchi '+data+' '+str(users), entity=event.message.peer_id.channel_id)
+                image.write(data, data+'.png')
+                result = await Client.inline_query(pl.Conf.BOT_USERNAME, f'CkTabchi {data} {users}', entity=chat_id)
                 await result[0].click() 
-    #if (chat_id in list(clir.hgetall('plAddGroPSettinGZ').keys()) and js.loads(clir.hget('plAddGroPSettinGZ', chat_id))['lock_tg']) and'action' in event.message.to_dict() and type_message is types.MessageActionChatAddUser:
+    #if (chat_id in list(clir.hgetall('plAddGroPSettinGZ').keys()) and js.loads(clir.hget('plAddGroPSettinGZ', chat_id))['service']) and'action' in event.message.to_dict() and type_message is types.MessageActionChatAddUser:
     #    pass
-    if chat_id in clir.lrange('plMuteAllGP', 0, -1) or (chat_id in list(clir.hgetall('plAddGroPSettinGZ').keys()) and js.loads(clir.hget('plAddGroPSettinGZ', chat_id))['lock_tg']):
-        await Client.delete_messages(event.message.peer_id.channel_id, event.message.id)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» CheckING ALL Message:
 @Client.on(events.MessageEdited())
@@ -141,6 +145,8 @@ async def check_massag3(event: events.newmessage.NewMessage.Event or events.mess
                     'rem': RemGrouP,
                     'help': SendHelP,
                     'panel': PANELAPI,
+                    'lock': LockGpManager,
+                    'unlock': LockGpManager,
                 }, pl.empty_async)(event)
     elif event.is_group:
         chat_id = str(event.chat_id)
@@ -149,13 +155,13 @@ async def check_massag3(event: events.newmessage.NewMessage.Event or events.mess
             await event.delete()
         elif chat_id in clir.hgetall('plAddGroPSettinGZ').keys():
             database = js.loads(clir.hget('plAddGroPSettinGZ', chat_id))
-            if database['lock_link'] and pl.check_msg_link(event.raw_text):
+            if database['link'] and pl.check_msg_link(event.raw_text):
                 await event.delete()
-            elif  database['lock_forward'] and event.fwd_from:
+            elif  database['forward'] and event.fwd_from:
                 await event.delete()
-            elif database['gp_Ch'] and event.sender_id and event.sender_id < 0:
+            elif database['unknown'] and event.sender_id and event.sender_id < 0:
                 await event.delete()
-            elif  database['lock_bot']:pass # not idea 4 this ...
+            elif  database['bot']:pass # not idea 4 this ...
     elif event.is_private:
         sender_id = str(event.sender_id)
         get_user = None if clir.get('acdontsave:'+sender_id+':pl') == None else int(clir.get('acdontsave:'+sender_id+':pl'))
@@ -951,6 +957,30 @@ async def leftchat(event: events.newmessage.NewMessage.Event):
             await pl.send_sudo_msg(event, '› **done, i lefted.**', Account)
         except Exception as er: await pl.send_sudo_msg(event, f'**› error: {er}**', Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+#   -» 2 Lock && UnLock ManageR:
+async def LockGpManager(event: events.newmessage.NewMessage.Event):
+    cmd, len_cmd = pl.get_cmds(event)
+    if len_cmd > 1:
+        database = clir.hget('plAddGroPSettinGZ', str(event.chat_id))
+        if database:
+            database = js.loads(database)
+            if cmd[1] == 'settings':
+                await pl.send_sudo_msg(event, '\n'.join(map(lambda k: f'**›** `{k[0]}` **=> [{"✔️" if k[1] else "✖️"}]**', database.items())), Account)
+            elif cmd[0] == 'lock':
+                if (key := database.get(cmd[1], None)) != None:
+                    if key:
+                        await pl.send_sudo_msg(event, f'**› {cmd[1]} is already locked !**', Account)
+                    else:
+                        await pl.setup_data(database, cmd[1], clir,js, event,pl.empty_async)
+                        await pl.send_sudo_msg(event, f'**› done, {cmd[1]} was locked !**', Account)
+            else:
+                if (key := database.get(cmd[1], None)) != None:
+                    if key:
+                        await pl.setup_data(database, cmd[1], clir, js, event, pl.empty_async)
+                        await pl.send_sudo_msg(event, f'**› done, {cmd[1]} is unlocked !**', Account)
+                    else:
+                        await pl.send_sudo_msg(event, f'**› {cmd[1]} is already unlocked !**', Account)
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» 2 Delet# a messag3 from SUDO:
 async def DeleteMessag3(event: events.newmessage.NewMessage.Event): # 0110100100100000011011000110111101110110011001010010000001101000011001010111001000100000011000100111010101110100001000000110100100100000011010000110000101110110011001010010000001110100011011110010000001100110011011110111001001100111011001010111010000100000011010000110010101110010
     if event.is_reply and event.raw_text.lower() == 'del':await Client.delete_messages(event.chat_id, event.reply_to.reply_to_msg_id);await event.delete()
@@ -1303,7 +1333,6 @@ async def ThUnBlockEdUseR(event: events.newmessage.NewMessage.Event):
             await event.edit(f'› **user** `{msg.peer_id.user_id}` **has been unblocked !**')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» There is nothing to say here:
-
 async def TurNFuckinGOff(event: events.newmessage.NewMessage.Event):
     await event.edit('› **bot went offline !**') if event.sender_id in Account else await event.reply('› **bot went offline !**')
     os.system(f'kill {os.getppid()}')
@@ -1383,9 +1412,9 @@ async def ChTabchi(event: events.InlineQuery.Event): # 'ChTabchi '+data+' '+str(
                 Button.inline('°› UnResT ›°', data='tunrt'+user),
             ),]
         builder = event.builder
-        result = await builder.photo(pic_name+'.jpg',text=f'با سلام [کاربر](tg://user?id={user}) گرامی:\nلطفا کد کپچای درست را انتخاب کنید.', buttons=buttons)
+        result = await builder.photo(pic_name+'.png',text=f'با سلام [کاربر](tg://user?id={user}) گرامی:\nلطفا کد کپچای درست را انتخاب کنید.', buttons=buttons)
         await event.answer([result])
-        os.remove(pic_name+'.jpg')
+        os.remove(pic_name+'.png')
 #   -»
 '''@bot.on(events.InlineQuery(pattern='fuckinghelp', users=Account))
 async def SenDFucKinGHelP(event: events.InlineQuery.Event):
@@ -1425,24 +1454,24 @@ async def panel_1(event: events.InlineQuery.Event):
     else:database = js.loads(database)
     buttons = [
         (
-            Button.inline(f"°› Link [{'✔️' if database['lock_link'] else '✖️'}] ›°", data="lock_link"),
-            Button.inline(f"°› Photo [{'✔️' if database['lock_photo'] else '✖️'}] ›°", data="lock_photo"),
+            Button.inline(f"°› Link [{'✔️' if database['link'] else '✖️'}] ›°", data="link"),
+            Button.inline(f"°› Photo [{'✔️' if database['photo'] else '✖️'}] ›°", data="photo"),
         ),
         (
-            Button.inline(f"°› Stiker [{'✔️' if database['lock_stiker'] else '✖️'}] ›°", data="lock_stiker"),
-            Button.inline(f"°› Gif [{'✔️' if database['lock_gif'] else '✖️'}] ›°", data="lock_gif"),
+            Button.inline(f"°› Stiker [{'✔️' if database['stiker'] else '✖️'}] ›°", data="stiker"),
+            Button.inline(f"°› Gif [{'✔️' if database['gif'] else '✖️'}] ›°", data="gif"),
         ),
         (
-            Button.inline(f"°› Tg [{'✔️' if database['lock_tg'] else '✖️'}] ›°", data="lock_tg"),
-            Button.inline(f"°› Game [{'✔️' if database['lock_game'] else '✖️'}] ›°", data="lock_game"),
+            Button.inline(f"°› service [{'✔️' if database['service'] else '✖️'}] ›°", data="service"),
+            Button.inline(f"°› Game [{'✔️' if database['game'] else '✖️'}] ›°", data="game"),
         ),
         (
-            Button.inline(f"°› Dsh [{'✔️' if database['lock_dsh'] else '✖️'}] ›°", data="lock_dsh"),
-            Button.inline(f"°› Voice [{'✔️' if database['lock_voice'] else '✖️'}] ›°", data="lock_voice"),
+            Button.inline(f"°› button [{'✔️' if database['button'] else '✖️'}] ›°", data="button"),
+            Button.inline(f"°› Voice [{'✔️' if database['voice'] else '✖️'}] ›°", data="voice"),
         ),
         (
-            Button.inline(f"°› Forward [{'✔️' if database['lock_forward'] else '✖️'}] ›°", data="lock_forward"),
-            Button.inline(f"°› Video [{'✔️' if database['lock_video'] else '✖️'}] ›°", data="lock_video"),
+            Button.inline(f"°› Forward [{'✔️' if database['forward'] else '✖️'}] ›°", data="forward"),
+            Button.inline(f"°› Video [{'✔️' if database['video'] else '✖️'}] ›°", data="video"),
         ),
         (Button.inline("[ ↻ ]", data="gpl2"),),
         (Button.inline(f"°› BacK ›°", data="bk_panel"),),
@@ -1452,20 +1481,20 @@ async def panel_2(event: events.InlineQuery.Event):
     database = js.loads(clir.hget('plAddGroPSettinGZ', str(event.chat_id)))
     buttons = [
         (
-            Button.inline(f"°› Via [{'✔️' if database['lock_via'] else '✖️'}] ›°", data="lock_via"),
-            Button.inline(f"°› Music [{'✔️' if database['lock_music'] else '✖️'}] ›°", data="lock_music"),
+            Button.inline(f"°› Via [{'✔️' if database['via'] else '✖️'}] ›°", data="via"),
+            Button.inline(f"°› Music [{'✔️' if database['music'] else '✖️'}] ›°", data="music"),
         ),
         (
-            Button.inline(f"°› File [{'✔️' if database['lock_file'] else '✖️'}] ›°", data="lock_file"),
-            Button.inline(f"°› Bot [{'✔️' if database['lock_bot'] else '✖️'}] ›°", data="lock_bot"),
+            Button.inline(f"°› File [{'✔️' if database['file'] else '✖️'}] ›°", data="file"),
+            Button.inline(f"°› Bot [{'✔️' if database['bot'] else '✖️'}] ›°", data="bot"),
         ),
         (
-            Button.inline(f"°› Location [{'✔️' if database['lock_location'] else '✖️'}] ›°", data="lock_location"),
-            Button.inline(f"°› Contact [{'✔️' if database['lock_contact'] else '✖️'}] ›°", data="lock_contact"),
+            Button.inline(f"°› Location [{'✔️' if database['location'] else '✖️'}] ›°", data="location"),
+            Button.inline(f"°› Contact [{'✔️' if database['contact'] else '✖️'}] ›°", data="contact"),
         ),
         (
-            Button.inline(f"°› Caption [{'✔️' if database['lock_caption'] else '✖️'}] ›°", data="lock_caption"),
-            Button.inline(f"°› chT CH [{'✔️' if database['gp_Ch'] else '✖️'}] ›°", data="gp_Ch"),
+            Button.inline(f"°› Caption [{'✔️' if database['caption'] else '✖️'}] ›°", data="caption"),
+            Button.inline(f"°› unknown [{'✔️' if database['unknown'] else '✖️'}] ›°", data="unknown"),
         ),
         (Button.inline("[ ↻ ]", data="gpl1"),),
         (Button.inline(f"°› BacK ›°", data="bk_panel"),),
@@ -1542,24 +1571,24 @@ async def main_call(event: events.CallbackQuery.Event):
                     b"gpl1":panel_1,
                     b"gpl2":panel_2,
                     b"bk_panel":pl_main,
-                    b"lock_link":main_call,
-                    b"lock_photo":main_call,
-                    b"lock_stiker":main_call,
-                    b"lock_gif":main_call,
-                    b"lock_tg":main_call,
-                    b"lock_game":main_call,
-                    b"lock_dsh":main_call,
-                    b"lock_voice":main_call,
-                    b"lock_forward":main_call,
-                    b"lock_video":main_call,
-                    b"lock_via":main_call,
-                    b"lock_music":main_call,
-                    b"lock_file":main_call,
-                    b"lock_bot":main_call,
-                    b"lock_location":main_call,
-                    b"gp_Ch":main_call,
-                    b"lock_contact":main_call,
-                    b"lock_caption":main_call,
+                    b"link":main_call,
+                    b"photo":main_call,
+                    b"stiker":main_call,
+                    b"gif":main_call,
+                    b"service":main_call,
+                    b"game":main_call,
+                    b"button":main_call,
+                    b"voice":main_call,
+                    b"forward":main_call,
+                    b"video":main_call,
+                    b"via":main_call,
+                    b"music":main_call,
+                    b"file":main_call,
+                    b"bot":main_call,
+                    b"location":main_call,
+                    b"unknown":main_call,
+                    b"contact":main_call,
+                    b"caption":main_call,
                     b"tban":cktabchi,
                     b"tunrt":cktabchi,
                 }, pl.empty_async)(event)
@@ -1579,20 +1608,20 @@ async def main_call(event: events.CallbackQuery.Event):
                     js, 
                     event,
                     panel_1 if key in [
-                        "lock_link",
-                        "lock_photo",
-                        "lock_stiker",
-                        "lock_gif",
-                        "lock_tg",
-                        "lock_game",
-                        "lock_dsh",
-                        "lock_voice",
-                        "lock_forward",
-                        "lock_video",
-                    ] else panel_2
+                        "link",
+                        "photo",
+                        "stiker",
+                        "gif",
+                        "service",
+                        "game",
+                        "button",
+                        "voice",
+                        "forward",
+                        "video",
+                    ] else panel_2,
                 ) 
             except MessageNotModifiedError as e:
-                await event.answer('اهسته تر',alert= True)  
+                await event.answer('اهسته تر', alert= True)  
     else:
          await event.answer('-You do not have this access!') 
 

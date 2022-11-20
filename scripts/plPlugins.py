@@ -116,10 +116,10 @@ def check_user_id(text: str):
     return None
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 BOT_GROUP_DATABASE = {
-    'lock_link':False,'gp_Ch':False, 'lock_photo':False,'lock_stiker':False,'lock_gif':False,
-    'lock_tg':False,'lock_game':False,'lock_dsh':False,'lock_voice':False,'lock_forward':False,
-    'lock_video':False,'lock_via':False,'lock_music':False,'lock_file':False,'lock_bot':False,
-    'lock_location':False,'lock_contact':False,'lock_caption':False,'lock_contact':False,'lock_caption':False
+    'link':False,'unknown':False, 'photo':False,'sticker':False,'gif':False,
+    'service':False,'game':False,'button':False,'voice':False,'forward':False,
+    'video':False,'via':False,'music':False,'file':False,'bot':False,
+    'location':False,'contact':False,'caption':False,'contact':False,'caption':False,
 }
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 async def empty_async(event):
@@ -141,7 +141,7 @@ async def setup_data(database: dict, key, clir, js, event, panel):
     if database.get(key, None) != None:
         database[key] = not database[key]
         clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
-        await panel(event)
+        return await panel(event)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 async def run_interpreter_code(run, file, lang_cmd, code, TimeoutExpired, event, Account):
     if lang_cmd and file:
