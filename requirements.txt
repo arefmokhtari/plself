@@ -18,3 +18,4 @@ beautifulsoup4
 pydub
 python-dotenv
 SpeechRecognition
+gitpython

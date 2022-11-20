@@ -42,7 +42,7 @@ def show():
         print('plFuckinBio =', clir.get('plFuckinBio'))
         print('plSetrandnameNow =', clir.get('plSetrandnameNow'))
         print('plUserInApiBoT =', clir.lrange('plUserInApiBoT', 0, -1))
-        print()
+        print('plSetMyFuckingLogo =', clir.get('plSetMyFuckingLogo'))
         print('plForWardSendOrno =', clir.get('plForWardSendOrno'))
         print('plKoSKhOLAApL =', clir.lrange('plKoSKhOLAApL', 0, -1))
         print('plAcUserInPV =', clir.lrange('plAcUserInPV',0 ,-1))

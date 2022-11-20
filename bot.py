@@ -26,7 +26,7 @@ from datetime import datetime as dt
 from captcha.image import ImageCaptcha
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import requests as req
-import psutil
+import psutil, git
 from pydub import AudioSegment
 from scripts.utils.Logger import Logging
 # - - - - - - - - - - - ValueS - - - - - - - - - - - - #
@@ -831,8 +831,13 @@ async def joinchat(event: events.newmessage.NewMessage.Event):
 #   -» InFO BOT:
 async def SeYInFO(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event)
-    if event.raw_text.lower() == 'info': 
-        await pl.send_sudo_msg(event, f'› **info plSelf** `v.{pl.Conf.version}` :\n\n› **sudos :** `{len(sudo)}`\n› **PV user :** `{len(clir.lrange("plAcUserInPV",0 ,-1))}`\n› **user :** `{getpwuid(os.getuid())[0]}`\n› **used RAM:** `{int(((psutil.Process(os.getpid()).memory_full_info().rss)/1024)/1024)}/{"%.3f"%(((psutil.virtual_memory().total)/1024)/1024)}MB`\n› **process:** `{os.getpid()}` **-** `{os.getppid()}`\n› **python3 version :** `{sys.version.split()[0]}`\n› **telethon version :** `{tver}`\n› **os:** `{subprocess.check_output(["lsb_release","-is"]).decode("utf-8").lower()}`', Account)
+    if event.raw_text.lower() == 'info':
+        repo = git.Repo(search_parent_directories=True)
+        message = f'› **info plSelf** `v.{pl.Conf.version}` :\n\n› **sudos :** `{len(sudo)}`\n› **PV user :** `{len(clir.lrange("plAcUserInPV",0 ,-1))}`\n› **user :** `{getpwuid(os.getuid())[0]}`\n› **used RAM:** `{int(((psutil.Process(os.getpid()).memory_full_info().rss)/1024)/1024)}/{"%.3f"%(((psutil.virtual_memory().total)/1024)/1024)}MB`\n› **process:** `{os.getpid()}` **-** `{os.getppid()}`\n› **python3 version :** `{sys.version.split()[0]}`\n› **telethon version :** `{tver}`\n› **os:** `{subprocess.check_output(["lsb_release","-is"]).decode("utf-8").lower().strip(chr(10))}`\n› **git:** `{repo.remotes.origin.url}`\n› **HEAD: {len(list(repo.iter_commits()))} -** `{repo.head.commit.message}`'
+        if filename := clir.get('plSetMyFuckingLogo'):
+            await Client.send_file(event.chat_id, filename, caption=message, reply_to=event.id)
+        else:
+            await pl.send_sudo_msg(event, message, Account)
     elif len_cmd > 1 and cmd[0] == 'info' and cmd[1] == 'pv':
         c = pl.Counter()
         await pl.send_sudo_msg(event, '› **user in pv:**\n\n'+'\n'.join(map(lambda s:f'{c.get_num()} - [{s}](tg://user?id={s})', clir.lrange('plAcUserInPV',0 ,-1))), Account)
@@ -1148,6 +1153,20 @@ async def SetManageR(event: events.newmessage.NewMessage.Event):
                         clir.set('plFuckinBio', bio)
                         await Client(UpdateProfileRequest(about = bio))
                         await pl.send_sudo_msg(event, f'› **done, bio :** `{bio}`', Account)
+            elif cmd[1] == 'logo':
+                if cmd[2] == 'this':
+                    msg = await event.get_reply_message()
+                    if msg.media and type(msg.media) in [types.MessageMediaPhoto]:
+                        file_name = await msg.download_media('data/temp')
+                        clir.set('plSetMyFuckingLogo', file_name)
+                        await pl.send_sudo_msg(event, '› **done, logo seted !**', Account)
+                elif cmd[2] == 'delete':
+                    if filename := clir.get('plSetMyFuckingLogo'):
+                        os.remove(filename)
+                        clir.delete('plSetMyFuckingLogo')
+                        await pl.send_sudo_msg(event, '› **done, logo deleted !**', Account)
+                    else:
+                        await pl.send_sudo_msg(event, '› ** logo not found !**', Account)
             elif cmd[1] == 'username':
                 username = event.raw_text[event.raw_text.find(' ', 5)+1:]
                 if username == 'delete':

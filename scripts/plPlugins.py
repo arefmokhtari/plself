@@ -151,8 +151,8 @@ async def run_interpreter_code(run, file, lang_cmd, code, TimeoutExpired, event,
         else:await send_sudo_msg(event, '› **error:**\n\n`'+code.stderr+'`' if code.stderr else '› **result:**\n\n`'+code.stdout+'`', Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 def check_data_dir():
-    if not os.path.isdir("data"): os.mkdir("data")
-    for dirs in ["code", "photos", "SeSioNS", "voice"]:
+    if not os.path.isdir('data'): os.mkdir('data')
+    for dirs in ['code', 'photos', 'SeSioNS', 'voice', 'temp']:
         if not os.path.isdir('data/' + dirs): os.mkdir('data/' + dirs)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 
