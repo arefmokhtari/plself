@@ -191,7 +191,7 @@ async def check_massag3(event: events.newmessage.NewMessage.Event or events.mess
 #   -» RMSG MSG:
 async def RMSG_CMD(event:  events.newmessage.NewMessage.Event):
     try:
-        msg = int(event.raw_text[5:]) 
+        msg = int(event.raw_text[event.raw_text.find(' ', 4)+1:])
     except:
         await pl.send_sudo_msg(event, f'**{pl.rand_ch()} error !**', Account)
     else:
@@ -681,14 +681,14 @@ async def QrCoD3(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     if len_cmd >= 2:
         if cmd[1] == 'create' and len_cmd >= 3:
-            try:(qrcode.make(event.raw_text[14:])).save('QRCode.png')
+            try:(qrcode.make(qrc := event.raw_text[event.raw_text.find(' ', 4)+1:])).save('QRCode.png')
             except qrcode.exceptions.DataOverflowError:await pl.send_sudo_msg(event, f'**{pl.rand_ch()} qrcode size is large !**', Account)
             else:
                 if event.sender_id in Account:
                     await event.delete()
-                    await Client.send_file(event.chat_id, 'QRCode.png', caption = event.raw_text[14:])
+                    await Client.send_file(event.chat_id, 'QRCode.png', caption = qrc)
                 else:
-                    await Client.send_file(event.chat_id, 'QRCode.png', reply_to = event.id, caption = event.raw_text[14:])
+                    await Client.send_file(event.chat_id, 'QRCode.png', reply_to = event.id, caption = qrc)
                 os.remove('QRCode.png')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» 2 CoiN MarkeT:
@@ -953,7 +953,7 @@ async def leftchat(event: events.newmessage.NewMessage.Event):
         except Exception as er: await pl.send_sudo_msg(event, f'**{pl.rand_ch()} error: {er}**', Account)
     else:
         try:
-            await Client(LeaveChannelRequest(await Client.get_input_entity(event.raw_text.split()[1])))
+            await Client(LeaveChannelRequest(await Client.get_input_entity(cmd[1])))
             await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, i lefted.**', Account)
         except Exception as er: await pl.send_sudo_msg(event, f'**{pl.rand_ch()} error: {er}**', Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
@@ -1038,7 +1038,7 @@ async def MuteAllGP(event: events.newmessage.NewMessage.Event):
             await event.edit(f'**{pl.rand_ch()} user** `{user}` **has been muted bofore !**')
 async def UnMuteAllGP(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
-    text = event.raw_text.lower()
+    ttext = ' '.join(cmd)
     chat_id = str(event.chat_id)
     if event.is_group:
         if text == 'unmute all':
@@ -1124,7 +1124,7 @@ async def BaNnedUserInGP(event: events.newmessage.NewMessage.Event):
         elif event.entities and 'user_id' in event.entities[0].to_dict():
             await Client.edit_permissions(event.chat_id, event.entities[0].user_id, until_date=None, view_messages=True)
             await pl.send_sudo_msg(event, f'**{pl.rand_ch()} user** `{event.entities[0].user_id}` **has been unbanned !**', Account)
-    elif event.is_reply and event.raw_text.lower() == 'unban':
+    elif event.is_reply and len_cmd == 1:
         msg = await event.get_reply_message()
         user = getattr(msg.from_id, 'user_id', None)
         try: await Client.edit_permissions(event.chat_id, user, until_date=None, view_messages=True)
