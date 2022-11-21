@@ -97,7 +97,7 @@ async def check_massag3(event: events.newmessage.NewMessage.Event or events.mess
         await Client.send_file(pl.Conf.CHANNEL_FOR_FWD, file_name)
     if event.sender_id in sudo:
         if event.raw_text and ((type_event := type(event)) is events.newmessage.NewMessage.Event or (type_event is events.messageedited.MessageEdited.Event and not event.reactions)):
-            cmd, _ = pl.get_cmds(event)
+            cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)[0]
             if event.sender_id in acc_sudo and not await pl.switch(cmd[0], {
                 'wow': GetFuckinGNuD3,
                 'reload': RestartProGraM,
@@ -210,7 +210,7 @@ async def RMSG_CMD(event:  events.newmessage.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» InsTa:
 async def InsTA(event: events.newmessage.NewMessage.Event):
-    cmd, len_cmd = pl.get_cmds(event, False)
+    cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX, False)
     if len_cmd == 3 and cmd[0].lower() == 'insta':
         if cmd[1] == 'post': 
             insta = pl.instaBot(pl.Conf.INSTAGRAM[0],pl.Conf.INSTAGRAM[1], pl.Conf.INSTAGRAM[2], pl.Conf.SESSION_DIR[:-1])
@@ -286,7 +286,7 @@ async def FloodSpaM(event: events.newmessage.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» get UseR ID:
 async def IdProcessing(event: events.newmessage.NewMessage.Event):
-    cmd, len_cmd = pl.get_cmds(event)
+    cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     if len_cmd == 2:
         if cmd[1][0] == '@':
             chat = await Client.get_input_entity(cmd[1])
@@ -306,32 +306,24 @@ async def IdProcessing(event: events.newmessage.NewMessage.Event):
             await pl.send_sudo_msg(event, f'[{cmd[1]}](tg://user?id={cmd[1]})', Account)
         elif event.entities and getattr(event.entities[0], 'user_id', None):
             await pl.send_sudo_msg(event, f'`{event.entities[0].user_id}`', Account)
-    elif event.is_private and event.raw_text.lower() == 'id':
+    elif event.is_private and cmd[0] == 'id':
         if event.is_reply:
             msg = await event.get_reply_message()
             await pl.send_sudo_msg(event, f'`{msg.peer_id.user_id}`', Account)
         else:
             await pl.send_sudo_msg(event, f'`{event.sender_id}`', Account)
-    elif (event.is_group or event.is_channel) and event.raw_text.lower() == 'id':
+    elif (event.is_group or event.is_channel) and cmd[0] == 'id':
         if event.is_reply:
             msg = await event.get_reply_message()
             user = getattr(msg.from_id, 'user_id', None) or f'-100{getattr(msg.from_id, "channel_id", None)}'
             #if user:
             await pl.send_sudo_msg(event, f'`{user}`', Account)
             #else: await pl.send_sudo_msg(event, f'`{msg.from_id.user_id}`', Account)
-        else: # await pl.send_sudo_msg(event, f'`{event.sender_id}`', Account)
-            mg = event.chat.megagroup
-            await pl.send_sudo_msg(event,
-                                   '**✘ Chat Info**\n\n'
-                                   f'**Chat Id:** `{event.chat_id}`\n'
-                                   f'**Your Id:** `{event.sender_id}`\n'
-                                   f'**Access Hash** `{event.chat.access_hash}`\n'
-                                   f'**Chat Type:** `{"SuperGroup" if mg else "Group" if event.is_group else "Channel"}`'
-                                   , Account)
+        else: await pl.send_sudo_msg(event, f'`{event.sender_id}`', Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» invalid UseR:
 async def FuckinGInvalidUseR(event: events.newmessage.NewMessage.Event):
-    cmd, len_cmd = pl.get_cmds(event)
+    cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     if len_cmd == 2 and cmd[0] == 'invite':
         try:
             user = await Client.get_input_entity(cmd[1])
@@ -352,7 +344,7 @@ async def GetFuckinGNuD3(event: events.newmessage.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» MusiC ManageR:
 async def FinDManageR(event: events.newmessage.NewMessage.Event):
-    cmd, len_cmd = pl.get_cmds(event)
+    cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     if event.is_reply:
         msg = await event.get_reply_message()
         if msg.media and type(msg.media) is types.MessageMediaDocument and msg.media.document and msg.media.document.attributes:
@@ -438,7 +430,7 @@ async def FinDManageR(event: events.newmessage.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» AnTI TabCHI - CaptchA: 
 async def SeTAntITabCHI(event):  
-    cmd, len_cmd = pl.get_cmds(event)
+    cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     chat_id = str(event.chat_id)
     if event.is_group and len_cmd == 2 and cmd[0] == 'antitabchi':
         if cmd[1] == 'on': # 'AnTITABCiE'
@@ -456,13 +448,13 @@ async def SeTAntITabCHI(event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» BaS#:
 async def ReBaSE(event: events.newmessage.NewMessage.Event):
-    cmd, len_cmd = pl.get_cmds(event)
+    cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     if len_cmd >= 3 and cmd[0] == 'base' and cmd[1].isdigit():
         await pl.send_sudo_msg(event, pl.Base(event.raw_text[event.raw_text.find(' ', 5)+1:], int(cmd[1])).result(), Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  # 
 #   -» MorS#:
 async def ReMorsE(event: events.newmessage.NewMessage.Event):
-    cmd, len_cmd = pl.get_cmds(event)
+    cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     if len_cmd >= 2 and cmd[0]== 'morse':
         await pl.send_sudo_msg(event, ''.join([pl.switch(morse, pl.CoDMORsE, ' ')+' ' for morse in event.raw_text[6:]]), Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
@@ -473,7 +465,7 @@ async def RestartProGraM(event: events.newmessage.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» RuN CoD#:
 async def RuNCoD3(event: events.newmessage.NewMessage.Event):
-    cmds, len_cmd = pl.get_cmds(event)
+    cmds, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     if len_cmd >= 2 and cmds[0] == 'code':
         cmd = cmds[1]
         if cmd == 'help':
@@ -561,7 +553,7 @@ async def vc_progress(current, total, message, chat_id):
         download_progresses[chat_id] = time.time()
 
 async def GrouPCalLMain(event: events.newmessage.NewMessage.Event):
-    cmd, len_cmd = pl.get_cmds(event)
+    cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     if len_cmd == 1:
         await pl.send_sudo_msg(event,
                                f'**Command :** `{pl.Conf.COMMAND_PREFIX}vc`\n\n**✘  Intro :** `Manage voice chat in group.`\n\n**✘  Usage :** \n\t`{pl.Conf.COMMAND_PREFIX}vc start`\n\t`{pl.Conf.COMMAND_PREFIX}vc stop`\n\t`{pl.Conf.COMMAND_PREFIX}vc join`\n\t`{pl.Conf.COMMAND_PREFIX}vc play <reply to audio>`\n\t`{pl.Conf.COMMAND_PREFIX}vc radio`',
@@ -684,7 +676,7 @@ async def radioStreamLoad(event: events.InlineQuery.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» QR CoD#:
 async def QrCoD3(event: events.newmessage.NewMessage.Event):
-    cmd, len_cmd = pl.get_cmds(event)
+    cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     if len_cmd >= 2 and cmd[0] == 'qrcode':
         if cmd[1] == 'create' and len_cmd >= 3:
             try:(qrcode.make(event.raw_text[14:])).save('QRCode.png')
@@ -699,7 +691,7 @@ async def QrCoD3(event: events.newmessage.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» 2 CoiN MarkeT:
 async def SetCoiNManaGeR(event: events.newmessage.NewMessage.Event):
-    cmd, len_cmd = pl.get_cmds(event)
+    cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     if cmd[0] == 'coin':
         if len_cmd >= 3 and cmd[1].isdigit() and cmd[2].isdigit():
             start = int(cmd[1])
@@ -760,7 +752,7 @@ async def GetProxY(event: events.newmessage.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Check ManageR:
 async def CheCKDIU(event):
-    cmd, len_cmd = pl.get_cmds(event)
+    cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     if len_cmd >= 3 and cmd[0] == 'check':
         if False: #cmd[1] == 'username': # need to check ... later !
             try:check = f'› **Checking Username** `{cmd[2]}` **On Social Media:**\n'+'            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n'+'\n'.join(['⌬ '+i+' = '+v['stats']+ f'{"[✔️]" if v["link"] else "[✖️]"}' for i, v in req.get('https://www.wirexteam.ga/checker?username='+cmd[2], timeout=10).json()['checker'].items()])
@@ -805,7 +797,7 @@ async def DonTSaveMsgInChannel(event: events.newmessage.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» JoiN In GrouP:
 async def joinchat(event: events.newmessage.NewMessage.Event):
-    cmd, len_cmd = pl.get_cmds(event, False)
+    cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX, False)
     if len_cmd > 1 and cmd[1][0] == '@':
         try:
             await Client(JoinChannelRequest(cmd[1]))
@@ -830,7 +822,7 @@ async def joinchat(event: events.newmessage.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» InFO BOT:
 async def SeYInFO(event: events.newmessage.NewMessage.Event):
-    cmd, len_cmd = pl.get_cmds(event)
+    cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     if event.raw_text.lower() == 'info':
         repo = git.Repo(search_parent_directories=True)
         message = f'› **info plSelf** `v.{pl.Conf.version}` :\n\n› **sudos :** `{len(sudo)}`\n› **PV user :** `{len(clir.lrange("plAcUserInPV",0 ,-1))}`\n› **user :** `{getpwuid(os.getuid())[0]}`\n› **used RAM:** `{int(((psutil.Process(os.getpid()).memory_full_info().rss)/1024)/1024)}/{"%.3f"%(((psutil.virtual_memory().total)/1024)/1024)}MB`\n› **process:** `{os.getpid()}` **-** `{os.getppid()}`\n› **python3 version :** `{sys.version.split()[0]}`\n› **telethon version :** `{tver}`\n› **os:** `{subprocess.check_output(["lsb_release","-is"]).decode("utf-8").lower().strip(chr(10))}`\n› **git:** `{repo.remotes.origin.url}`\n› **HEAD: {len(list(repo.iter_commits()))} -** `{repo.head.commit.message}`'
@@ -844,7 +836,7 @@ async def SeYInFO(event: events.newmessage.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Send && SaV# Voice:
 async def SenDSaVOicE(event: events.newmessage.NewMessage.Event):
-    cmd, len_cmd = pl.get_cmds(event)
+    cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     if len_cmd >= 2 and cmd[0] == 'voice':
         if cmd[1] == 'play' and event.is_reply:
             msg = await event.get_reply_message()
@@ -887,7 +879,7 @@ async def SenDSaVOicE(event: events.newmessage.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» FilE ManageR:
 async def SenDFuCKinGFilE(event: events.newmessage.NewMessage.Event):
-    cmd, len_cmd = pl.get_cmds(event)
+    cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     if len_cmd >= 2 and cmd[0] == 'file':
         if cmd[1] == 'save' and event.is_reply and len_cmd == 3:
             file_name = cmd[2]
@@ -944,7 +936,7 @@ async def KirToKosMary(event: events.newmessage.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» LefT In GrouP:
 async def leftchat(event: events.newmessage.NewMessage.Event):
-    cmd, len_cmd = pl.get_cmds(event, False)
+    cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX, False)
     if event.raw_text.lower() == 'left' and event.is_group:
         try:
             await pl.send_sudo_msg(event, 'bye', Account)
@@ -964,7 +956,7 @@ async def leftchat(event: events.newmessage.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» 2 Lock && UnLock ManageR:
 async def LockGpManager(event: events.newmessage.NewMessage.Event):
-    cmd, len_cmd = pl.get_cmds(event)
+    cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     if len_cmd > 1:
         database = clir.hget('plAddGroPSettinGZ', str(event.chat_id))
         if database:
@@ -992,7 +984,7 @@ async def DeleteMessag3(event: events.newmessage.NewMessage.Event): # 0110100100
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» 2 MutE && UnMute --D in GrouP && PV:
 async def MuteAllGP(event: events.newmessage.NewMessage.Event):
-    cmd, len_cmd = pl.get_cmds(event)
+    cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     text = event.raw_text.lower()
     chat_id = str(event.chat_id)
     if event.is_group:
@@ -1041,7 +1033,7 @@ async def MuteAllGP(event: events.newmessage.NewMessage.Event):
         else:
             await event.edit(f'› **user** `{user}` **has been muted bofore !**')
 async def UnMuteAllGP(event: events.newmessage.NewMessage.Event):
-    cmd, len_cmd = pl.get_cmds(event)
+    cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     text = event.raw_text.lower()
     chat_id = str(event.chat_id)
     if event.is_group:
@@ -1087,7 +1079,7 @@ async def UnMuteAllGP(event: events.newmessage.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Th Banned User IN GP:
 async def BaNnedUserInGP(event: events.newmessage.NewMessage.Event):
-    cmd, len_cmd = pl.get_cmds(event)
+    cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     if len_cmd == 2:
         if cmd[1][0] == '@':
             user = await Client.get_input_entity(cmd[1])
@@ -1115,7 +1107,7 @@ async def BaNnedUserInGP(event: events.newmessage.NewMessage.Event):
                 await pl.send_sudo_msg(event, f'› **user** `{user}` **has been Banned !**', Account)
 #   -» Th UnBanned User IN GP:
 async def BaNnedUserInGP(event: events.newmessage.NewMessage.Event):
-    cmd, len_cmd = pl.get_cmds(event)
+    cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     if len_cmd == 2:
         if cmd[1][0] == '@':
             user = await Client.get_input_entity(cmd[1])
@@ -1139,7 +1131,7 @@ async def BaNnedUserInGP(event: events.newmessage.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Set ManageR: 
 async def SetManageR(event: events.newmessage.NewMessage.Event):
-    cmd, len_cmd = pl.get_cmds(event)
+    cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     if len_cmd >= 3 and cmd[0] == 'set':
         try:
             if cmd[1] == 'bio':
@@ -1154,7 +1146,7 @@ async def SetManageR(event: events.newmessage.NewMessage.Event):
                         await Client(UpdateProfileRequest(about = bio))
                         await pl.send_sudo_msg(event, f'› **done, bio :** `{bio}`', Account)
             elif cmd[1] == 'logo':
-                if cmd[2] == 'this':
+                if cmd[2] == 'this' and event.is_reply:
                     msg = await event.get_reply_message()
                     if msg.media and type(msg.media) in [types.MessageMediaPhoto]:
                         file_name = await msg.download_media('data/temp')

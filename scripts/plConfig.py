@@ -19,7 +19,7 @@ class Conf:
     REDIS_NUMBER = int(os.getenv('REDIS_NUMBER'))
     SESSION_AC_NAME = os.getenv('SESSION_AC_NAME')
     SESSION_API_NAME = os.getenv('SESSION_API_NAME')
-    COMMAND_PREFIX = os.getenv('COMMAND_PREFIX')
+    COMMAND_PREFIX = js.loads(os.getenv('COMMAND_PREFIX'))
     SESSION_DIR = 'data/SeSioNS/'
     DOWNLOAD_DIR = 'data/Downloads/'
     RADIO_STATIONS = {"Iran International": 'https://n09.radiojar.com/dfnrphnr5f0uv',
@@ -27,7 +27,7 @@ class Conf:
                       "Radio Javan": 'https://rj1.rjstream.com/',
                       "Radio Faaz": 'https://onlineradiobox.com/json/de/faaz/play?platform=web',
                       }
-    version = 0.7
+    version = '0.7.8'
     STR_HELP_BOT = f'''**°• WlC 2 Th source help page! | pl-self v.{version} •°
  - Warning: Only sudo account and sudo\'s can use this system.**
 • Sudo\'s :
