@@ -1038,7 +1038,7 @@ async def MuteAllGP(event: events.newmessage.NewMessage.Event):
             await event.edit(f'**{pl.rand_ch()} user** `{user}` **has been muted bofore !**')
 async def UnMuteAllGP(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
-    ttext = ' '.join(cmd)
+    text = ' '.join(cmd)
     chat_id = str(event.chat_id)
     if event.is_group:
         if text == 'unmute all':
