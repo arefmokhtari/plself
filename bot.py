@@ -48,7 +48,7 @@ Client.start()
 logger.info("UserBot is Running...")
 group_call_factory = pl.VchatCall(Client)
 print('\t- PlSelf Started successfully!', pl.Color.RESET)
-print(f' {pl.Color.RED}----{pl.Color.RESET}    {pl.Color.BG_CYAN}{pl.Color.BOLD} Connected as {pl.Conf.SESSION_AC_NAME} ! {pl.Color.RESET}    {pl.Color.RED}----{pl.Color.RESET}')
+print(f' {pl.Color.RED}----{pl.Color.RESET}    {pl.Color.BG_GRAY}{pl.Color.BLACK} Connected as {pl.Conf.SESSION_AC_NAME} ! {pl.Color.RESET}    {pl.Color.RED}----{pl.Color.RESET}')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» CheckING MsG SerVic3 In GP:
 @Client.on(events.ChatAction())
@@ -57,7 +57,7 @@ async def GetMsGServic3InGP(event: events.chataction.ChatAction.Event):
     chat_id_str = '-100'+str(chat_id)
     type_message = type(event.action_message.action)
     
-    if chat_id_str in clir.lrange('plMuteAllGP', 0, -1) or (chat_id_str in list(clir.hgetall(pl.DataBase.group_manager).keys()) \
+    if chat_id_str in clir.lrange(pl.DataBase.mute_all, 0, -1) or (chat_id_str in list(clir.hgetall(pl.DataBase.group_manager).keys()) \
         and js.loads(clir.hget(pl.DataBase.group_manager, chat_id_str))['service']):
         await Client.delete_messages(chat_id, event.action_message.id)
     
@@ -151,7 +151,7 @@ async def check_massag3(event: events.newmessage.NewMessage.Event or events.mess
     elif event.is_group:
         chat_id = str(event.chat_id)
         usr = str(event.sender_id)
-        if chat_id in clir.lrange('plMuteAllGP', 0, -1) or(clir.hgetall(pl.DataBase.mute_group_user).get(chat_id) and usr in clir.hget(pl.DataBase.mute_group_user, chat_id).split()):
+        if chat_id in clir.lrange(pl.DataBase.mute_all, 0, -1) or(clir.hgetall(pl.DataBase.mute_group_user).get(chat_id) and usr in clir.hget(pl.DataBase.mute_group_user, chat_id).split()):
             await event.delete()
         elif chat_id in clir.hgetall(pl.DataBase.group_manager).keys():
             database = js.loads(clir.hget(pl.DataBase.group_manager, chat_id))
@@ -193,9 +193,9 @@ async def RMSG_CMD(event:  events.newmessage.NewMessage.Event):
     try:
         msg = int(event.raw_text[5:]) 
     except:
-        await pl.send_sudo_msg(event, '› **error !**', Account)
+        await pl.send_sudo_msg(event, f'**{pl.rand_ch()} error !**', Account)
     else:
-        _4sendmsg = await pl.send_sudo_msg(event, '› **wait !**', Account)
+        _4sendmsg = await pl.send_sudo_msg(event, f'**{pl.rand_ch()} wait !**', Account)
         c = 1 if event.sender_id in Account else 0
         async for message in Client.iter_messages(event.chat_id, msg+1):
             if c < 2:
@@ -204,25 +204,26 @@ async def RMSG_CMD(event:  events.newmessage.NewMessage.Event):
             try:
                 await message.delete()
             except Exception as er:
-                await pl.send_sudo_msg(_4sendmsg, f'› **error !** `{er}`', Account)
+                await pl.send_sudo_msg(_4sendmsg, f'**{pl.rand_ch()} error !** `{er}`', Account)
                 break
-        await _4sendmsg.edit(f'› **done,** `{msg}` **msg has been deleted !**')
+        await _4sendmsg.edit(f'**{pl.rand_ch()} done,** `{msg}` **msg has been deleted !**')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» InsTa:
 async def InsTA(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX, False)
-    if len_cmd == 3 and cmd[0].lower() == 'insta':
+    if len_cmd == 3:
         if cmd[1] == 'post': 
             insta = pl.instaBot(pl.Conf.INSTAGRAM[0],pl.Conf.INSTAGRAM[1], pl.Conf.INSTAGRAM[2], pl.Conf.SESSION_DIR[:-1])
             file_name = await insta.down_post(cmd[2])
             Files = file_name.get('file')
             post = file_name.get('post')
+            ch = pl.rand_ch()
             if len(file_name) >= 1:
                 try:
-                    await Client.send_file(event.chat_id, Files, reply_to=event.id, caption = f'› **username :** `{post.owner_username}`\n› **like :** `{post.likes}`\n› **Comments :** `{post.comments}`')
+                    await Client.send_file(event.chat_id, Files, reply_to=event.id, caption = f'**{ch} username :** `{post.owner_username}`\n**{ch} like :** `{post.likes}`\n**{ch} Comments :** `{post.comments}`')
                 except:
                     for f in Files:
-                        await Client.send_file(event.chat_id, f, reply_to=event.id, caption = f'› **username :** `{post.owner_username}`\n› **like :** `{post.likes}`\n› **Comments :** `{post.comments}`')
+                        await Client.send_file(event.chat_id, f, reply_to=event.id, caption = f'**{ch} username :** `{post.owner_username}`\n**{ch} like :** `{post.likes}`\n**{ch} Comments :** `{post.comments}`')
             pl.instaBot.remove_dir('insta')
             del insta
         elif cmd[1] == 'profile':
@@ -230,7 +231,7 @@ async def InsTA(event: events.newmessage.NewMessage.Event):
             files = await insta.down_profile(cmd[2])
             profile = files.get('profile')
             fucking_file = files.get('file')
-            await Client.send_file(event.chat_id, fucking_file, reply_to=event.id, caption = f'› **name :** `{profile.full_name}`\n› **bio :** `{profile.biography}`\n› **followers :** `{profile.followers:,}`')
+            await Client.send_file(event.chat_id, fucking_file, reply_to=event.id, caption = f'**{ch} name :** `{profile.full_name}`\n**{ch} bio :** `{profile.biography}`\n**{ch} followers :** `{profile.followers:,}`')
             pl.instaBot.remove_dir(profile.username)
             del insta
         elif cmd[1] == 'story':
@@ -248,8 +249,8 @@ async def InsTA(event: events.newmessage.NewMessage.Event):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Calculator:
 async def GeTCal(event: events.newmessage.NewMessage.Event):
-    try: await pl.send_sudo_msg(event, f'{eval(event.raw_text[4:]):,}', Account)
-    except: await pl.send_sudo_msg(event, '› **error !**', Account)
+    try: await pl.send_sudo_msg(event, f'`{eval(event.raw_text[4:]):,}`', Account)
+    except: await pl.send_sudo_msg(event, f'**{pl.rand_ch()} error !**', Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Flood SpaM:
 ''' nothing 4 now ...
@@ -299,20 +300,20 @@ async def IdProcessing(event: events.newmessage.NewMessage.Event):
         elif cmd[1][0] == '-':
             chat = await Client.get_entity(int(cmd[1]))
             if chat.username == None:
-                await pl.send_sudo_msg(event, '**› not username !**', Account)
+                await pl.send_sudo_msg(event, f'**{pl.rand_ch()} not username !**', Account)
             else:
                 await pl.send_sudo_msg(event, f'@{chat.username}', Account)
         elif cmd[1][0].isdigit():
             await pl.send_sudo_msg(event, f'[{cmd[1]}](tg://user?id={cmd[1]})', Account)
         elif event.entities and getattr(event.entities[0], 'user_id', None):
             await pl.send_sudo_msg(event, f'`{event.entities[0].user_id}`', Account)
-    elif event.is_private and cmd[0] == 'id':
+    elif event.is_private:
         if event.is_reply:
             msg = await event.get_reply_message()
             await pl.send_sudo_msg(event, f'`{msg.peer_id.user_id}`', Account)
         else:
             await pl.send_sudo_msg(event, f'`{event.sender_id}`', Account)
-    elif (event.is_group or event.is_channel) and cmd[0] == 'id':
+    elif (event.is_group or event.is_channel):
         if event.is_reply:
             msg = await event.get_reply_message()
             user = getattr(msg.from_id, 'user_id', None) or f'-100{getattr(msg.from_id, "channel_id", None)}'
@@ -324,15 +325,15 @@ async def IdProcessing(event: events.newmessage.NewMessage.Event):
 #   -» invalid UseR:
 async def FuckinGInvalidUseR(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
-    if len_cmd == 2 and cmd[0] == 'invite':
+    if len_cmd == 2:
         try:
             user = await Client.get_input_entity(cmd[1])
             chat = await Client.get_input_entity(event.chat_id)
             await Client(InviteToChannelRequest(InputPeerChannel(chat.channel_id, chat.access_hash),[InputPeerUser(user.user_id, user.access_hash)]))
         except Exception as e:
-            await pl.send_sudo_msg(event, '› **error** : '+str(e), Account)
+            await pl.send_sudo_msg(event, f'**{pl.rand_ch()} error** : '+str(e), Account)
         else:
-            await pl.send_sudo_msg(event, f'› **user** `{user.user_id}` **added to gorup !**', Account)
+            await pl.send_sudo_msg(event, f'**{pl.rand_ch()} user** `{user.user_id}` **added to gorup !**', Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» FucK Off =| :
 async def GetFuckinGNuD3(event: events.newmessage.NewMessage.Event):
@@ -352,19 +353,20 @@ async def FinDManageR(event: events.newmessage.NewMessage.Event):
                 if cmd[1] == 'find' and msg.media.document.mime_type in ['audio/ogg', 'video/mp4', 'audio/mpeg']:
                     filename = await msg.download_media()
                     shazam = Shazam()
+                    ch = pl.rand_ch()
                     if event.sender_id in Account:await event.delete()
-                    _sending_msg = await msg.reply('› **wait !**')
+                    _sending_msg = await msg.reply(f'**{pl.rand_ch()} wait !**')
                     out = await shazam.recognize_song(filename)
                     if out.get('track'):
                         try:album = out["track"]["sections"][0]["metadata"][0]["text"]
                         except IndexError:album = 'None'
-                        msg4send = f'**› music info:**\n**› name:** `{out["track"]["title"]}`\n**› artist:** `{out["track"]["subtitle"]}`\n**› genre:** `{out.get("track", {}).get("genres", {}).get("primary")}`\n**› album:** `{album}`'
+                        msg4send = f'**{ch} music info:**\n**{ch} name:** `{out["track"]["title"]}`\n**{ch} artist:** `{out["track"]["subtitle"]}`\n**{ch} genre:** `{out.get("track", {}).get("genres", {}).get("primary")}`\n**{ch} album:** `{album}`'
                     else:
-                        msg4send = '› **not found !**'
+                        msg4send = f'{ch} **not found !**'
                     await _sending_msg.edit(msg4send)
                     os.remove(filename)
                 elif cmd[1] == 'info':
-                    await pl.send_sudo_msg(event, f'**› music info:**\n**› title:** `{msg.media.document.attributes[0].title}`\n**› performer:** `{msg.media.document.attributes[0].performer}`\n**› filename:** `{msg.media.document.attributes[1].file_name}`', Account)
+                    await pl.send_sudo_msg(event, f'**{ch} music info:**\n**{ch} title:** `{msg.media.document.attributes[0].title}`\n**{ch} performer:** `{msg.media.document.attributes[0].performer}`\n**{ch} filename:** `{msg.media.document.attributes[1].file_name}`', Account)
                 elif cmd[1] == 'cut':
                     if len_cmd == 3:
                         if cmd[2].isdigit():
@@ -432,84 +434,84 @@ async def FinDManageR(event: events.newmessage.NewMessage.Event):
 async def SeTAntITabCHI(event):  
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     chat_id = str(event.chat_id)
-    if event.is_group and len_cmd == 2 and cmd[0] == 'antitabchi':
+    if event.is_group and len_cmd == 2:
         if cmd[1] == 'on':
             if chat_id in clir.hgetall(pl.DataBase.antitabchi).keys():
-                await pl.send_sudo_msg(event, '**› anti tabchi was active !**', Account)
+                await pl.send_sudo_msg(event, f'**{pl.rand_ch()} anti tabchi was active !**', Account)
             else:
                 clir.hset(pl.DataBase.antitabchi, chat_id, js.dumps([]))
-                await pl.send_sudo_msg(event, '**› done, anti tabchi is active !**', Account)
+                await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, anti tabchi is active !**', Account)
         elif cmd[1] == 'off':
             if chat_id in clir.hgetall(pl.DataBase.antitabchi).keys():
                 clir.hdel(pl.DataBase.antitabchi, chat_id)
-                await pl.send_sudo_msg(event, '**› done, anti tabchi service cleared !**', Account)
+                await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, anti tabchi service cleared !**', Account)
             else:
-                await pl.send_sudo_msg(event, '**› anti tabchi is not active !**', Account)
+                await pl.send_sudo_msg(event, f'**{pl.rand_ch()} anti tabchi is not active !**', Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» BaS#:
 async def ReBaSE(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
-    if len_cmd >= 3 and cmd[0] == 'base' and cmd[1].isdigit():
+    if len_cmd >= 3 and cmd[1].isdigit():
         await pl.send_sudo_msg(event, pl.Base(event.raw_text[event.raw_text.find(' ', 5)+1:], int(cmd[1])).result(), Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  # 
 #   -» MorS#:
 async def ReMorsE(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
-    if len_cmd >= 2 and cmd[0]== 'morse':
+    if len_cmd >= 2:
         await pl.send_sudo_msg(event, ''.join([pl.switch(morse, pl.CoDMORsE, ' ')+' ' for morse in event.raw_text[6:]]), Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» ReStarT Th3 ProGraM:
 async def RestartProGraM(event: events.newmessage.NewMessage.Event):
-    await pl.send_sudo_msg(event, '› **bot reloaded !**', Account)
+    await pl.send_sudo_msg(event, f'{pl.rand_ch()} **bot reloaded !**', Account)
     os.execl(sys.executable, sys.executable, *sys.argv)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» RuN CoD#:
 async def RuNCoD3(event: events.newmessage.NewMessage.Event):
     cmds, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
-    if len_cmd >= 2 and cmds[0] == 'code':
+    if len_cmd >= 2:
         cmd = cmds[1]
         if cmd == 'help':
-            await pl.send_sudo_msg(event, '› **cmds :**\n`py3`\n`py2`\n`php`\n`cpp`\n`c`\n`lua`\n`js`\n`java`', Account)
+            await pl.send_sudo_msg(event, '{pl.rand_ch()} **cmds :**\n`py3`\n`py2`\n`php`\n`cpp`\n`c`\n`lua`\n`js`\n`java`', Account)
         elif cmd == 'cpp':
             file = 'data/code/'+'source.cpp'
             pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
             try:s = subprocess.run(['g++', '-std=c++17', file], capture_output=True, text=True, timeout=5)
-            except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**› timeout error !**', Account)
+            except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, f'**{pl.rand_ch()} timeout error !**', Account)
             else:
-                if s.stderr:await pl.send_sudo_msg(event, '› **error:**\n\n`'+s.stderr+'`', Account)
+                if s.stderr:await pl.send_sudo_msg(event, f'**{pl.rand_ch()} error:**\n\n`'+s.stderr+'`', Account)
                 else:
                     try:code = subprocess.run(['./a.out'], capture_output=True, text=True, timeout=5)
-                    except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**› timeout error !**', Account)
-                    else:await pl.send_sudo_msg(event, '› **result:**\n\n`'+code.stdout+'`', Account)
+                    except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, f'**{pl.rand_ch()} timeout error !**', Account)
+                    else:await pl.send_sudo_msg(event, f'**{pl.rand_ch()} result:**\n\n`'+code.stdout+'`', Account)
                     finally:os.remove('a.out')
         elif cmd == 'program':
-            try:await pl.myexec(event.raw_text[event.raw_text.find('\n')+1:], event, Client);await pl.send_sudo_msg(event, '› **done !**', Account)
+            try:await pl.myexec(event.raw_text[event.raw_text.find('\n')+1:], event, Client);await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done !**', Account)
             except Exception as e:await pl.send_sudo_msg(event, str(e), Account)
         elif cmd == 'c':
             file = 'data/code/'+'source.c' 
             pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
             try:s = subprocess.run(['gcc', file, '-o', 'a.out'], capture_output=True, text=True, timeout=5)
-            except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**› timeout error !**', Account)
+            except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, f'**{pl.rand_ch()} timeout error !**', Account)
             else:
-                if s.stderr:await pl.send_sudo_msg(event, '› **error:**\n\n`'+s.stderr+'`', Account)
+                if s.stderr:await pl.send_sudo_msg(event, f'**{pl.rand_ch()} error:**\n\n`'+s.stderr+'`', Account)
                 else:
                     try:code = subprocess.run(['./a.out'], capture_output=True, text=True, timeout=5)
-                    except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**› timeout error !**', Account)
-                    else:await pl.send_sudo_msg(event, '› **result:**\n\n`'+code.stdout+'`', Account)
+                    except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, f'**{pl.rand_ch()} timeout error !**', Account)
+                    else:await pl.send_sudo_msg(event, f'**{pl.rand_ch()} result:**\n\n`'+code.stdout+'`', Account)
                     finally:os.remove('a.out')
         elif cmd == 'java':
             file = 'data/code/'+'source.java'
             pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
             try:s = subprocess.run(['javac', file], capture_output=True, text=True, timeout=5)
-            except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**› timeout error !**', Account)
+            except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, f'**{pl.rand_ch()} timeout error !**', Account)
             else:
-                if s.stderr:await pl.send_sudo_msg(event, '› **error:**\n\n`'+s.stderr+'`', Account)
+                if s.stderr:await pl.send_sudo_msg(event, f'**{pl.rand_ch()} error:**\n\n`'+s.stderr+'`', Account)
                 else:
                     os.system('cp data/code/source.class '+os.getcwd())
                     os.remove('data/code/'+'source.class')
                     try:code = subprocess.run(['java', 'source'], capture_output=True, text=True, timeout=5)
-                    except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, '**› timeout error !**', Account)
-                    else:await pl.send_sudo_msg(event, '› **error:**\n\n`'+code.stderr+'`' if code.stderr else '› **result:**\n\n`'+code.stdout+'`', Account)
+                    except subprocess.TimeoutExpired: await pl.send_sudo_msg(event, f'**{pl.rand_ch()} timeout error !**', Account)
+                    else:await pl.send_sudo_msg(event, f'**{pl.rand_ch()} error:**\n\n`'+code.stderr+'`' if code.stderr else f'**{pl.rand_ch()} result:**\n\n`'+code.stdout+'`', Account)
                     finally:os.remove('source.class')
         else:
             await pl.run_interpreter_code(
@@ -535,7 +537,7 @@ async def GetLyricZ(event: events.newmessage.NewMessage.Event):
     try: 
         lyr = res.json()['lyrics']
     except:
-        lyr = '› **no lyrics found !**'
+        lyr = f'{pl.rand_ch()} **no lyrics found !**'
     await pl.send_sudo_msg(event, lyr, Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» vchat ManageR:
@@ -677,10 +679,10 @@ async def radioStreamLoad(event: events.InlineQuery.Event):
 #   -» QR CoD#:
 async def QrCoD3(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
-    if len_cmd >= 2 and cmd[0] == 'qrcode':
+    if len_cmd >= 2:
         if cmd[1] == 'create' and len_cmd >= 3:
             try:(qrcode.make(event.raw_text[14:])).save('QRCode.png')
-            except qrcode.exceptions.DataOverflowError:await pl.send_sudo_msg(event, '**› qrcode size is large !**', Account)
+            except qrcode.exceptions.DataOverflowError:await pl.send_sudo_msg(event, f'**{pl.rand_ch()} qrcode size is large !**', Account)
             else:
                 if event.sender_id in Account:
                     await event.delete()
@@ -692,51 +694,50 @@ async def QrCoD3(event: events.newmessage.NewMessage.Event):
 #   -» 2 CoiN MarkeT:
 async def SetCoiNManaGeR(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
-    if cmd[0] == 'coin':
-        if len_cmd >= 3 and cmd[1].isdigit() and cmd[2].isdigit():
-            start = int(cmd[1])
-            end = int(cmd[2])
-            sep = 1 if start < end else -1
-            coin = pl.getCoin(loop=True)
-            coin_dict = {}
-            for page in range(start, end, sep):
-                coin.update(page=page)
-                coin_dict = pl.collection_dict(coin_dict, coin.get_dict())
-            pms = pl.split_coins(coin_dict)
-            for i in pms:
-                await event.reply(i)
-        elif len_cmd > 1:
-            if cmd[1].isdigit():
-                coin = pl.getCoin(page=int(cmd[1]))
-                pms = pl.split_coins(coin)
-                for i in pms:
-                    await event.reply(i)
-            else:
-                searching = cmd[1]
-                start_page = None
-                end_page = None
-                if len_cmd >= 3 and cmd[2].isdigit():
-                    start_page = int(cmd[2])
-                if len_cmd >= 4 and cmd[3].isdigit():
-                    end_page = int(cmd[3])
-                if end_page and start_page:
-                    sep = 1 if start_page < end_page else -1
-                    coin = pl.getCoin(loop=True)
-                    coin_dict = {}
-                    for page in range(start_page, end_page, sep):
-                        coin.update(page=page)
-                        coin_dict = pl.collection_dict(coin_dict, coin.get_dict())
-                    find = coin_dict.get(searching)
-                    await event.reply(f'`{find}$`') if find else await event.reply('**› not found !**')
-                else:
-                    coin = pl.getCoin(page=start_page)
-                    find = coin.get_dict().get(searching)
-                    await event.reply(f'`{find}$`') if find else await event.reply('**› not found !**')
-        else:
-            coin = pl.getCoin()
+    if len_cmd >= 3 and cmd[1].isdigit() and cmd[2].isdigit():
+        start = int(cmd[1])
+        end = int(cmd[2])
+        sep = 1 if start < end else -1
+        coin = pl.getCoin(loop=True)
+        coin_dict = {}
+        for page in range(start, end, sep):
+            coin.update(page=page)
+            coin_dict = pl.collection_dict(coin_dict, coin.get_dict())
+        pms = pl.split_coins(coin_dict)
+        for i in pms:
+            await event.reply(i)
+    elif len_cmd > 1:
+        if cmd[1].isdigit():
+            coin = pl.getCoin(page=int(cmd[1]))
             pms = pl.split_coins(coin)
             for i in pms:
                 await event.reply(i)
+        else:
+            searching = cmd[1]
+            start_page = None
+            end_page = None
+            if len_cmd >= 3 and cmd[2].isdigit():
+                start_page = int(cmd[2])
+            if len_cmd >= 4 and cmd[3].isdigit():
+                end_page = int(cmd[3])
+            if end_page and start_page:
+                sep = 1 if start_page < end_page else -1
+                coin = pl.getCoin(loop=True)
+                coin_dict = {}
+                for page in range(start_page, end_page, sep):
+                    coin.update(page=page)
+                    coin_dict = pl.collection_dict(coin_dict, coin.get_dict())
+                find = coin_dict.get(searching)
+                await event.reply(f'`{find}$`') if find else await event.reply(f'**{pl.rand_ch()} not found !**')
+            else:
+                coin = pl.getCoin(page=start_page)
+                find = coin.get_dict().get(searching)
+                await event.reply(f'`{find}$`') if find else await event.reply(f'**{pl.rand_ch()} not found !**')
+    else:
+        coin = pl.getCoin()
+        pms = pl.split_coins(coin)
+        for i in pms:
+            await event.reply(i)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» GeT ProxY: ---- not webservice to this code .
 '''
@@ -745,7 +746,7 @@ async def GetProxY(event: events.newmessage.NewMessage.Event):
         res = req.get('https://www.api.wirexteam.tk/mtproto')#('https://www.wirexteam.ga/mtproto')
         num = pl.Counter()
         try: 
-            pxy = '\n'.join(list(map(lambda px:f'› [proxy {num.get_num()}]({px["proxy"]}) - **ping: {px["ping"]} ms**', res.json()['mtproto']))[:50])
+            pxy = '\n'.join(list(map(lambda px:f'{pl.rand_ch()} [proxy {num.get_num()}]({px["proxy"]}) - **ping: {px["ping"]} ms**', res.json()['mtproto']))[:50])
         except:
             pxy = '- cannot connect 2 weservice !'
         await event.edit(pxy) if event.sender_id in Account else await event.reply(pxy)'''
@@ -753,28 +754,28 @@ async def GetProxY(event: events.newmessage.NewMessage.Event):
 #   -» Check ManageR:
 async def CheCKDIU(event):
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
-    if len_cmd >= 3 and cmd[0] == 'check':
+    if len_cmd >= 3:
         if False: #cmd[1] == 'username': # need to check ... later !
-            try:check = f'› **Checking Username** `{cmd[2]}` **On Social Media:**\n'+'            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n'+'\n'.join(['⌬ '+i+' = '+v['stats']+ f'{"[✔️]" if v["link"] else "[✖️]"}' for i, v in req.get('https://www.wirexteam.ga/checker?username='+cmd[2], timeout=10).json()['checker'].items()])
-            except: check = '› **error !**'
+            try:check = f'**{pl.rand_ch()} Checking Username** `{cmd[2]}` **On Social Media:**\n'+'            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n'+'\n'.join(['⌬ '+i+' = '+v['stats']+ f'{"[✔️]" if v["link"] else "[✖️]"}' for i, v in req.get('https://www.wirexteam.ga/checker?username='+cmd[2], timeout=10).json()['checker'].items()])
+            except: check = f'**{pl.rand_ch()} error !**'
             finally: await pl.send_sudo_msg(event, check, Account)
         elif cmd[1] == 'ip':
-            try: check = f'› **Ip Information For** ( `{cmd[2]}` ):'+'\n            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n'+'\n'.join(['⌬ '+i+' = '+str(v) for i, v in req.get('http://ip-api.com/json/{}?fields=status,message,continent,continentCode,country,countryCode,region,regionName,city,zip,lat,lon,timezone,currency,isp,org,as,query'.format(cmd[2]), timeout=10).json().items()])
-            except: check = '› **error !**'
+            try: check = f'**{pl.rand_ch()} Ip Information For** ( `{cmd[2]}` ):'+'\n            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n'+'\n'.join(['⌬ '+i+' = '+str(v) for i, v in req.get('http://ip-api.com/json/{}?fields=status,message,continent,continentCode,country,countryCode,region,regionName,city,zip,lat,lon,timezone,currency,isp,org,as,query'.format(cmd[2]), timeout=10).json().items()])
+            except: check = f'**{pl.rand_ch()} error !**'
             finally: await pl.send_sudo_msg(event, check, Account)
         elif cmd[1] == 'domain': 
-            try:domain = whois(cmd[2]);check = f'› **Checking Domain** (`{domain.domain}`)\n            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n⌬ creation = {domain.creation_date}\n⌬ expiration = {domain.expiration_date}\n⌬ servers = [ {", ".join(domain.name_servers)} ]\n⌬ dns = {domain.dnssec}\n⌬ email = {domain.emails}\n⌬ country = {domain.country}\n⌬ state = {domain.state}'
-            except:check = '› **error !**'
+            try:domain = whois(cmd[2]);check = f'**{pl.rand_ch()} Checking Domain** (`{domain.domain}`)\n            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n⌬ creation = {domain.creation_date}\n⌬ expiration = {domain.expiration_date}\n⌬ servers = [ {", ".join(domain.name_servers)} ]\n⌬ dns = {domain.dnssec}\n⌬ email = {domain.emails}\n⌬ country = {domain.country}\n⌬ state = {domain.state}'
+            except:check = f'**{pl.rand_ch()} error !**'
             finally:await pl.send_sudo_msg(event, check, Account)
         elif cmd[1] == 'phone':
-            try:kosphone = FuckingPhone(event.raw_text[event.raw_text.find(' ', 8)+1:]);check = f'› **checking phone** (`{kosphone.national_number}`)\n            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n⌬ country = {geocoder.description_for_number(kosphone, "en")}\n⌬ country code = {kosphone.country_code}\n⌬ co = {carrier.name_for_number(kosphone, "en")}'
-            except:check = '**› error !**'
+            try:kosphone = FuckingPhone(event.raw_text[event.raw_text.find(' ', 8)+1:]);check = f'**{pl.rand_ch()} checking phone** (`{kosphone.national_number}`)\n            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n⌬ country = {geocoder.description_for_number(kosphone, "en")}\n⌬ country code = {kosphone.country_code}\n⌬ co = {carrier.name_for_number(kosphone, "en")}'
+            except:check = f'**{pl.rand_ch()} error !**'
             finally:await pl.send_sudo_msg(event, check, Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Take the system "TIME/DATE" and send it:
 async def SeYTime(event: events.newmessage.NewMessage.Event):
     Dat3 = pl.gregorian_to_jalali(dt.today().year, dt.today().month, dt.today().day)
-    await pl.send_sudo_msg(event, '› Tim3 NoW :\n'+'- time = %.2d:%.2d:%.2d'%(dt.today().hour, dt.today().minute, dt.today().second)+' | '+pl.send_weekday(dt.now().weekday())+'\n- date = '+'/'.join(map(lambda x:'%.2d'%x, Dat3))+' - '+'/'.join(map(lambda x:'%.2d'%x, [dt.today().year, dt.today().month, dt.today().day]))+'\n- Seasons = '+pl.send_seasons(Dat3[1])+' - '+pl.send_seasons(Dat3[1], 'j')+'\n- Month = '+pl.jdmonthname(Dat3[1])+' - '+dt.now().strftime("%B"), Account)
+    await pl.send_sudo_msg(event, f'{pl.rand_ch()} Tim3 NoW :\n'+'- time = %.2d:%.2d:%.2d'%(dt.today().hour, dt.today().minute, dt.today().second)+' | '+pl.send_weekday(dt.now().weekday())+'\n- date = '+'/'.join(map(lambda x:'%.2d'%x, Dat3))+' - '+'/'.join(map(lambda x:'%.2d'%x, [dt.today().year, dt.today().month, dt.today().day]))+'\n- Seasons = '+pl.send_seasons(Dat3[1])+' - '+pl.send_seasons(Dat3[1], 'j')+'\n- Month = '+pl.jdmonthname(Dat3[1])+' - '+dt.now().strftime("%B"), Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» UsE th3 Google Translate module 4 translation !:
 async def TranslatE(event: events.newmessage.NewMessage.Event):
@@ -783,8 +784,9 @@ async def TranslatE(event: events.newmessage.NewMessage.Event):
         msg = await event.get_reply_message()
         msg_for_tr = msg.raw_text
     else:
-        msg_for_tr = event.raw_text[6:] 
-    await pl.send_sudo_msg(event, Tr.translate(msg_for_tr, dest=event.raw_text[3:5]).text, Account)
+        dest = event.raw_text[event.raw_text.find(' ', 1)+1:event.raw_text.find(' ', 5)]
+        msg_for_tr = event.raw_text[event.raw_text.find(' ', 5)+1:]
+    await pl.send_sudo_msg(event, Tr.translate(msg_for_tr, dest=dest).text, Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Accounts whose Messag# donot need to be forwarded =| ! :
 async def DonTSaveMsgInChannel(event: events.newmessage.NewMessage.Event):
@@ -801,52 +803,53 @@ async def joinchat(event: events.newmessage.NewMessage.Event):
     if len_cmd > 1 and cmd[1][0] == '@':
         try:
             await Client(JoinChannelRequest(cmd[1]))
-            await pl.send_sudo_msg(event, '› **done, joined !**', Account)
-        except:await pl.send_sudo_msg(event, '› **error !**', Account)
+            await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, joined !**', Account)
+        except:await pl.send_sudo_msg(event, f'**{pl.rand_ch()} error !**', Account)
     elif len_cmd > 1 and pl.check_link(cmd[1], ptrn = 's'):
         link = pl.check_link(cmd[1], ptrn = 'l')
         try:
             await Client(CheckChatInviteRequest(link[link.rfind('/')+1:]))
-        except: await pl.send_sudo_msg(event, '› **invalid link !**', Account)
+        except: await pl.send_sudo_msg(event, f'**{pl.rand_ch()} invalid link !**', Account)
         else:
             try:
                 await Client(ImportChatInviteRequest(link[link.rfind('/')+1:]))
-                await pl.send_sudo_msg(event, '› **done, joined !**', Account)
-            except Exception as er: await pl.send_sudo_msg(event, f'›** error: {er}!**', Account)
+                await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, joined !**', Account)
+            except Exception as er: await pl.send_sudo_msg(event, f'**{pl.rand_ch()} error: {er}!**', Account)
     else:
         try:
             await Client(JoinChannelRequest(cmd[1]))
-            await pl.send_sudo_msg(event, '› **done, joined !**', Account)
+            await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, joined !**', Account)
         except:
-            await pl.send_sudo_msg(event, '› **error !**', Account)
+            await pl.send_sudo_msg(event, f'**{pl.rand_ch()} error !**', Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» InFO BOT:
 async def SeYInFO(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
-    if event.raw_text.lower() == 'info':
+    ch = pl.rand_ch()
+    if len_cmd == 1:
         repo = git.Repo(search_parent_directories=True)
-        message = f'› **info plSelf** `v.{pl.Conf.version}` :\n\n› **sudos :** `{len(sudo)}`\n› **PV user :** `{len(clir.lrange(pl.DataBase.users_in_private,0 ,-1))}`\n› **user :** `{getpwuid(os.getuid())[0]}`\n› **used RAM:** `{int(((psutil.Process(os.getpid()).memory_full_info().rss)/1024)/1024)}/{"%.3f"%(((psutil.virtual_memory().total)/1024)/1024)}MB`\n› **process:** `{os.getpid()}` **-** `{os.getppid()}`\n› **python3 version :** `{sys.version.split()[0]}`\n› **telethon version :** `{tver}`\n› **os:** `{subprocess.check_output(["lsb_release","-is"]).decode("utf-8").lower().strip(chr(10))}`\n› **git:** `{repo.remotes.origin.url}`\n› **HEAD: {len(list(repo.iter_commits()))} -** `{repo.head.commit.message}`'
+        message = f'**{ch} info plSelf** `v.{pl.Conf.version}` :\n\n**{ch} sudos :** `{len(sudo)}`\n**{ch} PV user :** `{len(clir.lrange(pl.DataBase.users_in_private,0 ,-1))}`\n**{ch} user :** `{getpwuid(os.getuid())[0]}`\n**{ch} used RAM:** `{int(((psutil.Process(os.getpid()).memory_full_info().rss)/1024)/1024)}/{"%.2f"%(((psutil.virtual_memory().total)/1024)/1024)}MB`\n**{ch} process:** `{os.getpid()}` **-** `{os.getppid()}`\n**{ch} python3 version :** `{sys.version.split()[0]}`\n**{ch} telethon version :** `{tver}`\n**{ch} os:** `{subprocess.check_output(["lsb_release","-is"]).decode("utf-8").lower().strip(chr(10))}`\n**{ch} git:** `{repo.remotes.origin.url}`\n**{ch} HEAD: {len(list(repo.iter_commits()))} -** `{repo.head.commit.message}`'
         if filename := clir.get(pl.DataBase.logo):
             await Client.send_file(event.chat_id, filename, caption=message, reply_to=event.id)
         else:
             await pl.send_sudo_msg(event, message, Account)
     elif len_cmd > 1 and cmd[0] == 'info' and cmd[1] == 'pv':
         c = pl.Counter()
-        await pl.send_sudo_msg(event, '› **user in pv:**\n\n'+'\n'.join(map(lambda s:f'{c.get_num()} - [{s}](tg://user?id={s})', clir.lrange(pl.DataBase.users_in_private,0 ,-1))), Account)
+        await pl.send_sudo_msg(event, f'**{ch} user in pv:**\n\n'+'\n'.join(map(lambda s:f'{c.get_num()} - [{s}](tg://user?id={s})', clir.lrange(pl.DataBase.users_in_private,0 ,-1))), Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Send && SaV# Voice:
 async def SenDSaVOicE(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
-    if len_cmd >= 2 and cmd[0] == 'voice':
+    if len_cmd >= 2:
         if cmd[1] == 'play' and event.is_reply:
             msg = await event.get_reply_message()
             if msg.media and getattr(msg.media.document, 'attributes', None) and type(msg.media.document.attributes[0]) is types.DocumentAttributeAudio and msg.media.document.attributes[0].voice:
                 file = await msg.download_media()
                 try:txt = pl.voice_to_str(AudioSegment, file)
                 except:
-                    await pl.send_sudo_msg(event, '**› voice is empty, or it is not persian !**', Account)
+                    await pl.send_sudo_msg(event, f'**{pl.rand_ch()} voice is empty, or it is not persian !**', Account)
                     os.remove(file)
-                else:await pl.send_sudo_msg(event, f'{txt}' or '**› is empty !**', Account)
+                else:await pl.send_sudo_msg(event, f'{txt}' or f'**{pl.rand_ch()} is empty !**', Account)
         elif cmd[1] == 'save' and event.is_reply and len_cmd == 3:
             voice_name = cmd[2]
             if voice_name not in clir.hgetall(pl.DataBase.voices).keys():
@@ -854,19 +857,19 @@ async def SenDSaVOicE(event: events.newmessage.NewMessage.Event):
                 if msg.media and type(msg.media) is types.MessageMediaDocument and msg.media.document.attributes and type(msg.media.document.attributes[0]) is types.DocumentAttributeAudio and msg.media.document.attributes[0].voice:
                     voice = await msg.download_media('data/voice')
                     clir.hset(pl.DataBase.voices, voice_name, voice)
-                    await pl.send_sudo_msg(event, f'› **done, voice name to call :** `{voice_name}`', Account)
+                    await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, voice name to call :** `{voice_name}`', Account)
             else:
-                await pl.send_sudo_msg(event, '› **voice was already in the database !**', Account)
+                await pl.send_sudo_msg(event, f'**{pl.rand_ch()} voice was already in the database !**', Account)
         elif cmd[1] == 'delete' and len_cmd == 3:
             voice_name = cmd[2]
             if voice_name in clir.hgetall(pl.DataBase.voices).keys():
                 os.remove(clir.hget(pl.DataBase.voices, voice_name))
                 clir.hdel(pl.DataBase.voices, voice_name)
-                await pl.send_sudo_msg(event, f'› **done,** `{voice_name}` **removed to database !**', Account)
-            else:await pl.send_sudo_msg(event, f'› **the** `{voice_name}` **not in database !**', Account)
+                await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done,** `{voice_name}` **removed to database !**', Account)
+            else:await pl.send_sudo_msg(event, f'**{pl.rand_ch()} the** `{voice_name}` **not in database !**', Account)
         elif cmd[1] == 'list':
             num = pl.Counter()
-            await pl.send_sudo_msg(event, '› **voice list:**\n\n'+'\n'.join(map(lambda x:f'**{num.get_num()} -** `{x}`' ,clir.hgetall(pl.DataBase.voices).keys())), Account)
+            await pl.send_sudo_msg(event, f'{pl.rand_ch()} **voice list:**\n\n'+'\n'.join(map(lambda x:f'**{num.get_num()} -** `{x}`' ,clir.hgetall(pl.DataBase.voices).keys())), Account)
         else:
             voice_name = cmd[1]
             if voice_name in clir.hgetall(pl.DataBase.voices).keys():
@@ -880,7 +883,7 @@ async def SenDSaVOicE(event: events.newmessage.NewMessage.Event):
 #   -» FilE ManageR:
 async def SenDFuCKinGFilE(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
-    if len_cmd >= 2 and cmd[0] == 'file':
+    if len_cmd >= 2:
         if cmd[1] == 'save' and event.is_reply and len_cmd == 3:
             file_name = cmd[2]
             if file_name not in clir.hgetall(pl.DataBase.files).keys():
@@ -888,19 +891,19 @@ async def SenDFuCKinGFilE(event: events.newmessage.NewMessage.Event):
                 if msg.media:
                     await Client.send_file(pl.Conf.BOT_USERNAME, msg.media, caption=f'kosfile {file_name}')
                     #clir.hset(pl.DataBase.files, file_name, pack_bot_file_id(msg.media))
-                    await pl.send_sudo_msg(event, f'› **done, voice name to call :** `{file_name}`', Account)
+                    await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, voice name to call :** `{file_name}`', Account)
             else:
-                await pl.send_sudo_msg(event, '**› file was already in the database !**', Account)
+                await pl.send_sudo_msg(event, f'**{pl.rand_ch()} file was already in the database !**', Account)
         elif cmd[1] == 'delete' and len(cmd) == 3:
             file_name = cmd[2]
             if file_name in clir.hgetall(pl.DataBase.files).keys():
                 clir.hdel(pl.DataBase.files, file_name)
-                await pl.send_sudo_msg(event, f'› **done,** `{file_name}` **removed the database !**', Account)
+                await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done,** `{file_name}` **removed the database !**', Account)
             else:
-                await pl.send_sudo_msg(event, f'› **the** `{file_name}` **not in database !**', Account)
+                await pl.send_sudo_msg(event, f'**{pl.rand_ch()} the** `{file_name}` **not in database !**', Account)
         elif cmd[1] == 'list':
             num = pl.Counter()
-            await pl.send_sudo_msg(event, '› **file list:**\n\n'+'\n'.join(map(lambda x:f'**{num.get_num()} -** `{x}`' ,clir.hgetall(pl.DataBase.files).keys())), Account)
+            await pl.send_sudo_msg(event, f'**{pl.rand_ch()} file list:**\n\n'+'\n'.join(map(lambda x:f'**{num.get_num()} -** `{x}`' ,clir.hgetall(pl.DataBase.files).keys())), Account)
         else:
             file_name = cmd[1]
             if file_name in clir.hgetall(pl.DataBase.files).keys():
@@ -937,63 +940,64 @@ async def KirToKosMary(event: events.newmessage.NewMessage.Event):
 #   -» LefT In GrouP:
 async def leftchat(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX, False)
-    if event.raw_text.lower() == 'left' and event.is_group:
+    if len_cmd == 1 and event.is_group:
         try:
             await pl.send_sudo_msg(event, 'bye', Account)
             await Client(LeaveChannelRequest(await Client.get_input_entity(event.chat_id)))
-        except Exception as er: await pl.send_sudo_msg(event, f'**› error: {er}**', Account)
+        except Exception as er: await pl.send_sudo_msg(event, f'**{pl.rand_ch()} error: {er}**', Account)
     elif len_cmd > 1 and pl.check_link(cmd[1], ptrn = 's'):
         link = pl.check_link(cmd[1], ptrn = 'l')
         try:
             await Client(LeaveChannelRequest(await Client.get_input_entity(link)))
-            await pl.send_sudo_msg(event, '› **done, i lefted.**', Account)
-        except Exception as er: await pl.send_sudo_msg(event, f'**› error: {er}**', Account)
+            await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, i lefted.**', Account)
+        except Exception as er: await pl.send_sudo_msg(event, f'**{pl.rand_ch()} error: {er}**', Account)
     else:
         try:
             await Client(LeaveChannelRequest(await Client.get_input_entity(event.raw_text.split()[1])))
-            await pl.send_sudo_msg(event, '› **done, i lefted.**', Account)
-        except Exception as er: await pl.send_sudo_msg(event, f'**› error: {er}**', Account)
+            await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, i lefted.**', Account)
+        except Exception as er: await pl.send_sudo_msg(event, f'**{pl.rand_ch()} error: {er}**', Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» 2 Lock && UnLock ManageR:
 async def LockGpManager(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     if len_cmd > 1:
+        ch = pl.rand_ch()
         database = clir.hget(pl.DataBase.group_manager, str(event.chat_id))
         if database:
             database = js.loads(database)
             if cmd[1] == 'settings':
-                await pl.send_sudo_msg(event, '\n'.join(map(lambda k: f'**›** `{k[0]}` **=> [{"✔️" if k[1] else "✖️"}]**', database.items())), Account)
+                await pl.send_sudo_msg(event, '\n'.join(map(lambda k: f'**{ch}** `{k[0]}` **=> [{"✔️" if k[1] else "✖️"}]**', database.items())), Account)
             elif cmd[0] == 'lock':
                 if (key := database.get(cmd[1], None)) != None:
                     if key:
-                        await pl.send_sudo_msg(event, f'**› {cmd[1]} is already locked !**', Account)
+                        await pl.send_sudo_msg(event, f'**{ch} {cmd[1]} is already locked !**', Account)
                     else:
                         await pl.setup_data(database, cmd[1], clir,js, event,pl.empty_async)
-                        await pl.send_sudo_msg(event, f'**› done, {cmd[1]} was locked !**', Account)
+                        await pl.send_sudo_msg(event, f'**{ch} done, {cmd[1]} was locked !**', Account)
             else:
                 if (key := database.get(cmd[1], None)) != None:
                     if key:
                         await pl.setup_data(database, cmd[1], clir, js, event, pl.empty_async)
-                        await pl.send_sudo_msg(event, f'**› done, {cmd[1]} is unlocked !**', Account)
+                        await pl.send_sudo_msg(event, f'**{ch} done, {cmd[1]} is unlocked !**', Account)
                     else:
-                        await pl.send_sudo_msg(event, f'**› {cmd[1]} is already unlocked !**', Account)
+                        await pl.send_sudo_msg(event, f'**{ch} {cmd[1]} is already unlocked !**', Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» 2 Delet# a messag3 from SUDO:
 async def DeleteMessag3(event: events.newmessage.NewMessage.Event): # 0110100100100000011011000110111101110110011001010010000001101000011001010111001000100000011000100111010101110100001000000110100100100000011010000110000101110110011001010010000001110100011011110010000001100110011011110111001001100111011001010111010000100000011010000110010101110010
-    if event.is_reply and event.raw_text.lower() == 'del':await Client.delete_messages(event.chat_id, event.reply_to.reply_to_msg_id);await event.delete()
+    if event.is_reply:await Client.delete_messages(event.chat_id, event.reply_to.reply_to_msg_id);await event.delete()
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» 2 MutE && UnMute --D in GrouP && PV:
 async def MuteAllGP(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
-    text = event.raw_text.lower()
+    text = ' '.join(cmd)
     chat_id = str(event.chat_id)
     if event.is_group:
         if text == 'mute all':
-            if chat_id not in clir.lrange('plMuteAllGP', 0, -1):
-                clir.lpush('plMuteAllGP', event.chat_id)
-                await pl.send_sudo_msg(event, f'› **group** `{event.chat_id}` **has been muted !**', Account)
+            if chat_id not in clir.lrange(pl.DataBase.mute_all, 0, -1):
+                clir.lpush(pl.DataBase.mute_all, event.chat_id)
+                await pl.send_sudo_msg(event, f'**{pl.rand_ch()} group** `{event.chat_id}` **has been muted !**', Account)
             else:
-                await pl.send_sudo_msg(event, f'› **group** `{event.chat_id}` **has been muted before !**', Account)
+                await pl.send_sudo_msg(event, f'**{pl.rand_ch()} group** `{event.chat_id}` **has been muted before !**', Account)
         elif cmd[0] == 'mute':
             user = None
             if len_cmd == 1 and event.is_reply:
@@ -1015,13 +1019,13 @@ async def MuteAllGP(event: events.newmessage.NewMessage.Event):
                     if chat_id in clir.hgetall(pl.DataBase.mute_group_user).keys():
                         if user not in clir.hget(pl.DataBase.mute_group_user, chat_id).split():
                             pl.adduserinMuteGp2hset(clir ,pl.DataBase.mute_group_user, chat_id, user)
-                            await pl.send_sudo_msg(event, f'› **user** `{user}` **has been muted !**', Account)
-                        else:await pl.send_sudo_msg(event, f'› **user** `{user}` **has been muted before !**', Account)
+                            await pl.send_sudo_msg(event, f'**{pl.rand_ch()} user** `{user}` **has been muted !**', Account)
+                        else:await pl.send_sudo_msg(event, f'**{pl.rand_ch()} user** `{user}` **has been muted before !**', Account)
                     else:
                         pl.adduserinMuteGp2hset(clir ,pl.DataBase.mute_group_user, chat_id, user)
-                        await pl.send_sudo_msg(event, f'› **user** `{user}` **has been muted !**', Account)
+                        await pl.send_sudo_msg(event, f'**{pl.rand_ch()} user** `{user}` **has been muted !**', Account)
                 else:
-                    await pl.send_sudo_msg(event, '› **user is SUDO !**', Account)
+                    await pl.send_sudo_msg(event, f'**{pl.rand_ch()} user is SUDO !**', Account)
     elif text == 'mute' and event.sender_id == Account[0] and event.is_private and event.is_reply:
         msg = await event.get_reply_message()
         user = f'{getattr(msg.from_id, "user_id", "")}' or f'-100{getattr(msg.from_id, "channel_id", None)}'
@@ -1029,20 +1033,20 @@ async def MuteAllGP(event: events.newmessage.NewMessage.Event):
             return
         if user not in clir.lrange(pl.DataBase.mute_private_user, 0, -1):
             clir.lpush(pl.DataBase.mute_private_user, user)
-            await event.edit(f'› **user** `{user}` **has been muted !**')
+            await event.edit(f'**{pl.rand_ch()} user** `{user}` **has been muted !**')
         else:
-            await event.edit(f'› **user** `{user}` **has been muted bofore !**')
+            await event.edit(f'**{pl.rand_ch()} user** `{user}` **has been muted bofore !**')
 async def UnMuteAllGP(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     text = event.raw_text.lower()
     chat_id = str(event.chat_id)
     if event.is_group:
         if text == 'unmute all':
-            if chat_id in clir.lrange('plMuteAllGP', 0, -1): 
-                clir.lrem('plMuteAllGP', 0, event.chat_id)
-                await pl.send_sudo_msg(event, f'› **group** `{event.chat_id}` **it has out of muted !**', Account)
+            if chat_id in clir.lrange(pl.DataBase.mute_all, 0, -1): 
+                clir.lrem(pl.DataBase.mute_all, 0, event.chat_id)
+                await pl.send_sudo_msg(event, f'**{pl.rand_ch()} group** `{event.chat_id}` **it has out of muted !**', Account)
             else:
-                await pl.send_sudo_msg(event, f'› **group** `{event.chat_id}` **has not been muted !**', Account)
+                await pl.send_sudo_msg(event, f'**{pl.rand_ch()} group** `{event.chat_id}` **has not been muted !**', Account)
         elif cmd[0] == 'unmute':
             user = None
             if len_cmd == 1 and event.is_reply:
@@ -1061,21 +1065,21 @@ async def UnMuteAllGP(event: events.newmessage.NewMessage.Event):
                     if chat_id in clir.hgetall(pl.DataBase.mute_group_user).keys():
                         if user in clir.hget(pl.DataBase.mute_group_user, str(event.chat_id)).split():
                             pl.deluserinMuteGp2hset(clir ,pl.DataBase.mute_group_user, chat_id, user)
-                            await pl.send_sudo_msg(event, f'› **user** `{user}` **has been unmuted !**', Account)
+                            await pl.send_sudo_msg(event, f'**{pl.rand_ch()} user** `{user}` **has been unmuted !**', Account)
                         else:
-                            await pl.send_sudo_msg(event, f'› **user** `{user}` **has no muted !**', Account)
+                            await pl.send_sudo_msg(event, f'**{pl.rand_ch()} user** `{user}` **has no muted !**', Account)
                     else:
-                        await pl.send_sudo_msg(event, f'› **user** `{user}` **has no muted !**', Account)
+                        await pl.send_sudo_msg(event, f'**{pl.rand_ch()} user** `{user}` **has no muted !**', Account)
                 else:
-                    await pl.send_sudo_msg(event, '› **user is SUDO !**', Account)
+                    await pl.send_sudo_msg(event, f'**{pl.rand_ch()} user is SUDO !**', Account)
     elif text == 'unmute' and event.sender_id == Account[0] and event.is_private and event.is_reply:
         msg = await event.get_reply_message()
         if msg.peer_id.user_id == Account:return
         if str(msg.peer_id.user_id) in clir.lrange(pl.DataBase.mute_private_user, 0, -1):
             clir.lrem(pl.DataBase.mute_private_user, 0, msg.peer_id.user_id)
-            await event.edit(f'› **user** `{msg.peer_id.user_id}` **has been unmuted !**')
+            await event.edit(f'**{pl.rand_ch()} user** `{msg.peer_id.user_id}` **has been unmuted !**')
         else:
-            await event.edit(f'› **user** `{msg.peer_id.user_id}` **has no muted !**')
+            await event.edit(f'**{pl.rand_ch()} user** `{msg.peer_id.user_id}` **has no muted !**')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Th Banned User IN GP:
 async def BaNnedUserInGP(event: events.newmessage.NewMessage.Event):
@@ -1085,26 +1089,26 @@ async def BaNnedUserInGP(event: events.newmessage.NewMessage.Event):
             user = await Client.get_input_entity(cmd[1])
             if 'user_id' in user.to_dict():
                 await Client(EditBannedRequest(event.chat_id, user.user_id, ChatBannedRights(until_date=None, view_messages=True)))
-                await pl.send_sudo_msg(event, f'› **user** `{user.user_id}` **has been Banned !**', Account)
+                await pl.send_sudo_msg(event, f'**{pl.rand_ch()} user** `{user.user_id}` **has been Banned !**', Account)
         elif cmd[1].isdigit():
             await Client(EditBannedRequest(event.chat_id, int(cmd[1]), ChatBannedRights(until_date=None, view_messages=True)))
-            await pl.send_sudo_msg(event, f'› **user** `{cmd[1]}` **has been Banned !**', Account)
+            await pl.send_sudo_msg(event, f'**{pl.rand_ch()} user** `{cmd[1]}` **has been Banned !**', Account)
         elif event.entities and 'user_id' in event.entities[0].to_dict():
             await Client(EditBannedRequest(event.chat_id, event.entities[0].user_id, ChatBannedRights(until_date=None, view_messages=True)))
-            await pl.send_sudo_msg(event, f'› **user** `{event.entities[0].user_id}` **has been Banned !**', Account)
-    elif event.is_reply and event.raw_text.lower() == 'ban':
+            await pl.send_sudo_msg(event, f'**{pl.rand_ch()} user** `{event.entities[0].user_id}` **has been Banned !**', Account)
+    elif event.is_reply and len_cmd == 1:
         msg = await event.get_reply_message()
         user = getattr(msg.from_id, 'user_id', None)
         if not user:
-            await pl.send_sudo_msg(event, f'**› user id not found !**', Account)
+            await pl.send_sudo_msg(event, f'**{pl.rand_ch()} user id not found !**', Account)
         elif user in sudo:
-            await pl.send_sudo_msg(event, f'› **user** `{user}` **is SUDO !**', Account)
+            await pl.send_sudo_msg(event, f'**{pl.rand_ch()} user** `{user}` **is SUDO !**', Account)
         else:
             try: await Client(EditBannedRequest(event.chat_id, user, ChatBannedRights(until_date=None, view_messages=True)))
             except:
-                await pl.send_sudo_msg(event, '› **error !**', Account)
+                await pl.send_sudo_msg(event, f'**{pl.rand_ch()} error !**', Account)
             else:
-                await pl.send_sudo_msg(event, f'› **user** `{user}` **has been Banned !**', Account)
+                await pl.send_sudo_msg(event, f'**{pl.rand_ch()} user** `{user}` **has been Banned !**', Account)
 #   -» Th UnBanned User IN GP:
 async def BaNnedUserInGP(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
@@ -1113,72 +1117,72 @@ async def BaNnedUserInGP(event: events.newmessage.NewMessage.Event):
             user = await Client.get_input_entity(cmd[1])
             if 'user_id' in user.to_dict():
                 await Client.edit_permissions(event.chat_id, user.user_id, until_date=None, view_messages=True)
-                await pl.send_sudo_msg(event, f'› **user** `{user.user_id}` **has been unbanned !**', Account)
+                await pl.send_sudo_msg(event, f'**{pl.rand_ch()} user** `{user.user_id}` **has been unbanned !**', Account)
         elif cmd[1].isdigit():
             await Client.edit_permissions(event.chat_id, int(cmd[1]), until_date=None, view_messages=True)
-            await pl.send_sudo_msg(event, f'› **user** `{cmd[1]}` **has been unbanned !**', Account)
+            await pl.send_sudo_msg(event, f'**{pl.rand_ch()} user** `{cmd[1]}` **has been unbanned !**', Account)
         elif event.entities and 'user_id' in event.entities[0].to_dict():
             await Client.edit_permissions(event.chat_id, event.entities[0].user_id, until_date=None, view_messages=True)
-            await pl.send_sudo_msg(event, f'› **user** `{event.entities[0].user_id}` **has been unbanned !**', Account)
+            await pl.send_sudo_msg(event, f'**{pl.rand_ch()} user** `{event.entities[0].user_id}` **has been unbanned !**', Account)
     elif event.is_reply and event.raw_text.lower() == 'unban':
         msg = await event.get_reply_message()
         user = getattr(msg.from_id, 'user_id', None)
         try: await Client.edit_permissions(event.chat_id, user, until_date=None, view_messages=True)
         except:
-            await pl.send_sudo_msg(event, '› **error !**', Account)
+            await pl.send_sudo_msg(event, f'**{pl.rand_ch()} error !**', Account)
         else:
-            await pl.send_sudo_msg(event, f'› **user** `{user}` **has been unbanned !**', Account)
+            await pl.send_sudo_msg(event, f'**{pl.rand_ch()} user** `{user}` **has been unbanned !**', Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Set ManageR: 
 async def SetManageR(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
-    if len_cmd >= 3 and cmd[0] == 'set':
+    if len_cmd >= 3:
         try:
             if cmd[1] == 'bio':
                 bio = event.raw_text[event.raw_text.find(' ', 5)+1:]
                 if bio == 'delete':
                     clir.delete(pl.DataBase.bio)
                     await Client(UpdateProfileRequest(about = ''))
-                    await pl.send_sudo_msg(event, '› **done, bio was deleted !**', Account)
+                    await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, bio was deleted !**', Account)
                 else:
                     if len(bio) <= 70:
                         clir.set(pl.DataBase.bio, bio)
                         await Client(UpdateProfileRequest(about = bio))
-                        await pl.send_sudo_msg(event, f'› **done, bio :** `{bio}`', Account)
+                        await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, bio :** `{bio}`', Account)
             elif cmd[1] == 'logo':
                 if cmd[2] == 'this' and event.is_reply:
                     msg = await event.get_reply_message()
                     if msg.media and type(msg.media) in [types.MessageMediaPhoto]:
                         file_name = await msg.download_media('data/temp')
                         clir.set(pl.DataBase.logo, file_name)
-                        await pl.send_sudo_msg(event, '› **done, logo seted !**', Account)
+                        await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, logo seted !**', Account)
                 elif cmd[2] == 'delete':
                     if filename := clir.get(pl.DataBase.logo):
                         os.remove(filename)
                         clir.delete(pl.DataBase.logo)
-                        await pl.send_sudo_msg(event, '› **done, logo deleted !**', Account)
+                        await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, logo deleted !**', Account)
                     else:
-                        await pl.send_sudo_msg(event, '› ** logo not found !**', Account)
+                        await pl.send_sudo_msg(event, f'**{pl.rand_ch()} logo not found !**', Account)
             elif cmd[1] == 'username':
                 username = event.raw_text[event.raw_text.find(' ', 5)+1:]
                 if username == 'delete':
                     await Client(UpdateUsernameRequest(''))
-                    await pl.send_sudo_msg(event, '› **done, username was deleted !**', Account)
+                    await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, username was deleted !**', Account)
                 else:
                     await Client(UpdateUsernameRequest(username))
-                    await pl.send_sudo_msg(event, f'› **done, username :** `{username}`', Account)
+                    await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, username :** `{username}`', Account)
             elif cmd[1] == 'name':
                 name = event.raw_text[event.raw_text.find(' ', 5)+1:]
                 await Client(UpdateProfileRequest(first_name = name))
-                await pl.send_sudo_msg(event, f'› **done, name :** `{name}`', Account)
+                await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, name :** `{name}`', Account)
             elif cmd[1] == 'lastname':
                 lastname = event.raw_text[event.raw_text.find(' ', 5)+1:]
                 if lastname == 'delete':
                     await Client(UpdateProfileRequest(last_name = ''))
-                    await pl.send_sudo_msg(event, '› **done, lastname was deleted !**', Account)
+                    await pl.send_sudo_msg(event, '**{pl.rand_ch()} done, lastname was deleted !**', Account)
                 else:
                     await Client(UpdateProfileRequest(last_name = lastname))
-                    await pl.send_sudo_msg(event, f'› **done, lastname :** `{lastname}`', Account)
+                    await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, lastname :** `{lastname}`', Account)
             elif cmd[1] == 'profile':
                 if cmd[2] == 'this' and event.is_reply:
                     msg = await event.get_reply_message()
@@ -1194,7 +1198,7 @@ async def SetManageR(event: events.newmessage.NewMessage.Event):
                             await pl.send_sudo_msg(event, str(e), Account)
                         else:
                             if event.sender_id in Account: await event.delete()
-                            await msg.reply('› **done, profile seted !**')
+                            await msg.reply(f'**{pl.rand_ch()} done, profile seted !**')
                         finally:os.remove(pic_name)
                 elif cmd[2] == 'group':
                     if event.is_reply:
@@ -1206,97 +1210,101 @@ async def SetManageR(event: events.newmessage.NewMessage.Event):
                                     pic = await Client.upload_file(pic_name)
                                     await Client(EditPhotoRequest(cmd[3][1:], pic))
                                     if event.sender_id in Account:await event.delete()
-                                    await msg.reply('› **done, profile seted !**')
+                                    await msg.reply(f'**{pl.rand_ch()} done, profile seted !**')
                                     os.remove(pic_name)
                                 elif cmd[3][0]=='-' and cmd[3][1:].isdigit():
                                     pic_name = await msg.download_media()
                                     pic = await Client.upload_file(pic_name)
                                     await Client(EditPhotoRequest(await Client.get_input_entity(int(cmd[3])), pic))
                                     if event.sender_id in Account:await event.delete()
-                                    await msg.reply('› **done, profile seted !**')
+                                    await msg.reply(f'**{pl.rand_ch()} done, profile seted !**')
                                     os.remove(pic_name)
                             elif event.is_reply and (event.is_group or event.is_channel):
                                 pic_name = await msg.download_media()
                                 pic = await Client.upload_file(pic_name)
                                 await Client(EditPhotoRequest(event.chat_id, pic))
                                 if event.sender_id in Account:await event.delete()
-                                await msg.reply('› **done, profile seted !**')
+                                await msg.reply(f'**{pl.rand_ch()} done, profile seted !**')
                                 os.remove(pic_name)
                 elif cmd[2] == 'delete':
                     await Client(DeletePhotosRequest([(await Client.get_profile_photos('me'))[0]]))
-                    await pl.send_sudo_msg(event, '› **done, a profile deleted !**', Account)
+                    await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, a profile deleted !**', Account)
                 elif cmd[2] == 'deleteall':
                     await Client(DeletePhotosRequest((await Client.get_profile_photos('me'))))
-                    await pl.send_sudo_msg(event, '› **done, all profile was deleted !**', Account)
+                    await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, all profile was deleted !**', Account)
             elif cmd[1] == 'lasttime':
                 if cmd[2] == 'on':
                     if clir.get(pl.DataBase.lastname_timer):
-                        await pl.send_sudo_msg(event, '› **lasttime was already ON !**', Account)
+                        await pl.send_sudo_msg(event, f'**{pl.rand_ch()} lasttime was already ON !**', Account)
                     else:
                         full = (await Client.get_me()).last_name or '<<<!@n@!@dlfd;f;sfldssdkskmadki!l!l>>>'
                         clir.set(pl.DataBase.lastname_timer, full)
-                        await pl.send_sudo_msg(event, '› **done, set lasttime is ON !**', Account)
+                        await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, set lasttime is ON !**', Account)
                 elif cmd[2] == 'off':
                     get_re = clir.get(pl.DataBase.lastname_timer)
                     if get_re:
                         await Client(UpdateProfileRequest(last_name = '')) if get_re == '<<<!@n@!@dlfd;f;sfldssdkskmadki!l!l>>>' else await Client(UpdateProfileRequest(last_name = get_re))
                         clir.delete(pl.DataBase.lastname_timer)
-                        await pl.send_sudo_msg(event, '› **done, set lastime is OFF !**', Account)
-                    else: await pl.send_sudo_msg(event, '› **lasttime was already OFF !**', Account)
+                        await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, set lastime is OFF !**', Account)
+                    else: await pl.send_sudo_msg(event, f'**{pl.rand_ch()} lasttime was already OFF !**', Account)
             elif cmd[1] == 'biotime':
                 if cmd[2] == 'on':
                     if clir.get(pl.DataBase.biotime):
-                        await pl.send_sudo_msg(event, '› **biotime was already ON !**', Account)
+                        await pl.send_sudo_msg(event, f'**{pl.rand_ch()} biotime was already ON !**', Account)
                     else:
                         clir.set(pl.DataBase.biotime, 'miow=|')
-                        await pl.send_sudo_msg(event, '› **done, biotime is ON !**', Account)
+                        await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, biotime is ON !**', Account)
                 elif cmd[2] == 'off':
                     if clir.get(pl.DataBase.biotime):
                         clir.delete(pl.DataBase.biotime)
-                        await pl.send_sudo_msg(event, '› **done, biotime is OFF !**', Account)
+                        await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, biotime is OFF !**', Account)
             elif cmd[1] == 'forward':
                 if cmd[2] == 'off':
                     if clir.get(pl.DataBase.is_forward_messages):
                         clir.delete(pl.DataBase.is_forward_messages)
-                        await pl.send_sudo_msg(event, '› **done, forward has offline !**', Account)
+                        await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, forward has offline !**', Account)
                     else:
-                        await pl.send_sudo_msg(event, '› **forward was already offline !**', Account)
+                        await pl.send_sudo_msg(event, f'**{pl.rand_ch()} forward was already offline !**', Account)
                 elif cmd[2] == 'on':
                     if clir.get(pl.DataBase.is_forward_messages):
-                        await pl.send_sudo_msg(event, '› **forward was already online !**', Account)
+                        await pl.send_sudo_msg(event, f'**{pl.rand_ch()} forward was already online !**', Account)
                     else:
                         clir.set(pl.DataBase.is_forward_messages, 'True')
-                        await pl.send_sudo_msg(event, '› **done, forward has online !**', Account)
+                        await pl.send_sudo_msg(event, f'**{pl.rand_ch()} done, forward has online !**', Account)
         except Exception as er:
-            await pl.send_sudo_msg(event, f'**› error: {er}**', Account)
+            await pl.send_sudo_msg(event, f'**{pl.rand_ch()} error: {er}**', Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» PIN MsG : 
 async def PINMessaG3(event: events.newmessage.NewMessage.Event):
     if event.is_reply and event.raw_text:
         msg = await event.get_reply_message()
         await Client.pin_message(event.chat_id, msg, notify = True)
-        await pl.send_sudo_msg(event, '› **message pinned !**', Account)
+        await pl.send_sudo_msg(event, f'**{pl.rand_ch()} message pinned !**', Account)
 #   -» UNPIN MsG : 
 async def UnPINMessaG3(event: events.newmessage.NewMessage.Event):
     if event.is_group:
         msg = await Client.get_messages(event.chat_id, ids=types.InputMessagePinned())
-        if msg != None:
+        if msg:
             await Client.unpin_message(event.chat_id, msg.id)
-            await event.delete() and await msg.reply('› **message unpinned !**')
+            await event.delete() and await msg.reply(f'**{pl.rand_ch()} message unpinned !**')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» SpeedTesT:
 async def SpeeDTesT(event: events.newmessage.NewMessage.Event):
-    if event.raw_text.lower() == 'speedtest':
-        msg = await pl.send_sudo_msg(event, '› **wait !**', Account)
+    len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)[1]
+    if len_cmd == 1:
+        ch = pl.rand_ch()
+        msg = await pl.send_sudo_msg(event, f'**{ch} wait !**', Account)
         FuckingTIME = dt.now()
         res = await pl.dict_speedtest()
-        await msg.edit(f'› **result from `speedtest.net` after {(dt.now()-FuckingTIME).seconds}s :**\n\n**› download :** `{res["download"]:,}` **Mbps**\n**› upload :** `{res["ping"]:,}` **Mbps**\n**› ping :** `{res["ping"]}` **ms**')
+        await msg.edit(f'**{ch} result from `speedtest.net` after {(dt.now()-FuckingTIME).seconds}s :**\n\n**{ch} download :** `{res["download"]:,}` **Mbps**\n**{ch} upload :** `{res["ping"]:,}` **Mbps**\n**{ch} ping :** `{res["ping"]}` **ms**')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» PING CMD:
 async def PING(event: events.newmessage.NewMessage.Event):
-    TStarT = dt.now()
-    kosmsg = await pl.send_sudo_msg(event, '› `bot is ON !`', Account)
-    await kosmsg.edit(f'› `bot is ON !` **ping {(dt.now()-TStarT).microseconds/1000} ms**')
+    len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)[1]
+    if len_cmd == 1:
+        TStarT = dt.now()
+        kosmsg = await pl.send_sudo_msg(event, f'**{pl.rand_ch()}** `bot is ON !`', Account)
+        await kosmsg.edit(f'**{pl.rand_ch()}** `bot is ON !` **ping {(dt.now()-TStarT).microseconds/1000} ms**')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» SenD FuckinG Gam3:
 async def SendFGam3(event: events.newmessage.NewMessage.Event):
@@ -1309,12 +1317,12 @@ async def ThBlockEdUseR(event: events.newmessage.NewMessage.Event):
         msg = await event.get_reply_message()
         if event.is_group:
             user = getattr(msg.from_id, 'user_id', None)
-            if not user: await pl.send_sudo_msg(event, f'**› user id not found !**', Account)
+            if not user: await pl.send_sudo_msg(event, f'**{pl.rand_ch()} user id not found !**', Account)
             else:
                 await Client(BlockRequest(user))
-                await event.edit(f'› **user** `{user}` **has been blocked !**')
+                await event.edit(f'**{pl.rand_ch()} user** `{user}` **has been blocked !**')
         else:
-            await event.edit(f'› **user** `{user}` **has been blocked !**')
+            await event.edit(f'**{pl.rand_ch()} user** `{user}` **has been blocked !**')
             await Client(BlockRequest(msg.peer_id.user_id))
 #   -»
 async def ThUnBlockEdUseR(event: events.newmessage.NewMessage.Event):
@@ -1322,32 +1330,32 @@ async def ThUnBlockEdUseR(event: events.newmessage.NewMessage.Event):
         msg = await event.get_reply_message()
         if event.is_group:
             user = getattr(msg.from_id, 'user_id', None)
-            if not user: await pl.send_sudo_msg(event, f'**› user id not found !**', Account)
+            if not user: await pl.send_sudo_msg(event, f'**{pl.rand_ch()} user id not found !**', Account)
             else:
                 await Client(UnblockRequest(user))
-                await event.edit(f'› **user** `{user}` **has been unblocked !**')
+                await event.edit(f'**{pl.rand_ch()} user** `{user}` **has been unblocked !**')
         else:
             await Client(UnblockRequest(msg.peer_id.user_id))
-            await event.edit(f'› **user** `{msg.peer_id.user_id}` **has been unblocked !**')
+            await event.edit(f'**{pl.rand_ch()} user** `{msg.peer_id.user_id}` **has been unblocked !**')
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» There is nothing to say here:
 async def TurNFuckinGOff(event: events.newmessage.NewMessage.Event):
-    await event.edit('› **bot went offline !**') if event.sender_id in Account else await event.reply('› **bot went offline !**')
+    await event.edit(f'**{pl.rand_ch()} bot went offline !**') if event.sender_id in Account else await event.reply(f'**{pl.rand_ch()} bot went offline !**')
     os.system(f'kill {os.getppid()}')
 # - - - - - Anti-spam settings in the group - - - - -  #
 #   -» Add GrouP 2 ReDis:
 async def AddGrouP(event: events.newmessage.NewMessage.Event):
-    if str(event.chat_id) not in clir.hgetall(pl.DataBase.group_manager).keys():
-        clir.hset(pl.DataBase.group_manager, str(event.chat_id), js.dumps(pl.BOT_GROUP_DATABASE))
-        await pl.send_sudo_msg(event, '› **group add to database !**', Account)
-    else: await pl.send_sudo_msg(event, '› **group added to database before !**', Account)
+    if (str_chat_id := str(event.chat_id)) not in clir.hgetall(pl.DataBase.group_manager).keys():
+        clir.hset(pl.DataBase.group_manager, str_chat_id, js.dumps(pl.BOT_GROUP_DATABASE))
+        await pl.send_sudo_msg(event, f'**{pl.rand_ch()} group add to database !**', Account)
+    else: await pl.send_sudo_msg(event, f'**{pl.rand_ch()} group added to database before !**', Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» RemoVeD GrouP 2 ReDis:
 async def RemGrouP(event: events.newmessage.NewMessage.Event):
-    if str(event.chat_id) in clir.hgetall(pl.DataBase.group_manager).keys():
-        clir.hdel(pl.DataBase.group_manager, str(event.chat_id))
-        await pl.send_sudo_msg(event, '› **group deleted to database !**', Account)
-    else:await pl.send_sudo_msg(event, '› **group deleted to database before !**', Account)
+    if (str_chat_id := str(event.chat_id)) in clir.hgetall(pl.DataBase.group_manager).keys():
+        clir.hdel(pl.DataBase.group_manager, str_chat_id)
+        await pl.send_sudo_msg(event, f'**{pl.rand_ch()}group deleted to database !**', Account)
+    else:await pl.send_sudo_msg(event, f'**{pl.rand_ch()} group deleted to database before !**', Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» BoT H3lp:
 async def SendHelP(event: events.newmessage.NewMessage.Event):
@@ -1362,11 +1370,12 @@ async def SendHelP(event: events.newmessage.NewMessage.Event):
             result = await Client.inline_query(botc.BOT_USERNAME, 'fuckinghelp', entity=event.chat_id)
             await result[0].click(reply_to=event.id)
     except Exception as e:
-        await event.edit(f'› **error :** {e}') if event.sender_id in Account else await event.reply(f'› **error :** {e}')'''
+        await event.edit(f'**{pl.rand_ch()} error :** {e}') if event.sender_id in Account else await event.reply(f'**{pl.rand_ch()} error :** {e}')'''
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» SenD PaneL:
 async def PANELAPI(event: events.newmessage.NewMessage.Event): 
-    if event.is_group and event.raw_text.lower() == 'panel':
+    len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)[1]
+    if event.is_group and len_cmd == 1:
         if str(event.chat_id) in clir.hgetall(pl.DataBase.group_manager):
             try: 
                 if event.sender_id in Account: 
@@ -1377,15 +1386,15 @@ async def PANELAPI(event: events.newmessage.NewMessage.Event):
                     result = await Client.inline_query(pl.Conf.BOT_USERNAME, 'panel', entity=event.chat_id)
                     await result[0].click(reply_to=event.id)
             except Exception as e:
-                await pl.send_sudo_msg(event, f'› **error :** {e}', Account)
+                await pl.send_sudo_msg(event, f'**{pl.rand_ch()} error :** {e}', Account)
         else:
-            await pl.send_sudo_msg(event, '› **group not in database !**', Account)
+            await pl.send_sudo_msg(event, f'**{pl.rand_ch()} group not in database !**', Account)
 # - - - - - - - - - - ApI_BoT - - - - - - - - - - - -  #
 #   -» InPrivat3:
 @bot.on(events.NewMessage(pattern='/start'))
 async def bot_starting_user(event: events.newmessage.NewMessage.Event):
     if event.sender_id in sudo:
-        await event.reply('**› hello sudo !**')
+        await event.reply(f'**{pl.rand_ch()} hello sudo !**')
     elif event.is_private and (usr := str(event.sender_id)) not in clir.lrange(pl.DataBase.users_is_bot_private, 0, -1):
         clir.lpush(pl.DataBase.users_is_bot_private, usr)
 #   -» 
@@ -1394,6 +1403,7 @@ async def ChTabchi(event: events.InlineQuery.Event): # 'ChTabchi '+data+' '+str(
     if event.query.user_id in Account:
         pic_name = event.original_update.query.split()[1]
         user = event.original_update.query.split()[2]
+        ch = pl.rand_ch(True)
         but = [Button.inline(pl.create_rend_name(4), data='ftabchi '+user) for _ in range(4)]
         but[rand.randint(0,3)] = Button.inline(pic_name, data='ttabchi '+user) 
         buttons = [ 
@@ -1406,8 +1416,8 @@ async def ChTabchi(event: events.InlineQuery.Event): # 'ChTabchi '+data+' '+str(
                 but[3],
             ),
             (
-                Button.inline('°› ‌Ban ›°', data='tban'+user),
-                Button.inline('°› UnResT ›°', data='tunrt'+user),
+                Button.inline(f'{ch} ‌Ban {ch[::-1]}', data='tban'+user),
+                Button.inline(f'{ch} UnResT {ch[::-1]}', data='tunrt'+user),
             ),]
         builder = event.builder
         result = await builder.photo(pic_name+'.png',text=f'با سلام [کاربر](tg://user?id={user}) گرامی:\nلطفا کد کپچای درست را انتخاب کنید.', buttons=buttons)
@@ -1416,105 +1426,111 @@ async def ChTabchi(event: events.InlineQuery.Event): # 'ChTabchi '+data+' '+str(
 #   -»
 '''@bot.on(events.InlineQuery(pattern='fuckinghelp', users=Account))
 async def SenDFucKinGHelP(event: events.InlineQuery.Event):
+    ch = pl.rand_ch(True)
     buttons = [
         (
-            Button.inline('°› AnTi SpaM GP ›°', data='fuckinghelp1'),
+            Button.inline(f'{ch} AnTi SpaM GP {ch[::-1]}', data='fuckinghelp1'),
         ),
         (
-            Button.inline('°› KosSher FUN ›°', data='fuckinghelp2'),
-            Button.inline('°› Account HELP ›°', data='fuckinghelp3')
+            Button.inline('{ch} KosSher FUN {ch[::-1]}', data='fuckinghelp2'),
+            Button.inline('{ch} Account HELP {ch[::-1]}', data='fuckinghelp3')
         ),
-        (Button.inline("°› [ ExiT ] ›°", data="exitpl"),)
+        (Button.inline("{ch} [ ExiT ] {ch[::-1]}", data="exitpl"),)
     ]
     builder = event.builder
-    kos = await builder.article(title='fuckinghelp', text=f'**°› WlC 2 Th source help page! | pl-self v.{pl.version} ›°**', buttons=buttons)
+    kos = await builder.article(title='fuckinghelp', text=f'**{ch} WlC 2 Th source help page! | pl-self v.{pl.version} {ch[::-1]}**', buttons=buttons)
     await event.answer([kos])'''
 #   -» 
 @bot.on(events.InlineQuery(pattern="panel", users = Account)) 
 async def gpanel_1(event: events.InlineQuery.Event):
     if event.query.user_id in Account:
+        ch = pl.rand_ch(True)
         buttons = [
             (
-                Button.inline(f"°› Settings ›°", data="gpl1"),
+                Button.inline(f"{ch} Settings {ch[::-1]}", data="gpl1"),
             ),
             (
-                Button.inline("°› List Mute GP ›°", data="list_mute_gp"),
-                Button.inline("°› List Mute PV ›°", data="list_mute_pv"),
+                Button.inline(f"{ch} List Mute GP {ch[::-1]}", data="list_mute_gp"),
+                Button.inline(f"{ch} List Mute PV {ch[::-1]}", data="list_mute_pv"),
             ),
-            (Button.inline("°› [ ExiT ] ›°", data="exitpl"),)
+            (Button.inline(f"{ch} [ ExiT ] {ch[::-1]}", data="exitpl"),)
         ]
         builder = event.builder
-        result = await builder.article(title='panel', text='°› Welcome to the management panel of Group!\nPlease choose: ›°', buttons=buttons)
+        result = await builder.article(title='panel', text=f'{ch} Welcome to the management panel of Group!\nPlease choose: {ch[::-1]}', buttons=buttons)
         await event.answer([result])
 async def panel_1(event: events.InlineQuery.Event):
     database = clir.hget(pl.DataBase.group_manager, str(event.chat_id))
     if database == None:return
     else:database = js.loads(database)
+    ch = pl.rand_ch(True)
     buttons = [
         (
-            Button.inline(f"°› Link [{'✔️' if database['link'] else '✖️'}] ›°", data="link"),
-            Button.inline(f"°› Photo [{'✔️' if database['photo'] else '✖️'}] ›°", data="photo"),
+            Button.inline(f"{ch} Link [{'✔️' if database['link'] else '✖️'}] {ch[::-1]}", data="link"),
+            Button.inline(f"{ch} Photo [{'✔️' if database['photo'] else '✖️'}] {ch[::-1]}", data="photo"),
         ),
         (
-            Button.inline(f"°› Sticker [{'✔️' if database['sticker'] else '✖️'}] ›°", data="sticker"),
-            Button.inline(f"°› Gif [{'✔️' if database['gif'] else '✖️'}] ›°", data="gif"),
+            Button.inline(f"{ch} Sticker [{'✔️' if database['sticker'] else '✖️'}] {ch[::-1]}", data="sticker"),
+            Button.inline(f"{ch} Gif [{'✔️' if database['gif'] else '✖️'}] {ch[::-1]}", data="gif"),
         ),
         (
-            Button.inline(f"°› service [{'✔️' if database['service'] else '✖️'}] ›°", data="service"),
-            Button.inline(f"°› Game [{'✔️' if database['game'] else '✖️'}] ›°", data="game"),
+            Button.inline(f"{ch} service [{'✔️' if database['service'] else '✖️'}] {ch[::-1]}", data="service"),
+            Button.inline(f"{ch} Game [{'✔️' if database['game'] else '✖️'}] {ch[::-1]}", data="game"),
         ),
         (
-            Button.inline(f"°› button [{'✔️' if database['button'] else '✖️'}] ›°", data="button"),
-            Button.inline(f"°› Voice [{'✔️' if database['voice'] else '✖️'}] ›°", data="voice"),
+            Button.inline(f"{ch} button [{'✔️' if database['button'] else '✖️'}] {ch[::-1]}", data="button"),
+            Button.inline(f"{ch} Voice [{'✔️' if database['voice'] else '✖️'}] {ch[::-1]}", data="voice"),
         ),
         (
-            Button.inline(f"°› Forward [{'✔️' if database['forward'] else '✖️'}] ›°", data="forward"),
-            Button.inline(f"°› Video [{'✔️' if database['video'] else '✖️'}] ›°", data="video"),
+            Button.inline(f"{ch} Forward [{'✔️' if database['forward'] else '✖️'}] {ch[::-1]}", data="forward"),
+            Button.inline(f"{ch} Video [{'✔️' if database['video'] else '✖️'}] {ch[::-1]}", data="video"),
         ),
         (Button.inline("[ ↻ ]", data="gpl2"),),
-        (Button.inline(f"°› BacK ›°", data="bk_panel"),),
+        (Button.inline(f"{ch[::-1]} BacK {ch[::-1]}", data="bk_panel"),),
     ]
-    await event.edit('°› Menu: (1/2) ›°', buttons=buttons)
+    await event.edit(f'{ch} Menu: (1/2) {ch[::-1]}', buttons=buttons)
 async def panel_2(event: events.InlineQuery.Event):
     database = js.loads(clir.hget(pl.DataBase.group_manager, str(event.chat_id)))
+    ch = pl.rand_ch(True)
     buttons = [
         (
-            Button.inline(f"°› Via [{'✔️' if database['via'] else '✖️'}] ›°", data="via"),
-            Button.inline(f"°› Music [{'✔️' if database['music'] else '✖️'}] ›°", data="music"),
+            Button.inline(f"{ch} Via [{'✔️' if database['via'] else '✖️'}] {ch[::-1]}", data="via"),
+            Button.inline(f"{ch} Music [{'✔️' if database['music'] else '✖️'}] {ch[::-1]}", data="music"),
         ),
         (
-            Button.inline(f"°› File [{'✔️' if database['file'] else '✖️'}] ›°", data="file"),
-            Button.inline(f"°› Bot [{'✔️' if database['bot'] else '✖️'}] ›°", data="bot"),
+            Button.inline(f"{ch} File [{'✔️' if database['file'] else '✖️'}] {ch[::-1]}", data="file"),
+            Button.inline(f"{ch} Bot [{'✔️' if database['bot'] else '✖️'}] {ch[::-1]}", data="bot"),
         ),
         (
-            Button.inline(f"°› Location [{'✔️' if database['location'] else '✖️'}] ›°", data="location"),
-            Button.inline(f"°› Contact [{'✔️' if database['contact'] else '✖️'}] ›°", data="contact"),
+            Button.inline(f"{ch} Location [{'✔️' if database['location'] else '✖️'}] {ch[::-1]}", data="location"),
+            Button.inline(f"{ch} Contact [{'✔️' if database['contact'] else '✖️'}] {ch[::-1]}", data="contact"),
         ),
         (
-            Button.inline(f"°› Caption [{'✔️' if database['caption'] else '✖️'}] ›°", data="caption"),
-            Button.inline(f"°› unknown [{'✔️' if database['unknown'] else '✖️'}] ›°", data="unknown"),
+            Button.inline(f"{ch} Caption [{'✔️' if database['caption'] else '✖️'}] {ch[::-1]}", data="caption"),
+            Button.inline(f"{ch} unknown [{'✔️' if database['unknown'] else '✖️'}] {ch[::-1]}", data="unknown"),
         ),
         (Button.inline("[ ↻ ]", data="gpl1"),),
-        (Button.inline(f"°› BacK ›°", data="bk_panel"),),
+        (Button.inline(f"{ch} BacK {ch[::-1]}", data="bk_panel"),),
     ]
     await event.edit("Menu (2/2)",buttons=buttons)
 async def pl_main(event: events.InlineQuery.Event):
+    ch = pl.rand_ch(True)
     buttons = [
             (
-                Button.inline(f"°› Settings ›°", data="gpl1"),
+                Button.inline(f"{ch} Settings {ch[::-1]}", data="gpl1"),
             ),
             (
-                Button.inline("°› List Mute GP ›°", data="list_mute_gp"),
-                Button.inline("°› List Mute PV ›°", data="list_mute_pv"),
+                Button.inline(f"{ch} List Mute GP {ch[::-1]}", data="list_mute_gp"),
+                Button.inline(f"{ch} List Mute PV {ch[::-1]}", data="list_mute_pv"),
             ),
             
-            (Button.inline("°› [ ExiT ] ›°", data="exitpl"),
+            (Button.inline(f"{ch} [ ExiT ] {ch[::-1]}", data="exitpl"),
             )
         ]
-    await event.edit('°› Welcome to the management panel of Group!\nPlease choose: ›°', buttons=buttons)
+    await event.edit(f'{ch} Welcome to the management panel of Group!\nPlease choose: {ch[::-1]}', buttons=buttons)
 @bot.on(events.CallbackQuery())
 async def main_call(event: events.CallbackQuery.Event):
-    buttons = [(Button.inline("°› [ BacK ] ›°", data="bk_panel"),),]
+    ch = pl.rand_ch(True)
+    buttons = [(Button.inline(f"{ch} [ BacK ] {ch[::-1]}", data="bk_panel"),),]
     if (event.data.split()[0] == b"ftabchi" or event.data.split()[0] == b"ttabchi"):
         if event.original_update.user_id == int(event.data.split()[1]):
             return await cktabchi(event)
@@ -1522,7 +1538,7 @@ async def main_call(event: events.CallbackQuery.Event):
     elif event.query.user_id in sudo:
         try:
             if event.data == b"exitpl":
-                return await event.edit('**› panel was closed !**')
+                return await event.edit(f'**{pl.rand_ch()} panel was closed !**')
             elif event.data == b"list_mute_pv":
                 return await event.edit('Muted User in Pv :'+' - '.join(clir.lrange(pl.DataBase.mute_private_user, 0, -1)),buttons=buttons)
             elif event.data == b"list_mute_gp":
@@ -1558,7 +1574,7 @@ async def main_call(event: events.CallbackQuery.Event):
                 await Client.delete_messages(event.chat_id, event.message_id)
 
             elif event.data == b"radio.menu.main":
-                await event.edit("**Welcome to Radio Panel**\n\nChoose from the following options:\n\n‌",
+                await event.edit(f"**{cg} Welcome to Radio Panel**\n\nChoose from the following options:{ch[::-1]}\n\n‌",
                                  buttons=[
                                      [Button.inline("Radio Stations 🎙", data="radio.stations")],
                                      [Button.inline("Radio Settings ⚙️", data="radio.settings")],
@@ -1637,7 +1653,7 @@ async def cktabchi(event: events.CallbackQuery.Event):
         database = js.loads(clir.hget(pl.DataBase.antitabchi, str(event.chat_id)))
         if event.data.split()[0] == b"ftabchi":
             if event.query.user_id not in database:database.append(event.query.user_id) 
-            await event.answer('- FuCk you :)',alert= True)  # event.query.user_id 
+            await event.answer('- !4u :)',alert= True)  # event.query.user_id 
             clir.hset(pl.DataBase.antitabchi, str(event.chat_id),  js.dumps(database))
         elif event.data.split()[0] ==  b"ttabchi":
             if event.query.user_id not in database:database.append(event.query.user_id)

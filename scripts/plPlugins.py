@@ -2,6 +2,7 @@
 import os, random, re
 from speedtest import Speedtest
 import speech_recognition as sr 
+from .plConfig import rand_ch
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 CoDMORsE = {'a' : ".-", 'b' : "-...", 'c' : "-.-.", 'd' : "-..", 'e' : ".", 'f' : "..-.", 'g' : "--.", 'h' : "....", 'i' : "..", 'j' : ".--", 'k' : "-.-", 'l' : ".-..", 'm' : "--", 'n' : "-.", 'o' : "---", 'p' : ".--.", 'q' : "--.-", 'r' : ".-.", 's' : "...", 't' : "-", 'u' : "..-", 'v' : "...-", 'w' : ".--", 'x' : "-..-", 'y' : "-.--", 'z' : "--..", ' ' : ' ', '1':  ".---", '2':  "..---", '3': "...--", '4':  "....-",'5': ".....", '6':  "-....", '7': "--...", '8':  "---..", '9':  "----.", '0': "-----", '۱':  ".---", '۲':  "..---", '۳': "...--", '۴':  "....-", '۵': ".....", '۶':  "-....", '۷': "--...", '۸':  "---..", '۹':  "----.", '۰': "-----", 'آ' : '.-', 'ا' : '.-', 'ب' : '-...', 'پ' : '.--.', 'ت' : '-', 'ث' : '-.-.', 'ج' : '.---', 'چ' : '---.', 'ح' : '....', 'خ' : '-..-', 'د' : '-..', 'ذ' : '...-', 'ر' : '.-.', 'ز' : '--..', 'ژ' : '--.', 'س' : '...', 'ش' : '----', 'ص' : '.-.-', 'ض' : '..-..', 'ط' : '..-', 'ظ' : '-.--', 'ع' : '---', 'غ' : '..--', 'ف' : '..--', 'ق' : '..-.', 'ک' : '-.-', 'گ' : '--.-', 'ل' : '.-..', 'م' : '--', 'ن' : '.-', 'و' : '.--', 'ه' : '.', 'ی' : '..', '\n':'\n'}
 # - - - - - - - - - - - -FuncTioN- - - - - - - - - - - #
@@ -148,8 +149,8 @@ async def run_interpreter_code(run, file, lang_cmd, code, TimeoutExpired, event,
     if lang_cmd and file:
         edit_source_run(code, file)
         try:code = run([lang_cmd, file], capture_output=True, text=True, timeout=5)
-        except TimeoutExpired: await send_sudo_msg(event, '**› timeout error !**', Account)
-        else:await send_sudo_msg(event, '› **error:**\n\n`'+code.stderr+'`' if code.stderr else '› **result:**\n\n`'+code.stdout+'`', Account)
+        except TimeoutExpired: await send_sudo_msg(event, f'**{rand_ch()} timeout error !**', Account)
+        else:await send_sudo_msg(event, f'{rand_ch()} **error:**\n\n`'+code.stderr+'`' if code.stderr else f'{rand_ch()} **result:**\n\n`'+code.stdout+'`', Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 def check_data_dir():
     if not os.path.isdir('data'): os.mkdir('data')

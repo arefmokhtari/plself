@@ -2,6 +2,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 from dotenv import load_dotenv
 import os, json as js
+from random import choice
 load_dotenv()
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 class Conf:
@@ -20,6 +21,8 @@ class Conf:
     SESSION_AC_NAME = os.getenv('SESSION_AC_NAME')
     SESSION_API_NAME = os.getenv('SESSION_API_NAME')
     COMMAND_PREFIX = js.loads(os.getenv('COMMAND_PREFIX'))
+    CHARS = js.loads(os.getenv('CHARS'))
+    PANEL_CHARS = js.loads(os.getenv('PANEL_CHARS'))
     SESSION_DIR = 'data/SeSioNS/'
     DOWNLOAD_DIR = 'data/Downloads/'
     RADIO_STATIONS = {"Iran International": 'https://n09.radiojar.com/dfnrphnr5f0uv',
@@ -47,4 +50,7 @@ class Conf:
 □ `lasttime [ON/OFF]`
 **#plagueDr**'''
     KOS_FoSH = []  # add msgs to floot spam !
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+def rand_ch(panel_chars = False):
+    return choice(Conf.PANEL_CHARS if panel_chars else Conf.CHARS) 
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #

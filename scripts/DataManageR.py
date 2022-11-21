@@ -28,6 +28,7 @@ class DataBase:
     voices = 'plVoiCESaVE'
     files = 'plFuCKInGFilESaVE'
     antitabchi = 'AnTITABCiE'
+    mute_all = 'plMuteAllGP'
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 async def userisbot(clir, event):
     if str(event.sender_id) in clir.lrange(DataBase.users_in_private,0 ,-1):
