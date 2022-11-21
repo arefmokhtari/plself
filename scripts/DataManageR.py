@@ -12,21 +12,38 @@ def bot_redis(redis_number: int) -> StrictRedis:
     else:
         return BOTREDIS
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+class DataBase:
+    ignore_message = 'DonTCare2MsG'
+    mute_private_user = 'plMutePVUsEr'
+    mute_group_user = 'plMut3UserInPG'
+    group_manager = 'plAddGroPSettinGZ'
+    lastname_timer = 'plSetTimENow'
+    biotime = 'plBioTimENow'
+    bio = 'plFuckinBio'
+    users_is_bot_private = 'plUserInApiBoT'
+    logo = 'plSetMyFuckingLogo'
+    is_forward_messages = 'plForWardSendOrno'
+    users_in_private = 'plAcUserInPV'
+    user_bot_in_private = 'plAcBoTInPV'
+    voices = 'plVoiCESaVE'
+    files = 'plFuCKInGFilESaVE'
+    antitabchi = 'AnTITABCiE'
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 async def userisbot(clir, event):
-    if str(event.sender_id) in clir.lrange('plAcUserInPV',0 ,-1):
+    if str(event.sender_id) in clir.lrange(DataBase.users_in_private,0 ,-1):
         return False
-    elif str(event.sender_id) in clir.lrange('plAcBoTInPV',0 ,-1):
+    elif str(event.sender_id) in clir.lrange(DataBase.user_bot_in_private,0 ,-1):
         return True
     else:
         user = await event.get_sender()
         if user.username == None:
-            clir.lpush('plAcUserInPV', user.id)
+            clir.lpush(DataBase.users_in_private, user.id)
             return False
         elif user.username.lower().endswith('bot') or user.username in ['BotFather', 'Stickers', 'gamee', 'like', 'pic', 'bing', 'music']:
-            clir.lpush('plAcBoTInPV', user.id) 
+            clir.lpush(DataBase.user_bot_in_private, user.id) 
             return True
         else:
-            clir.lpush('plAcUserInPV', user.id)
+            clir.lpush(DataBase.users_in_private, user.id)
             return False
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 def adduserinMuteGp2hset(clir, key: str, field: str, val: str):

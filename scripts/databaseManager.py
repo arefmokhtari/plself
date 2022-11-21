@@ -40,11 +40,9 @@ def show():
         print('plSetTimENow =', clir.get('plSetTimENow'))
         print('plBioTimENow =', clir.get('plBioTimENow'))
         print('plFuckinBio =', clir.get('plFuckinBio'))
-        print('plSetrandnameNow =', clir.get('plSetrandnameNow'))
         print('plUserInApiBoT =', clir.lrange('plUserInApiBoT', 0, -1))
         print('plSetMyFuckingLogo =', clir.get('plSetMyFuckingLogo'))
         print('plForWardSendOrno =', clir.get('plForWardSendOrno'))
-        print('plKoSKhOLAApL =', clir.lrange('plKoSKhOLAApL', 0, -1))
         print('plAcUserInPV =', clir.lrange('plAcUserInPV',0 ,-1))
         print('plAcBoTInPV =', clir.lrange('plAcBoTInPV',0 ,-1)) 
         print('plVoiCESaVE =', clir.hgetall('plVoiCESaVE')) 
@@ -68,7 +66,6 @@ def show():
             'plSetTimENow':clir.get('plSetTimENow'),
             'plBioTimENow':clir.get('plBioTimENow'),
             'plFuckinBio':clir.get('plFuckinBio'),
-            'plSetrandnameNow':clir.get('plSetrandnameNow'),
             'plUserInApiBoT':clir.lrange('plUserInApiBoT', 0, -1),
             'plForWardSendOrno':clir.get('plForWardSendOrno'),
             'plAcUserInPV':clir.lrange('plAcUserInPV',0 ,-1),

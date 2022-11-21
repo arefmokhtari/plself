@@ -57,11 +57,11 @@ async def GetMsGServic3InGP(event: events.chataction.ChatAction.Event):
     chat_id_str = '-100'+str(chat_id)
     type_message = type(event.action_message.action)
     
-    if chat_id_str in clir.lrange('plMuteAllGP', 0, -1) or (chat_id_str in list(clir.hgetall('plAddGroPSettinGZ').keys()) \
-        and js.loads(clir.hget('plAddGroPSettinGZ', chat_id_str))['service']):
+    if chat_id_str in clir.lrange('plMuteAllGP', 0, -1) or (chat_id_str in list(clir.hgetall(pl.DataBase.group_manager).keys()) \
+        and js.loads(clir.hget(pl.DataBase.group_manager, chat_id_str))['service']):
         await Client.delete_messages(chat_id, event.action_message.id)
     
-    if chat_id_str in clir.hgetall('AnTITABCiE').keys():
+    if chat_id_str in clir.hgetall(pl.DataBase.antitabchi).keys():
         if type_message == types.MessageActionChatJoinedByLink:
             await Client.edit_permissions(chat_id, user_id, 
                 view_messages = True,
@@ -85,7 +85,7 @@ async def GetMsGServic3InGP(event: events.chataction.ChatAction.Event):
                 image.write(data, data+'.png')
                 result = await Client.inline_query(pl.Conf.BOT_USERNAME, f'CkTabchi {data} {users}', entity=chat_id)
                 await result[0].click() 
-    #if (chat_id in list(clir.hgetall('plAddGroPSettinGZ').keys()) and js.loads(clir.hget('plAddGroPSettinGZ', chat_id))['service']) and'action' in event.message.to_dict() and type_message is types.MessageActionChatAddUser:
+    #if (chat_id in list(clir.hgetall(pl.DataBase.group_manager).keys()) and js.loads(clir.hget(pl.DataBase.group_manager, chat_id))['service']) and'action' in event.message.to_dict() and type_message is types.MessageActionChatAddUser:
     #    pass
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» CheckING ALL Message:
@@ -151,10 +151,10 @@ async def check_massag3(event: events.newmessage.NewMessage.Event or events.mess
     elif event.is_group:
         chat_id = str(event.chat_id)
         usr = str(event.sender_id)
-        if chat_id in clir.lrange('plMuteAllGP', 0, -1) or(clir.hgetall('plMut3UserInPG').get(chat_id) and usr in clir.hget('plMut3UserInPG', chat_id).split()):
+        if chat_id in clir.lrange('plMuteAllGP', 0, -1) or(clir.hgetall(pl.DataBase.mute_group_user).get(chat_id) and usr in clir.hget(pl.DataBase.mute_group_user, chat_id).split()):
             await event.delete()
-        elif chat_id in clir.hgetall('plAddGroPSettinGZ').keys():
-            database = js.loads(clir.hget('plAddGroPSettinGZ', chat_id))
+        elif chat_id in clir.hgetall(pl.DataBase.group_manager).keys():
+            database = js.loads(clir.hget(pl.DataBase.group_manager, chat_id))
             if database['link'] and pl.check_msg_link(event.raw_text):
                 await event.delete()
             elif  database['forward'] and event.fwd_from:
@@ -165,26 +165,26 @@ async def check_massag3(event: events.newmessage.NewMessage.Event or events.mess
     elif event.is_private:
         sender_id = str(event.sender_id)
         get_user = None if clir.get('acdontsave:'+sender_id+':pl') == None else int(clir.get('acdontsave:'+sender_id+':pl'))
-        if sender_id in clir.lrange('plMutePVUsEr', 0, -1):
+        if sender_id in clir.lrange(pl.DataBase.mute_private_user, 0, -1):
             if not await pl.userisbot(clir, event):
                 if get_user == None:
-                    if clir.get('plForWardSendOrno'):
+                    if clir.get(pl.DataBase.is_forward_messages):
                         clir.setex('acdontsave:'+sender_id+':pl', 86400, 1)
                         await Client.forward_messages(pl.Conf.CHANNEL_FOR_FWD, event.message)
                 else:
                     if get_user < 15:
-                        if clir.get('plForWardSendOrno'):
+                        if clir.get(pl.DataBase.is_forward_messages):
                             clir.setex('acdontsave:'+sender_id+':pl', 86400, get_user+1)
                             await Client.forward_messages(pl.Conf.CHANNEL_FOR_FWD, event.message)
             await event.delete()
-        elif sender_id not in clir.lrange('DonTCare2MsG', 0, -1) and not await pl.userisbot(clir, event):
+        elif sender_id not in clir.lrange(pl.DataBase.ignore_message, 0, -1) and not await pl.userisbot(clir, event):
             if get_user == None:
-                if clir.get('plForWardSendOrno'):
+                if clir.get(pl.DataBase.is_forward_messages):
                     clir.setex('acdontsave:'+sender_id+':pl', 86400, 1)
                     await Client.forward_messages(pl.Conf.CHANNEL_FOR_FWD, event.message)
             else:
                 if get_user < 15:
-                    if clir.get('plForWardSendOrno'):
+                    if clir.get(pl.DataBase.is_forward_messages):
                         clir.setex('acdontsave:'+sender_id+':pl', 86400, get_user+1)
                         await Client.forward_messages(pl.Conf.CHANNEL_FOR_FWD, event.message)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
@@ -433,15 +433,15 @@ async def SeTAntITabCHI(event):
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     chat_id = str(event.chat_id)
     if event.is_group and len_cmd == 2 and cmd[0] == 'antitabchi':
-        if cmd[1] == 'on': # 'AnTITABCiE'
-            if chat_id in clir.hgetall('AnTITABCiE').keys():
+        if cmd[1] == 'on':
+            if chat_id in clir.hgetall(pl.DataBase.antitabchi).keys():
                 await pl.send_sudo_msg(event, '**› anti tabchi was active !**', Account)
             else:
-                clir.hset('AnTITABCiE', chat_id, js.dumps([]))
+                clir.hset(pl.DataBase.antitabchi, chat_id, js.dumps([]))
                 await pl.send_sudo_msg(event, '**› done, anti tabchi is active !**', Account)
         elif cmd[1] == 'off':
-            if chat_id in clir.hgetall('AnTITABCiE').keys():
-                clir.hdel('AnTITABCiE', chat_id)
+            if chat_id in clir.hgetall(pl.DataBase.antitabchi).keys():
+                clir.hdel(pl.DataBase.antitabchi, chat_id)
                 await pl.send_sudo_msg(event, '**› done, anti tabchi service cleared !**', Account)
             else:
                 await pl.send_sudo_msg(event, '**› anti tabchi is not active !**', Account)
@@ -791,8 +791,8 @@ async def DonTSaveMsgInChannel(event: events.newmessage.NewMessage.Event):
     if event.is_private and event.is_reply:
         msg = await event.get_reply_message()
         user_id = f'{getattr(msg.from_id, "user_id", "")}'
-        if user_id and user_id not in clir.lrange('DonTCare2MsG', 0, -1):
-            clir.lpush('DonTCare2MsG', msg.peer_id.user_id)
+        if user_id and user_id not in clir.lrange(pl.DataBase.ignore_message, 0, -1):
+            clir.lpush(pl.DataBase.ignore_message, msg.peer_id.user_id)
     await event.delete()
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» JoiN In GrouP:
@@ -825,14 +825,14 @@ async def SeYInFO(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     if event.raw_text.lower() == 'info':
         repo = git.Repo(search_parent_directories=True)
-        message = f'› **info plSelf** `v.{pl.Conf.version}` :\n\n› **sudos :** `{len(sudo)}`\n› **PV user :** `{len(clir.lrange("plAcUserInPV",0 ,-1))}`\n› **user :** `{getpwuid(os.getuid())[0]}`\n› **used RAM:** `{int(((psutil.Process(os.getpid()).memory_full_info().rss)/1024)/1024)}/{"%.3f"%(((psutil.virtual_memory().total)/1024)/1024)}MB`\n› **process:** `{os.getpid()}` **-** `{os.getppid()}`\n› **python3 version :** `{sys.version.split()[0]}`\n› **telethon version :** `{tver}`\n› **os:** `{subprocess.check_output(["lsb_release","-is"]).decode("utf-8").lower().strip(chr(10))}`\n› **git:** `{repo.remotes.origin.url}`\n› **HEAD: {len(list(repo.iter_commits()))} -** `{repo.head.commit.message}`'
-        if filename := clir.get('plSetMyFuckingLogo'):
+        message = f'› **info plSelf** `v.{pl.Conf.version}` :\n\n› **sudos :** `{len(sudo)}`\n› **PV user :** `{len(clir.lrange(pl.DataBase.users_in_private,0 ,-1))}`\n› **user :** `{getpwuid(os.getuid())[0]}`\n› **used RAM:** `{int(((psutil.Process(os.getpid()).memory_full_info().rss)/1024)/1024)}/{"%.3f"%(((psutil.virtual_memory().total)/1024)/1024)}MB`\n› **process:** `{os.getpid()}` **-** `{os.getppid()}`\n› **python3 version :** `{sys.version.split()[0]}`\n› **telethon version :** `{tver}`\n› **os:** `{subprocess.check_output(["lsb_release","-is"]).decode("utf-8").lower().strip(chr(10))}`\n› **git:** `{repo.remotes.origin.url}`\n› **HEAD: {len(list(repo.iter_commits()))} -** `{repo.head.commit.message}`'
+        if filename := clir.get(pl.DataBase.logo):
             await Client.send_file(event.chat_id, filename, caption=message, reply_to=event.id)
         else:
             await pl.send_sudo_msg(event, message, Account)
     elif len_cmd > 1 and cmd[0] == 'info' and cmd[1] == 'pv':
         c = pl.Counter()
-        await pl.send_sudo_msg(event, '› **user in pv:**\n\n'+'\n'.join(map(lambda s:f'{c.get_num()} - [{s}](tg://user?id={s})', clir.lrange('plAcUserInPV',0 ,-1))), Account)
+        await pl.send_sudo_msg(event, '› **user in pv:**\n\n'+'\n'.join(map(lambda s:f'{c.get_num()} - [{s}](tg://user?id={s})', clir.lrange(pl.DataBase.users_in_private,0 ,-1))), Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Send && SaV# Voice:
 async def SenDSaVOicE(event: events.newmessage.NewMessage.Event):
@@ -849,33 +849,33 @@ async def SenDSaVOicE(event: events.newmessage.NewMessage.Event):
                 else:await pl.send_sudo_msg(event, f'{txt}' or '**› is empty !**', Account)
         elif cmd[1] == 'save' and event.is_reply and len_cmd == 3:
             voice_name = cmd[2]
-            if voice_name not in clir.hgetall('plVoiCESaVE').keys():
+            if voice_name not in clir.hgetall(pl.DataBase.voices).keys():
                 msg = await event.get_reply_message()
                 if msg.media and type(msg.media) is types.MessageMediaDocument and msg.media.document.attributes and type(msg.media.document.attributes[0]) is types.DocumentAttributeAudio and msg.media.document.attributes[0].voice:
                     voice = await msg.download_media('data/voice')
-                    clir.hset('plVoiCESaVE', voice_name, voice)
+                    clir.hset(pl.DataBase.voices, voice_name, voice)
                     await pl.send_sudo_msg(event, f'› **done, voice name to call :** `{voice_name}`', Account)
             else:
                 await pl.send_sudo_msg(event, '› **voice was already in the database !**', Account)
         elif cmd[1] == 'delete' and len_cmd == 3:
             voice_name = cmd[2]
-            if voice_name in clir.hgetall('plVoiCESaVE').keys():
-                os.remove(clir.hget('plVoiCESaVE', voice_name))
-                clir.hdel('plVoiCESaVE', voice_name)
+            if voice_name in clir.hgetall(pl.DataBase.voices).keys():
+                os.remove(clir.hget(pl.DataBase.voices, voice_name))
+                clir.hdel(pl.DataBase.voices, voice_name)
                 await pl.send_sudo_msg(event, f'› **done,** `{voice_name}` **removed to database !**', Account)
             else:await pl.send_sudo_msg(event, f'› **the** `{voice_name}` **not in database !**', Account)
         elif cmd[1] == 'list':
             num = pl.Counter()
-            await pl.send_sudo_msg(event, '› **voice list:**\n\n'+'\n'.join(map(lambda x:f'**{num.get_num()} -** `{x}`' ,clir.hgetall('plVoiCESaVE').keys())), Account)
+            await pl.send_sudo_msg(event, '› **voice list:**\n\n'+'\n'.join(map(lambda x:f'**{num.get_num()} -** `{x}`' ,clir.hgetall(pl.DataBase.voices).keys())), Account)
         else:
             voice_name = cmd[1]
-            if voice_name in clir.hgetall('plVoiCESaVE').keys():
+            if voice_name in clir.hgetall(pl.DataBase.voices).keys():
                 await event.delete()
                 if event.is_reply:
                     msg = await event.get_reply_message()
-                    await Client.send_file(event.chat_id, clir.hget('plVoiCESaVE', voice_name), reply_to=msg.id)
+                    await Client.send_file(event.chat_id, clir.hget(pl.DataBase.voices, voice_name), reply_to=msg.id)
                 else:
-                    await Client.send_file(event.chat_id, clir.hget('plVoiCESaVE', voice_name))
+                    await Client.send_file(event.chat_id, clir.hget(pl.DataBase.voices, voice_name))
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» FilE ManageR:
 async def SenDFuCKinGFilE(event: events.newmessage.NewMessage.Event):
@@ -883,27 +883,27 @@ async def SenDFuCKinGFilE(event: events.newmessage.NewMessage.Event):
     if len_cmd >= 2 and cmd[0] == 'file':
         if cmd[1] == 'save' and event.is_reply and len_cmd == 3:
             file_name = cmd[2]
-            if file_name not in clir.hgetall('plFuCKInGFilESaVE').keys():
+            if file_name not in clir.hgetall(pl.DataBase.files).keys():
                 msg = await event.get_reply_message()
                 if msg.media:
                     await Client.send_file(pl.Conf.BOT_USERNAME, msg.media, caption=f'kosfile {file_name}')
-                    #clir.hset('plFuCKInGFilESaVE', file_name, pack_bot_file_id(msg.media))
+                    #clir.hset(pl.DataBase.files, file_name, pack_bot_file_id(msg.media))
                     await pl.send_sudo_msg(event, f'› **done, voice name to call :** `{file_name}`', Account)
             else:
                 await pl.send_sudo_msg(event, '**› file was already in the database !**', Account)
         elif cmd[1] == 'delete' and len(cmd) == 3:
             file_name = cmd[2]
-            if file_name in clir.hgetall('plFuCKInGFilESaVE').keys():
-                clir.hdel('plFuCKInGFilESaVE', file_name)
+            if file_name in clir.hgetall(pl.DataBase.files).keys():
+                clir.hdel(pl.DataBase.files, file_name)
                 await pl.send_sudo_msg(event, f'› **done,** `{file_name}` **removed the database !**', Account)
             else:
                 await pl.send_sudo_msg(event, f'› **the** `{file_name}` **not in database !**', Account)
         elif cmd[1] == 'list':
             num = pl.Counter()
-            await pl.send_sudo_msg(event, '› **file list:**\n\n'+'\n'.join(map(lambda x:f'**{num.get_num()} -** `{x}`' ,clir.hgetall('plFuCKInGFilESaVE').keys())), Account)
+            await pl.send_sudo_msg(event, '› **file list:**\n\n'+'\n'.join(map(lambda x:f'**{num.get_num()} -** `{x}`' ,clir.hgetall(pl.DataBase.files).keys())), Account)
         else:
             file_name = cmd[1]
-            if file_name in clir.hgetall('plFuCKInGFilESaVE').keys():
+            if file_name in clir.hgetall(pl.DataBase.files).keys():
                 reply_to = ''
                 if event.is_reply:
                     reply_to = event.reply_to.reply_to_msg_id
@@ -925,13 +925,13 @@ async def KosNaNatMary(event: events.newmessage.NewMessage.Event):
 @bot.on(events.NewMessage(pattern = 'kosfile', from_users=Account[0]))
 async def KirToKosMary(event: events.newmessage.NewMessage.Event):
     if event.media:
-        clir.hset('plFuCKInGFilESaVE', event.raw_text.split()[1], pack_bot_file_id(event.media))
+        clir.hset(pl.DataBase.files, event.raw_text.split()[1], pack_bot_file_id(event.media))
     else:
         kos = event.raw_text.split()
         reply = ''
         if pl.isexistList(kos, 3):
             reply = kos[3]
-        await bot.send_file(Account[0], clir.hget('plFuCKInGFilESaVE', kos[1]), caption = f'kosnanatmary {kos[2]} {reply}')
+        await bot.send_file(Account[0], clir.hget(pl.DataBase.files, kos[1]), caption = f'kosnanatmary {kos[2]} {reply}')
         await event.delete()
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» LefT In GrouP:
@@ -958,7 +958,7 @@ async def leftchat(event: events.newmessage.NewMessage.Event):
 async def LockGpManager(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     if len_cmd > 1:
-        database = clir.hget('plAddGroPSettinGZ', str(event.chat_id))
+        database = clir.hget(pl.DataBase.group_manager, str(event.chat_id))
         if database:
             database = js.loads(database)
             if cmd[1] == 'settings':
@@ -1012,13 +1012,13 @@ async def MuteAllGP(event: events.newmessage.NewMessage.Event):
                     user = str(event.entities[0].user_id)
             if user != None:
                 if int(user) not in sudo:
-                    if chat_id in clir.hgetall('plMut3UserInPG').keys():
-                        if user not in clir.hget('plMut3UserInPG', chat_id).split():
-                            pl.adduserinMuteGp2hset(clir ,'plMut3UserInPG', chat_id, user)
+                    if chat_id in clir.hgetall(pl.DataBase.mute_group_user).keys():
+                        if user not in clir.hget(pl.DataBase.mute_group_user, chat_id).split():
+                            pl.adduserinMuteGp2hset(clir ,pl.DataBase.mute_group_user, chat_id, user)
                             await pl.send_sudo_msg(event, f'› **user** `{user}` **has been muted !**', Account)
                         else:await pl.send_sudo_msg(event, f'› **user** `{user}` **has been muted before !**', Account)
                     else:
-                        pl.adduserinMuteGp2hset(clir ,'plMut3UserInPG', chat_id, user)
+                        pl.adduserinMuteGp2hset(clir ,pl.DataBase.mute_group_user, chat_id, user)
                         await pl.send_sudo_msg(event, f'› **user** `{user}` **has been muted !**', Account)
                 else:
                     await pl.send_sudo_msg(event, '› **user is SUDO !**', Account)
@@ -1027,8 +1027,8 @@ async def MuteAllGP(event: events.newmessage.NewMessage.Event):
         user = f'{getattr(msg.from_id, "user_id", "")}' or f'-100{getattr(msg.from_id, "channel_id", None)}'
         if int(user) in Account:
             return
-        if user not in clir.lrange('plMutePVUsEr', 0, -1):
-            clir.lpush('plMutePVUsEr', user)
+        if user not in clir.lrange(pl.DataBase.mute_private_user, 0, -1):
+            clir.lpush(pl.DataBase.mute_private_user, user)
             await event.edit(f'› **user** `{user}` **has been muted !**')
         else:
             await event.edit(f'› **user** `{user}` **has been muted bofore !**')
@@ -1058,9 +1058,9 @@ async def UnMuteAllGP(event: events.newmessage.NewMessage.Event):
                     user = str(event.entities[0].user_id)
             if user != None:
                 if int(user) not in sudo:
-                    if chat_id in clir.hgetall('plMut3UserInPG').keys():
-                        if user in clir.hget('plMut3UserInPG', str(event.chat_id)).split():
-                            pl.deluserinMuteGp2hset(clir ,'plMut3UserInPG', chat_id, user)
+                    if chat_id in clir.hgetall(pl.DataBase.mute_group_user).keys():
+                        if user in clir.hget(pl.DataBase.mute_group_user, str(event.chat_id)).split():
+                            pl.deluserinMuteGp2hset(clir ,pl.DataBase.mute_group_user, chat_id, user)
                             await pl.send_sudo_msg(event, f'› **user** `{user}` **has been unmuted !**', Account)
                         else:
                             await pl.send_sudo_msg(event, f'› **user** `{user}` **has no muted !**', Account)
@@ -1071,8 +1071,8 @@ async def UnMuteAllGP(event: events.newmessage.NewMessage.Event):
     elif text == 'unmute' and event.sender_id == Account[0] and event.is_private and event.is_reply:
         msg = await event.get_reply_message()
         if msg.peer_id.user_id == Account:return
-        if str(msg.peer_id.user_id) in clir.lrange('plMutePVUsEr', 0, -1):
-            clir.lrem('plMutePVUsEr', 0, msg.peer_id.user_id)
+        if str(msg.peer_id.user_id) in clir.lrange(pl.DataBase.mute_private_user, 0, -1):
+            clir.lrem(pl.DataBase.mute_private_user, 0, msg.peer_id.user_id)
             await event.edit(f'› **user** `{msg.peer_id.user_id}` **has been unmuted !**')
         else:
             await event.edit(f'› **user** `{msg.peer_id.user_id}` **has no muted !**')
@@ -1137,12 +1137,12 @@ async def SetManageR(event: events.newmessage.NewMessage.Event):
             if cmd[1] == 'bio':
                 bio = event.raw_text[event.raw_text.find(' ', 5)+1:]
                 if bio == 'delete':
-                    clir.delete('plFuckinBio')
+                    clir.delete(pl.DataBase.bio)
                     await Client(UpdateProfileRequest(about = ''))
                     await pl.send_sudo_msg(event, '› **done, bio was deleted !**', Account)
                 else:
                     if len(bio) <= 70:
-                        clir.set('plFuckinBio', bio)
+                        clir.set(pl.DataBase.bio, bio)
                         await Client(UpdateProfileRequest(about = bio))
                         await pl.send_sudo_msg(event, f'› **done, bio :** `{bio}`', Account)
             elif cmd[1] == 'logo':
@@ -1150,12 +1150,12 @@ async def SetManageR(event: events.newmessage.NewMessage.Event):
                     msg = await event.get_reply_message()
                     if msg.media and type(msg.media) in [types.MessageMediaPhoto]:
                         file_name = await msg.download_media('data/temp')
-                        clir.set('plSetMyFuckingLogo', file_name)
+                        clir.set(pl.DataBase.logo, file_name)
                         await pl.send_sudo_msg(event, '› **done, logo seted !**', Account)
                 elif cmd[2] == 'delete':
-                    if filename := clir.get('plSetMyFuckingLogo'):
+                    if filename := clir.get(pl.DataBase.logo):
                         os.remove(filename)
-                        clir.delete('plSetMyFuckingLogo')
+                        clir.delete(pl.DataBase.logo)
                         await pl.send_sudo_msg(event, '› **done, logo deleted !**', Account)
                     else:
                         await pl.send_sudo_msg(event, '› ** logo not found !**', Account)
@@ -1228,57 +1228,44 @@ async def SetManageR(event: events.newmessage.NewMessage.Event):
                 elif cmd[2] == 'deleteall':
                     await Client(DeletePhotosRequest((await Client.get_profile_photos('me'))))
                     await pl.send_sudo_msg(event, '› **done, all profile was deleted !**', Account)
-                '''elif cmd[1] == 'randname':
-                if cmd[2] == 'on':
-                    if bool(clir.get('plSetrandnameNow')):
-                            await event.edit('- The randname was already ON') if event.sender_id in Account else await event.reply('- The randname was already ON')
-                    else:
-                        clir.set('plSetrandnameNow', 'KoSKoS')
-                        await event.edit('- DonE ! SeT randname is ON !') if event.sender_id in Account else await event.reply('- DonE ! SeT randname is ON !')
-                elif cmd[2] == 'off':
-                    get_re = clir.get('plSetrandnameNow')
-                    if bool(get_re):
-                        await event.edit('- DonE ! SeT randname is OFF !') if event.sender_id in Account else await event.reply('- DonE ! SeT randname is OFF !')
-                        clir.delete('plSetrandnameNow')
-                    else: await event.edit('- The randname was already OFF') if event.sender_id in Account else await event.reply('- The randname was already OFF')'''
             elif cmd[1] == 'lasttime':
                 if cmd[2] == 'on':
-                    if clir.get('plSetTimENow'):
+                    if clir.get(pl.DataBase.lastname_timer):
                         await pl.send_sudo_msg(event, '› **lasttime was already ON !**', Account)
                     else:
                         full = (await Client.get_me()).last_name or '<<<!@n@!@dlfd;f;sfldssdkskmadki!l!l>>>'
-                        clir.set('plSetTimENow', full)
+                        clir.set(pl.DataBase.lastname_timer, full)
                         await pl.send_sudo_msg(event, '› **done, set lasttime is ON !**', Account)
                 elif cmd[2] == 'off':
-                    get_re = clir.get('plSetTimENow')
+                    get_re = clir.get(pl.DataBase.lastname_timer)
                     if get_re:
                         await Client(UpdateProfileRequest(last_name = '')) if get_re == '<<<!@n@!@dlfd;f;sfldssdkskmadki!l!l>>>' else await Client(UpdateProfileRequest(last_name = get_re))
-                        clir.delete('plSetTimENow')
+                        clir.delete(pl.DataBase.lastname_timer)
                         await pl.send_sudo_msg(event, '› **done, set lastime is OFF !**', Account)
                     else: await pl.send_sudo_msg(event, '› **lasttime was already OFF !**', Account)
             elif cmd[1] == 'biotime':
                 if cmd[2] == 'on':
-                    if clir.get('plBioTimENow'):
+                    if clir.get(pl.DataBase.biotime):
                         await pl.send_sudo_msg(event, '› **biotime was already ON !**', Account)
                     else:
-                        clir.set('plBioTimENow', 'KoSKoS=D')
+                        clir.set(pl.DataBase.biotime, 'miow=|')
                         await pl.send_sudo_msg(event, '› **done, biotime is ON !**', Account)
                 elif cmd[2] == 'off':
-                    if clir.get('plBioTimENow'):
-                        clir.delete('plBioTimENow')
+                    if clir.get(pl.DataBase.biotime):
+                        clir.delete(pl.DataBase.biotime)
                         await pl.send_sudo_msg(event, '› **done, biotime is OFF !**', Account)
             elif cmd[1] == 'forward':
                 if cmd[2] == 'off':
-                    if clir.get('plForWardSendOrno'):
-                        clir.delete('plForWardSendOrno')
+                    if clir.get(pl.DataBase.is_forward_messages):
+                        clir.delete(pl.DataBase.is_forward_messages)
                         await pl.send_sudo_msg(event, '› **done, forward has offline !**', Account)
                     else:
                         await pl.send_sudo_msg(event, '› **forward was already offline !**', Account)
                 elif cmd[2] == 'on':
-                    if clir.get('plForWardSendOrno'):
+                    if clir.get(pl.DataBase.is_forward_messages):
                         await pl.send_sudo_msg(event, '› **forward was already online !**', Account)
                     else:
-                        clir.set('plForWardSendOrno', 'True')
+                        clir.set(pl.DataBase.is_forward_messages, 'True')
                         await pl.send_sudo_msg(event, '› **done, forward has online !**', Account)
         except Exception as er:
             await pl.send_sudo_msg(event, f'**› error: {er}**', Account)
@@ -1350,15 +1337,15 @@ async def TurNFuckinGOff(event: events.newmessage.NewMessage.Event):
 # - - - - - Anti-spam settings in the group - - - - -  #
 #   -» Add GrouP 2 ReDis:
 async def AddGrouP(event: events.newmessage.NewMessage.Event):
-    if str(event.chat_id) not in clir.hgetall('plAddGroPSettinGZ').keys():
-        clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(pl.BOT_GROUP_DATABASE))
+    if str(event.chat_id) not in clir.hgetall(pl.DataBase.group_manager).keys():
+        clir.hset(pl.DataBase.group_manager, str(event.chat_id), js.dumps(pl.BOT_GROUP_DATABASE))
         await pl.send_sudo_msg(event, '› **group add to database !**', Account)
     else: await pl.send_sudo_msg(event, '› **group added to database before !**', Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» RemoVeD GrouP 2 ReDis:
 async def RemGrouP(event: events.newmessage.NewMessage.Event):
-    if str(event.chat_id) in clir.hgetall('plAddGroPSettinGZ').keys():
-        clir.hdel('plAddGroPSettinGZ', str(event.chat_id))
+    if str(event.chat_id) in clir.hgetall(pl.DataBase.group_manager).keys():
+        clir.hdel(pl.DataBase.group_manager, str(event.chat_id))
         await pl.send_sudo_msg(event, '› **group deleted to database !**', Account)
     else:await pl.send_sudo_msg(event, '› **group deleted to database before !**', Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
@@ -1380,7 +1367,7 @@ async def SendHelP(event: events.newmessage.NewMessage.Event):
 #   -» SenD PaneL:
 async def PANELAPI(event: events.newmessage.NewMessage.Event): 
     if event.is_group and event.raw_text.lower() == 'panel':
-        if str(event.chat_id) in clir.hgetall('plAddGroPSettinGZ'):
+        if str(event.chat_id) in clir.hgetall(pl.DataBase.group_manager):
             try: 
                 if event.sender_id in Account: 
                     result = await Client.inline_query(pl.Conf.BOT_USERNAME, 'panel', entity=event.chat_id)
@@ -1399,8 +1386,8 @@ async def PANELAPI(event: events.newmessage.NewMessage.Event):
 async def bot_starting_user(event: events.newmessage.NewMessage.Event):
     if event.sender_id in sudo:
         await event.reply('**› hello sudo !**')
-    elif event.is_private and (usr := str(event.sender_id)) not in clir.lrange('plUserInApiBoT', 0, -1):
-        clir.lpush('plUserInApiBoT', usr)
+    elif event.is_private and (usr := str(event.sender_id)) not in clir.lrange(pl.DataBase.users_is_bot_private, 0, -1):
+        clir.lpush(pl.DataBase.users_is_bot_private, usr)
 #   -» 
 @bot.on(events.InlineQuery(pattern="CkTabchi", users = Account))
 async def ChTabchi(event: events.InlineQuery.Event): # 'ChTabchi '+data+' '+str(event.sender_id)
@@ -1460,7 +1447,7 @@ async def gpanel_1(event: events.InlineQuery.Event):
         result = await builder.article(title='panel', text='°› Welcome to the management panel of Group!\nPlease choose: ›°', buttons=buttons)
         await event.answer([result])
 async def panel_1(event: events.InlineQuery.Event):
-    database = clir.hget('plAddGroPSettinGZ', str(event.chat_id))
+    database = clir.hget(pl.DataBase.group_manager, str(event.chat_id))
     if database == None:return
     else:database = js.loads(database)
     buttons = [
@@ -1469,7 +1456,7 @@ async def panel_1(event: events.InlineQuery.Event):
             Button.inline(f"°› Photo [{'✔️' if database['photo'] else '✖️'}] ›°", data="photo"),
         ),
         (
-            Button.inline(f"°› Stiker [{'✔️' if database['stiker'] else '✖️'}] ›°", data="stiker"),
+            Button.inline(f"°› Sticker [{'✔️' if database['sticker'] else '✖️'}] ›°", data="sticker"),
             Button.inline(f"°› Gif [{'✔️' if database['gif'] else '✖️'}] ›°", data="gif"),
         ),
         (
@@ -1489,7 +1476,7 @@ async def panel_1(event: events.InlineQuery.Event):
     ]
     await event.edit('°› Menu: (1/2) ›°', buttons=buttons)
 async def panel_2(event: events.InlineQuery.Event):
-    database = js.loads(clir.hget('plAddGroPSettinGZ', str(event.chat_id)))
+    database = js.loads(clir.hget(pl.DataBase.group_manager, str(event.chat_id)))
     buttons = [
         (
             Button.inline(f"°› Via [{'✔️' if database['via'] else '✖️'}] ›°", data="via"),
@@ -1537,9 +1524,9 @@ async def main_call(event: events.CallbackQuery.Event):
             if event.data == b"exitpl":
                 return await event.edit('**› panel was closed !**')
             elif event.data == b"list_mute_pv":
-                return await event.edit('Muted User in Pv :'+' - '.join(clir.lrange('plMutePVUsEr', 0, -1)),buttons=buttons)
+                return await event.edit('Muted User in Pv :'+' - '.join(clir.lrange(pl.DataBase.mute_private_user, 0, -1)),buttons=buttons)
             elif event.data == b"list_mute_gp":
-                return await event.edit('Muted User in GrouP :',clir.hgetall('plMut3UserInPG'),buttons=buttons)
+                return await event.edit('Muted User in GrouP :',clir.hgetall(pl.DataBase.mute_group_user),buttons=buttons)
             elif event.data == b"radio.stations":
                 return await radio_stations(event)
             elif event.data.startswith(b"radio.play."):
@@ -1584,7 +1571,7 @@ async def main_call(event: events.CallbackQuery.Event):
                     b"bk_panel":pl_main,
                     b"link":main_call,
                     b"photo":main_call,
-                    b"stiker":main_call,
+                    b"sticker":main_call,
                     b"gif":main_call,
                     b"service":main_call,
                     b"game":main_call,
@@ -1608,7 +1595,7 @@ async def main_call(event: events.CallbackQuery.Event):
     else:
         await event.answer('- You do not have this access !')
 async def main_call(event: events.CallbackQuery.Event):
-    database = clir.hget('plAddGroPSettinGZ', str(event.chat_id))
+    database = clir.hget(pl.DataBase.group_manager, str(event.chat_id))
     if database == None: return
     else: database = js.loads(database)
     if event.query.user_id in sudo:
@@ -1621,7 +1608,7 @@ async def main_call(event: events.CallbackQuery.Event):
                     panel_1 if key in [
                         "link",
                         "photo",
-                        "stiker",
+                        "sticker",
                         "gif",
                         "service",
                         "game",
@@ -1646,28 +1633,28 @@ async def radio_stations(event: events.CallbackQuery.Event):
 
 
 async def cktabchi(event: events.CallbackQuery.Event): 
-    if str(event.chat_id) in clir.hgetall('AnTITABCiE').keys():
-        database = js.loads(clir.hget('AnTITABCiE', str(event.chat_id)))
+    if str(event.chat_id) in clir.hgetall(pl.DataBase.antitabchi).keys():
+        database = js.loads(clir.hget(pl.DataBase.antitabchi, str(event.chat_id)))
         if event.data.split()[0] == b"ftabchi":
             if event.query.user_id not in database:database.append(event.query.user_id) 
             await event.answer('- FuCk you :)',alert= True)  # event.query.user_id 
-            clir.hset("AnTITABCiE", str(event.chat_id),  js.dumps(database))
+            clir.hset(pl.DataBase.antitabchi, str(event.chat_id),  js.dumps(database))
         elif event.data.split()[0] ==  b"ttabchi":
             if event.query.user_id not in database:database.append(event.query.user_id)
             await event.edit(f'[کاربر](tg://user?id={int(event.data.split()[1])}) با موفقیت سنجش تبچی رو پشت سر گزاشتند')
             await Client.edit_permissions(event.chat_id, event.query.user_id, view_messages= True, send_messages= True, send_media= True, send_stickers= True, send_gifs= True, send_games= True, send_inline= True, embed_link_previews= True, send_polls= True, change_info= True, invite_users = True)
             #, view_messages: bool = True, send_messages: bool = True, send_media: bool = True, send_stickers: bool = True, send_gifs: bool = True, send_games: bool = True, send_inline: bool = True, embed_link_previews: bool = True, send_polls: bool = True, change_info: bool = True, invite_users: bool = True, pin_messages: bool = True
             await event.answer('- You\'ve been accepted !') 
-            clir.hset("AnTITABCiE", str(event.chat_id), js.dumps(database))
+            clir.hset(pl.DataBase.antitabchi, str(event.chat_id), js.dumps(database))
         elif event.data.split()[0] ==  b"tban":
             await Client(EditBannedRequest(event.chat_id, str(event.data.split()[1]), ChatBannedRights(until_date=None, view_messages=True)))
         elif event.data.split()[0] ==  b"tunrt":
             await Client.edit_permissions(event.chat_id, str(event.data.split()[1]), view_messages= True, send_messages= True, send_media= True, send_stickers= True, send_gifs= True, send_games= True, send_inline= True, embed_link_previews= True, send_polls= True, change_info= True, invite_users = True)
 # - - - - - - - - - - lasT-Tim3 - - - - - - - - - - -  #
 async def ChangeLasTName(): 
-    if bool(clir.get('plSetTimENow')):await Client(UpdateProfileRequest(last_name = pl.crtime(dt.today().hour, dt.today().minute)))
+    if bool(clir.get(pl.DataBase.lastname_timer)):await Client(UpdateProfileRequest(last_name = pl.crtime(dt.today().hour, dt.today().minute)))
 async def ChangeBioTimE():
-    if bool(clir.get('plBioTimENow')):await Client(UpdateProfileRequest(about=(clir.get('plFuckinBio') or '')+pl.crbiotime(dt.now().hour if dt.now().hour < 12 else dt.now().hour - 12))) 
+    if bool(clir.get(pl.DataBase.biotime)):await Client(UpdateProfileRequest(about=(clir.get('plFuckinBio') or '')+pl.crbiotime(dt.now().hour if dt.now().hour < 12 else dt.now().hour - 12))) 
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 scheduler = AsyncIOScheduler(timezone="Asia/Tehran")
 scheduler.add_job(ChangeLasTName, "interval", minutes = 1, next_run_time=f'{dt.today().year}-{dt.today().month}-{dt.today().day} {dt.today().hour}:{dt.today().minute}:00' ) 
