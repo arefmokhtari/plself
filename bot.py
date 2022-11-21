@@ -1574,7 +1574,7 @@ async def main_call(event: events.CallbackQuery.Event):
                 await Client.delete_messages(event.chat_id, event.message_id)
 
             elif event.data == b"radio.menu.main":
-                await event.edit(f"**{cg} Welcome to Radio Panel**\n\nChoose from the following options:{ch[::-1]}\n\n‌",
+                await event.edit(f"**{ch} Welcome to Radio Panel**\n\nChoose from the following options:{ch[::-1]}\n\n‌",
                                  buttons=[
                                      [Button.inline("Radio Stations 🎙", data="radio.stations")],
                                      [Button.inline("Radio Settings ⚙️", data="radio.settings")],
