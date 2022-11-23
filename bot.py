@@ -784,8 +784,8 @@ async def TranslatE(event: events.newmessage.NewMessage.Event):
         msg = await event.get_reply_message()
         msg_for_tr = msg.raw_text
     else:
-        dest = event.raw_text[event.raw_text.find(' ', 1)+1:event.raw_text.find(' ', 5)]
         msg_for_tr = event.raw_text[event.raw_text.find(' ', 5)+1:]
+    dest = event.raw_text[event.raw_text.find(' ', 1)+1:None if (rfind := event.raw_text.rfind(' ', 5)) == -1 else rfind]
     await pl.send_sudo_msg(event, Tr.translate(msg_for_tr, dest=dest).text, Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Accounts whose Messag# donot need to be forwarded =| ! :
