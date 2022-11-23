@@ -92,7 +92,7 @@ async def GetMsGServic3InGP(event: events.chataction.ChatAction.Event):
 @Client.on(events.MessageEdited())
 @Client.on(events.NewMessage())
 async def check_massag3(event: events.newmessage.NewMessage.Event or events.messageedited.MessageEdited.Event):
-    if event.is_private and event.sender_id != Account[0] and event.media and event.media.ttl_seconds:
+    if event.is_private and event.sender_id != Account[0] and event.media and getattr(event.media, 'ttl_seconds', None):
         file_name = await event.download_media('data/photos')
         await Client.send_file(pl.Conf.CHANNEL_FOR_FWD, file_name)
     if event.sender_id in sudo:
