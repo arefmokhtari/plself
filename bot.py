@@ -13,7 +13,7 @@ from telethon.utils import pack_bot_file_id
 from googletrans import Translator
 from shazamio import Shazam
 from pytgcalls.exceptions import NoActiveGroupCall
-import qrcode
+import qrcode, uvloop
 from phonenumbers import geocoder, carrier, parse as FuckingPhone
 from whois import whois
 from pwd import getpwuid
@@ -35,7 +35,9 @@ acc_sudo = pl.Conf.main_sudo
 sudo = pl.Conf.sudoS
 # phone = '+989360145942'
 pl.check_data_dir()
+uvloop.install()
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+logging.basicConfig(format='[%(levelname) 5s/%(asctime)s] %(name)s: %(message)s', level=logging.WARNING)
 logger = Logging("UserBot", logging.DEBUG)
 print(f'{pl.Color.BLACK}\n{pl.Color.BG_RED}\t# {" [   Plague Dr.  ] ":-^46} #{pl.Color.RESET}\n')
 bot = TelegramClient(pl.Conf.SESSION_DIR + pl.Conf.SESSION_API_NAME, pl.Conf.API_ID, pl.Conf.API_HASH).start(bot_token=pl.Conf.BOT_TOKEN)
@@ -341,19 +343,20 @@ async def GetFuckinGNuD3(event: events.newmessage.NewMessage.Event):
         msg = await event.get_reply_message()
         if msg.media:
             file_name = await msg.download_media('data/photos')
-            await Client.send_file(pl.Conf.CHANNEL_FOR_FWD, file_name)
+            try: await Client.send_file(pl.Conf.CHANNEL_FOR_FWD, file_name)
+            except: pass
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» MusiC ManageR:
 async def FinDManageR(event: events.newmessage.NewMessage.Event):
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     if event.is_reply:
         msg = await event.get_reply_message()
+        ch = pl.rand_ch()
         if msg.media and type(msg.media) is types.MessageMediaDocument and msg.media.document and msg.media.document.attributes:
             if len_cmd >= 2:
                 if cmd[1] == 'find' and msg.media.document.mime_type in ['audio/ogg', 'video/mp4', 'audio/mpeg']:
                     filename = await msg.download_media()
                     shazam = Shazam()
-                    ch = pl.rand_ch()
                     if event.sender_id in Account:await event.delete()
                     _sending_msg = await msg.reply(f'**{pl.rand_ch()} wait !**')
                     out = await shazam.recognize_song(filename)
@@ -517,7 +520,7 @@ async def RuNCoD3(event: events.newmessage.NewMessage.Event):
             await pl.run_interpreter_code(
                 subprocess.run,
                 {'lua':'data/code/source.lua', 'py3':'data/code/source.py', 'py2':'data/code/source.py', 'php':'data/code/source.php', 'js':'data/code/source.js', 'javascript':'data/code/source.js','node':'data/code/source.js', 'nodejs':'data/code/source.js'}.get(cmd),
-                {'lua':'lua', 'py3':'python3', 'py2':'python2', 'php':'php', 'js':'node', 'javascript':'node', 'node':'node', 'nodejs':'node'}.get(cmd),
+                {'lua':'lua','python3':'python3', 'py3':'python3', 'py2':'python2', 'php':'php', 'js':'node', 'javascript':'node', 'node':'node', 'nodejs':'node'}.get(cmd),
                 event.raw_text[event.raw_text.find('\n')+1:],
                 subprocess.TimeoutExpired,
                 event,

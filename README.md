@@ -7,8 +7,6 @@
 
 *note: This script must be run in a Linux environment (to access and Scriptlibraries)*
 
-*note: to use 'pytgcalls' in version 0.7 project, python3 version must be < 3.10*
-
 ## Tutorial
 
 <details>
@@ -51,9 +49,13 @@ apt install nodejs
 ```pip3 install -U -r requirements.txt```
 
 *- database manager: run 'python3 scripts/databaseManager.py' !*
+*- account manager: run 'python3 scripts/manager.py' !*
 
 # RUN shell script:
 
-```screen ./launch.sh```
+```
+chmod 777 launch.sh
+screen ./launch.sh
+```
 
 # Other provisions will definitely be added to this section
