@@ -26,7 +26,7 @@ from datetime import datetime as dt
 from captcha.image import ImageCaptcha
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import requests as req
-import psutil, git
+import psutil, git, re
 from pydub import AudioSegment
 from scripts.utils.Logger import Logging
 # - - - - - - - - - - - ValueS - - - - - - - - - - - - #
@@ -781,14 +781,15 @@ async def SeYTime(event: events.newmessage.NewMessage.Event):
     await pl.send_sudo_msg(event, f'{pl.rand_ch()} Tim3 NoW :\n'+'- time = %.2d:%.2d:%.2d'%(dt.today().hour, dt.today().minute, dt.today().second)+' | '+pl.send_weekday(dt.now().weekday())+'\n- date = '+'/'.join(map(lambda x:'%.2d'%x, Dat3))+' - '+'/'.join(map(lambda x:'%.2d'%x, [dt.today().year, dt.today().month, dt.today().day]))+'\n- Seasons = '+pl.send_seasons(Dat3[1])+' - '+pl.send_seasons(Dat3[1], 'j')+'\n- Month = '+pl.jdmonthname(Dat3[1])+' - '+dt.now().strftime("%B"), Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» UsE th3 Google Translate module 4 translation !:
-async def TranslatE(event: events.newmessage.NewMessage.Event):
-    Tr = Translator() # 0110100100100000011011000110111101110110011001010010000001001101
-    if event.is_reply and len(event.raw_text) == 5:
-        msg = await event.get_reply_message()
-        msg_for_tr = msg.raw_text
+async def TranslatE(event: events.newmessage.NewMessage.Event): # 
+    Tr = Translator()
+    pre_re = '|'.join(map(lambda s: rf'\{s}', pl.Conf.COMMAND_PREFIX))
+    if event.is_reply and len(event.raw_text.split()) == 2:
+        msg_for_tr = (await event.get_reply_message()).raw_text
     else:
-        msg_for_tr = event.raw_text[event.raw_text.find(' ', 5)+1:]
-    dest = event.raw_text[event.raw_text.find(' ', 1)+1:None if (rfind := event.raw_text.rfind(' ', 5)) == -1 else rfind]
+        msg_for_tr = re.search(r'^({pre_re}|)tr(\s*)([a-zA-Z]{2}) ((.|\s)*)$'.replace("{pre_re}", pre_re), event.raw_text).group(4)
+    
+    dest = re.search(r'^({pre_re}|)tr(\s*)([a-zA-Z]{2})((.|\s)*)$'.replace("{pre_re}", pre_re), event.raw_text).group(3)
     await pl.send_sudo_msg(event, Tr.translate(msg_for_tr, dest=dest).text, Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Accounts whose Messag# donot need to be forwarded =| ! :
