@@ -562,7 +562,8 @@ async def RuNCoD3(event: events.newmessage.NewMessage.Event):
                         os.remove('a.out')
         elif cmd == 'program':
             try:
-                await pl.myexec(event.raw_text[event.raw_text.find('\n') + 1:], event, Client);await pl.send_sudo_msg(
+                await pl.myexec(event.raw_text[event.raw_text.find('\n') + 1:], event, Client);
+                await pl.send_sudo_msg(
                     event, f'**{pl.rand_ch()} done !**', Account)
             except Exception as e:
                 await pl.send_sudo_msg(event, str(e), Account)
@@ -893,7 +894,8 @@ async def CheCKDIU(event):
         elif cmd[1] == 'domain':
             try:
                 domain = whois(cmd[
-                                   2]);check = f'**{pl.rand_ch()} Checking Domain** (`{domain.domain}`)\n            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n⌬ creation = {domain.creation_date}\n⌬ expiration = {domain.expiration_date}\n⌬ servers = [ {", ".join(domain.name_servers)} ]\n⌬ dns = {domain.dnssec}\n⌬ email = {domain.emails}\n⌬ country = {domain.country}\n⌬ state = {domain.state}'
+                                   2]);
+                check = f'**{pl.rand_ch()} Checking Domain** (`{domain.domain}`)\n            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n⌬ creation = {domain.creation_date}\n⌬ expiration = {domain.expiration_date}\n⌬ servers = [ {", ".join(domain.name_servers)} ]\n⌬ dns = {domain.dnssec}\n⌬ email = {domain.emails}\n⌬ country = {domain.country}\n⌬ state = {domain.state}'
             except:
                 check = f'**{pl.rand_ch()} error !**'
             finally:
@@ -901,7 +903,8 @@ async def CheCKDIU(event):
         elif cmd[1] == 'phone':
             try:
                 kosphone = FuckingPhone(event.raw_text[event.raw_text.find(' ',
-                                                                           8) + 1:]);check = f'**{pl.rand_ch()} checking phone** (`{kosphone.national_number}`)\n            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n⌬ country = {geocoder.description_for_number(kosphone, "en")}\n⌬ country code = {kosphone.country_code}\n⌬ co = {carrier.name_for_number(kosphone, "en")}'
+                                                                           8) + 1:]);
+                check = f'**{pl.rand_ch()} checking phone** (`{kosphone.national_number}`)\n            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n⌬ country = {geocoder.description_for_number(kosphone, "en")}\n⌬ country code = {kosphone.country_code}\n⌬ co = {carrier.name_for_number(kosphone, "en")}'
             except:
                 check = f'**{pl.rand_ch()} error !**'
             finally:
@@ -913,7 +916,7 @@ async def CheCKDIU(event):
 async def SeYTime(event: events.newmessage.NewMessage.Event):
     Dat3 = pl.gregorian_to_jalali(dt.today().year, dt.today().month, dt.today().day)
     await pl.send_sudo_msg(event, f'{pl.rand_ch()} Tim3 NoW :\n' + '- time = %.2d:%.2d:%.2d' % (
-    dt.today().hour, dt.today().minute, dt.today().second) + ' | ' + pl.send_weekday(
+        dt.today().hour, dt.today().minute, dt.today().second) + ' | ' + pl.send_weekday(
         dt.now().weekday()) + '\n- date = ' + '/'.join(map(lambda x: '%.2d' % x, Dat3)) + ' - ' + '/'.join(
         map(lambda x: '%.2d' % x,
             [dt.today().year, dt.today().month, dt.today().day])) + '\n- Seasons = ' + pl.send_seasons(
@@ -1020,7 +1023,7 @@ async def SenDSaVOicE(event: events.newmessage.NewMessage.Event):
                 msg = await event.get_reply_message()
                 if msg.media and type(
                         msg.media) is types.MessageMediaDocument and msg.media.document.attributes and type(
-                        msg.media.document.attributes[0]) is types.DocumentAttributeAudio and \
+                    msg.media.document.attributes[0]) is types.DocumentAttributeAudio and \
                         msg.media.document.attributes[0].voice:
                     voice = await msg.download_media('data/voice')
                     clir.hset(pl.DataBase.voices, voice_name, voice)
@@ -1565,6 +1568,7 @@ async def ThBlockEdUseR(event: events.newmessage.NewMessage.Event):
                 await Client(BlockRequest(user))
                 await event.edit(f'**{pl.rand_ch()} user** `{user}` **has been blocked !**')
         else:
+            user = getattr(msg.from_id, 'user_id', None)
             await event.edit(f'**{pl.rand_ch()} user** `{user}` **has been blocked !**')
             await Client(BlockRequest(msg.peer_id.user_id))
 
