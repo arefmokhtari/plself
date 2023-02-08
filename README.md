@@ -24,13 +24,13 @@ You're gonna need to get the following programs and services installed on your P
 #### Debian/Ubuntu/Linux Mint
 ```
 sudo apt update
-sudo apt install python3.9 python3-pip screen redis ffmpeg git
+sudo apt install python3 python3-pip screen redis ffmpeg git
 ```
 
 ### Arch Linux
 ```
 sudo pacman -Syyu
-sudo pacman -S python39 python-pip screen redis ffmpeg git
+sudo pacman -S python3 python-pip screen redis ffmpeg git
 ```
 
 To install the latest version of [nodejs](https://github.com/nvm-sh/nvm#installing-and-updating), enter this commands in your terminal
