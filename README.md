@@ -88,12 +88,12 @@ virtualenv venv
 source venv/bin/activate
 # - optional -
 
-pip3 install -r requirements.txt
+pip3 install -U -r requirements.txt
 
 # Fill the 'config.env' file with the required information and then run this command
-mv config.env .env
+cp config.env .env
 
-sudo chmod 700 launch.sh
+sudo chmod 777 launch.sh
 screen ./launch.sh
 
 ```
