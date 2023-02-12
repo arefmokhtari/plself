@@ -93,7 +93,7 @@ pip3 install -U -r requirements.txt
 # Fill the 'config.env' file with the required information and then run this command
 cp config.env .env
 
-sudo chmod 777 launch.sh
+chmod 777 launch.sh
 screen ./launch.sh
 
 ```
