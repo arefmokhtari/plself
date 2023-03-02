@@ -88,7 +88,7 @@ virtualenv venv
 source venv/bin/activate
 # - optional -
 
-pip3 install -U -r requirements.txt
+pip3 install -r requirements.txt
 
 # Fill the 'config.env' file with the required information and then run this command
 cp config.env .env
