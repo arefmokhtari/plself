@@ -27,7 +27,6 @@ import random as rand
 from datetime import datetime as dt
 from captcha.image import ImageCaptcha
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-import requests as req
 import psutil, git, re
 from pydub import AudioSegment
 from scripts.utils.Logger import Logging
@@ -615,7 +614,7 @@ async def RuNCoD3(event: events.newmessage.NewMessage.Event):
                 {'lua': 'data/code/source.lua', 'py3': 'data/code/source.py', 'py2': 'data/code/source.py',
                  'php': 'data/code/source.php', 'js': 'data/code/source.js', 'javascript': 'data/code/source.js',
                  'node': 'data/code/source.js', 'nodejs': 'data/code/source.js'}.get(cmd),
-                {'lua': 'lua', 'python3': 'python3', 'py3': 'python3', 'py2': 'python2', 'php': 'php', 'js': 'node',
+                {'lua': 'lua', 'python3': sys.executable, 'py3': sys.executable, 'py2': 'python2', 'php': 'php', 'js': 'node',
                  'javascript': 'node', 'node': 'node', 'nodejs': 'node'}.get(cmd),
                 event.raw_text[event.raw_text.find('\n') + 1:],
                 subprocess.TimeoutExpired,
@@ -635,9 +634,8 @@ async def GetLyricZ(event: events.newmessage.NewMessage.Event):
             music, artist = msg.media.document.attributes[0].title, msg.media.document.attributes[0].performer
     else:
         artist, music = text[text.find(' ') + 1:text.rfind('-')], text[text.rfind('-') + 1:]
-    res = req.get('https://api.lyrics.ovh/v1/' + artist + '/' + music, timeout=10)
     try:
-        lyr = res.json()['lyrics']
+        lyr = (await pl.client_session('get', 'json', 'https://api.lyrics.ovh/v1/' + artist + '/' + music, timeout=10))['lyrics']
     except:
         lyr = f'{pl.rand_ch()} **no lyrics found !**'
     await pl.send_sudo_msg(event, lyr, Account)
@@ -871,30 +869,29 @@ async def GetProxY(event: events.newmessage.NewMessage.Event):
 async def CheCKDIU(event):
     cmd, len_cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)
     if len_cmd >= 3:
-        if False:  # cmd[1] == 'username': # need to check ... later !
-            try:
-                check = f'**{pl.rand_ch()} Checking Username** `{cmd[2]}` **On Social Media:**\n' + '            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n' + '\n'.join(
-                    ['⌬ ' + i + ' = ' + v['stats'] + f'{"[✔️]" if v["link"] else "[✖️]"}' for i, v in
-                     req.get('https://www.wirexteam.ga/checker?username=' + cmd[2], timeout=10).json()[
-                         'checker'].items()])
-            except:
-                check = f'**{pl.rand_ch()} error !**'
-            finally:
-                await pl.send_sudo_msg(event, check, Account)
+        if False: pass # cmd[1] == 'username': # need to check ... later !
+            # try:
+            #     check = f'**{pl.rand_ch()} Checking Username** `{cmd[2]}` **On Social Media:**\n' + '            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n' + '\n'.join(
+            #         ['⌬ ' + i + ' = ' + v['stats'] + f'{"[✔️]" if v["link"] else "[✖️]"}' for i, v in
+            #          req.get('https://www.wirexteam.ga/checker?username=' + cmd[2], timeout=10).json()[
+            #              'checker'].items()])
+            # except:
+            #     check = f'**{pl.rand_ch()} error !**'
+            # finally:
+            #     await pl.send_sudo_msg(event, check, Account)
         elif cmd[1] == 'ip':
             try:
                 check = f'**{pl.rand_ch()} Ip Information For** ( `{cmd[2]}` ):' + '\n            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n' + '\n'.join(
-                    ['⌬ ' + i + ' = ' + str(v) for i, v in req.get(
-                        'http://ip-api.com/json/{}?fields=status,message,continent,continentCode,country,countryCode,region,regionName,city,zip,lat,lon,timezone,currency,isp,org,as,query'.format(
-                            cmd[2]), timeout=10).json().items()])
+                    ['⌬ ' + i + ' = ' + str(v) for i, v in (await pl.client_session('get', 'json',
+                        f'http://ip-api.com/json/{cmd[2]}?fields=status,message,continent,continentCode,country,countryCode,region,regionName,city,zip,lat,lon,timezone,currency,isp,org,as,query'
+                        , timeout=10)).items()])
             except:
                 check = f'**{pl.rand_ch()} error !**'
             finally:
                 await pl.send_sudo_msg(event, check, Account)
         elif cmd[1] == 'domain':
             try:
-                domain = whois(cmd[
-                                   2]);
+                domain = whois(cmd[2])
                 check = f'**{pl.rand_ch()} Checking Domain** (`{domain.domain}`)\n            ⋰⋰⋰⋰⋱⋱⋱⋱⋰⋰⋰⋰⋱⋱⋱⋱\n⌬ creation = {domain.creation_date}\n⌬ expiration = {domain.expiration_date}\n⌬ servers = [ {", ".join(domain.name_servers)} ]\n⌬ dns = {domain.dnssec}\n⌬ email = {domain.emails}\n⌬ country = {domain.country}\n⌬ state = {domain.state}'
             except:
                 check = f'**{pl.rand_ch()} error !**'
