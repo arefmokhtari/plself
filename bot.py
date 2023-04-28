@@ -474,7 +474,7 @@ async def RuNCoD3(event: events.newmessage.NewMessage.Event):
     if len_cmd >= 2:
         cmd = cmds[1]
         if cmd == 'help':
-            await pl.send_sudo_msg(event, '{pl.rand_ch()} **cmds :**\n`py3`\n`py2`\n`php`\n`cpp`\n`c`\n`lua`\n`js`\n`java`', Account)
+            await pl.send_sudo_msg(event, f'{pl.rand_ch()} **cmds :**\n`py3`\n`py2`\n`php`\n`cpp`\n`c`\n`lua`\n`js`\n`java`', Account)
         elif cmd == 'cpp':
             file = 'data/code/'+'source.cpp'
             pl.edit_source_run(event.raw_text[event.raw_text.find('\n')+1:], file)
@@ -517,15 +517,15 @@ async def RuNCoD3(event: events.newmessage.NewMessage.Event):
                     else:await pl.send_sudo_msg(event, f'**{pl.rand_ch()} error:**\n\n`'+code.stderr+'`' if code.stderr else f'**{pl.rand_ch()} result:**\n\n`'+code.stdout+'`', Account)
                     finally:os.remove('source.class')
         else:
-            await pl.run_interpreter_code(
-                subprocess.run,
-                {'lua':'data/code/source.lua', 'py3':'data/code/source.py', 'py2':'data/code/source.py', 'php':'data/code/source.php', 'js':'data/code/source.js', 'javascript':'data/code/source.js','node':'data/code/source.js', 'nodejs':'data/code/source.js'}.get(cmd),
-                {'lua':'lua','python3':'python3', 'py3':'python3', 'py2':'python2', 'php':'php', 'js':'node', 'javascript':'node', 'node':'node', 'nodejs':'node'}.get(cmd),
+            if code := await pl.run_interpreter_code(
+                pl.RUN_FILE_CMD.get(cmd),
+                pl.RUN_LANG_CODE.get(cmd),
                 event.raw_text[event.raw_text.find('\n')+1:],
-                subprocess.TimeoutExpired,
-                event,
-                Account
-            )
+            ):
+                await pl.send_sudo_msg(event, 
+                f'{pl.rand_ch()} **error:**\n\n`'+code[1].decode()+'`' if code[1] else f'{pl.rand_ch()} **result:**\n\n`'+code[0].decode()+'`', 
+                Account)
+            else: await pl.send_sudo_msg(event, f'**{pl.rand_ch()} error !**', Account)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» GeT LyriCZ:
 async def GetLyricZ(event: events.newmessage.NewMessage.Event):
@@ -570,7 +570,6 @@ async def GrouPCalLMain(event: events.newmessage.NewMessage.Event):
             try:
                 await Client(CreateGroupCallRequest(event.chat_id))
             except errors.rpcbaseerrors.BadRequestError as e:
-                print(e)
                 await pl.send_sudo_msg(event, '**• voice chat ending, please request again !**', Account)
             else:
                 await pl.send_sudo_msg(event, '**• voice chat was created !**', Account)

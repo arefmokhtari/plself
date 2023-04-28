@@ -8,3 +8,4 @@ scripts/utils/__pycache__/
 
 #   virtualenv
 venv/
+.venv/

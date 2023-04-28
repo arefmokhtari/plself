@@ -1,5 +1,5 @@
 #                   [   Plague Dr.  ]
-import os, random, re
+import os, random, re, asyncio
 from speedtest import Speedtest
 import speech_recognition as sr 
 from .plConfig import rand_ch
@@ -145,12 +145,25 @@ async def setup_data(database: dict, key, clir, js, event, panel):
         clir.hset('plAddGroPSettinGZ', str(event.chat_id), js.dumps(database))
         return await panel(event)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
-async def run_interpreter_code(run, file, lang_cmd, code, TimeoutExpired, event, Account):
+RUN_FILE_CMD = {'lua':'data/code/source.lua', 'py3':'data/code/source.py', 'py2':'data/code/source.py', 'php':'data/code/source.php', 'js':'data/code/source.js', 'javascript':'data/code/source.js','node':'data/code/source.js', 'nodejs':'data/code/source.js'}
+RUN_LANG_CODE = {'lua':'lua','python3':'python3', 'py3':'python3', 'py2':'python2', 'php':'php', 'js':'node', 'javascript':'node', 'node':'node', 'nodejs':'node'}
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+async def async_run_code(*args, **kwargs):
+    return await (await asyncio.create_subprocess_exec(
+        *args,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+        **kwargs,
+    )).communicate()
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+async def run_interpreter_code(file: str, lang_cmd: str, code: str) -> tuple[bytes, bytes]:
+    """ return std error and std output if lang_cmd and file else None """ # ho carz
     if lang_cmd and file:
         edit_source_run(code, file)
-        try:code = run([lang_cmd, file], capture_output=True, text=True, timeout=5)
-        except TimeoutExpired: await send_sudo_msg(event, f'**{rand_ch()} timeout error !**', Account)
-        else:await send_sudo_msg(event, f'{rand_ch()} **error:**\n\n`'+code.stderr+'`' if code.stderr else f'{rand_ch()} **result:**\n\n`'+code.stdout+'`', Account)
+        try: return await asyncio.wait_for(
+            async_run_code(lang_cmd, file), 5
+        )
+        except asyncio.exceptions.TimeoutError: pass # ho carz
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 def check_data_dir():
     if not os.path.isdir('data'): os.mkdir('data')
