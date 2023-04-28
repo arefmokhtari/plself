@@ -9,3 +9,7 @@ scripts/utils/__pycache__/
 #   virtualenv
 venv/
 .venv/
+
+#   .env file
+
+.env
