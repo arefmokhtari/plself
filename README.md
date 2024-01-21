@@ -1,5 +1,5 @@
 
-# PlSelF [ Plague Dr ]
+# PlSelf [ plague3r ]
 
 > A Telegram UserBot based on [Telethon](https://github.com/LonamiWebs/Telethon)
 
