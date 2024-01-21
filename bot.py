@@ -104,14 +104,15 @@ async def GetMsGServic3InGP(event: events.chataction.ChatAction.Event):
 @Client.on(events.MessageEdited())
 @Client.on(events.NewMessage())
 async def check_massag3(event: events.newmessage.NewMessage.Event or events.messageedited.MessageEdited.Event):
-    if event.is_private and event.sender_id != Account[0] and event.media and getattr(event.media, 'ttl_seconds', None):
+    user_id = event.sender_id or event.chat_id
+    if event.is_private and user_id != Account[0] and event.media and getattr(event.media, 'ttl_seconds', None):
         file_name = await event.download_media('data/photos')
         await Client.send_file(pl.Conf.CHANNEL_FOR_FWD, file_name)
-    if event.sender_id in sudo:
+    if user_id in sudo:
         if event.raw_text and ((type_event := type(event)) is events.newmessage.NewMessage.Event or (
                 type_event is events.messageedited.MessageEdited.Event and not event.reactions)):
             cmd = pl.get_cmds(event, pl.Conf.COMMAND_PREFIX)[0]
-            if event.sender_id in acc_sudo and not await pl.switch(cmd[0], {
+            if user_id in acc_sudo and not await pl.switch(cmd[0], {
                 'wow': GetFuckinGNuD3,
                 'reload': RestartProGraM,
                 'acdontsave': DonTSaveMsgInChannel,
@@ -164,7 +165,7 @@ async def check_massag3(event: events.newmessage.NewMessage.Event or events.mess
                 }, pl.empty_async)(event)
     elif event.is_group:
         chat_id = str(event.chat_id)
-        usr = str(event.sender_id)
+        usr = str(user_id)
         if chat_id in clir.lrange(pl.DataBase.mute_all, 0, -1) or (
                 clir.hgetall(pl.DataBase.mute_group_user).get(chat_id) and usr in clir.hget(pl.DataBase.mute_group_user,
                                                                                             chat_id).split()):
@@ -175,12 +176,12 @@ async def check_massag3(event: events.newmessage.NewMessage.Event or events.mess
                 await event.delete()
             elif database['forward'] and event.fwd_from:
                 await event.delete()
-            elif database['unknown'] and event.sender_id and event.sender_id < 0:
+            elif database['unknown'] and user_id and user_id < 0:
                 await event.delete()
             elif database['bot']:
                 pass  # not idea 4 this ...
     elif event.is_private:
-        sender_id = str(event.sender_id)
+        sender_id = str(user_id)
         get_user = None if clir.get('acdontsave:' + sender_id + ':pl') == None else int(
             clir.get('acdontsave:' + sender_id + ':pl'))
         if sender_id in clir.lrange(pl.DataBase.mute_private_user, 0, -1):
@@ -349,7 +350,7 @@ async def IdProcessing(event: events.newmessage.NewMessage.Event):
             msg = await event.get_reply_message()
             await pl.send_sudo_msg(event, f'`{msg.peer_id.user_id}`', Account)
         else:
-            await pl.send_sudo_msg(event, f'`{event.sender_id}`', Account)
+            await pl.send_sudo_msg(event, f'`{event.sender_id or event.chat_id}`', Account)
     elif (event.is_group or event.is_channel):
         if event.is_reply:
             msg = await event.get_reply_message()
@@ -358,7 +359,7 @@ async def IdProcessing(event: events.newmessage.NewMessage.Event):
             await pl.send_sudo_msg(event, f'`{user}`', Account)
             # else: await pl.send_sudo_msg(event, f'`{msg.from_id.user_id}`', Account)
         else:
-            await pl.send_sudo_msg(event, f'`{event.sender_id}`', Account)
+            await pl.send_sudo_msg(event, f'`{event.sender_id or event.chat_id}`', Account)
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
