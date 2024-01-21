@@ -64,7 +64,7 @@ def edit_source_run(code: str, file: str):
     with open(file, 'w') as f:
         f.write(code)
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
-def get_cmds(event, prefix, lower: bool = True):
+def get_cmds(event, prefix, lower: bool = True) -> tuple[list[str], int]:
     cmd = event.raw_text.lower().split() if lower else event.raw_text.split()
     cmd[0] = cmd[0][1:] if cmd[0][0] in prefix else cmd[0]
     len_cmd = len(cmd)
