@@ -62,7 +62,8 @@ print(
 #   -» CheckING MsG SerVic3 In GP:
 @Client.on(events.ChatAction())
 async def GetMsGServic3InGP(event: events.chataction.ChatAction.Event):
-    chat_id, user_id = event.action_message.peer_id.channel_id, event.action_message.from_id.user_id
+    chat_id, user_id = event.action_message.peer_id.channel_id, event.action_message.from_id and \
+        event.action_message.from_id.user_id or event.chat_id
     chat_id_str = '-100' + str(chat_id)
     type_message = type(event.action_message.action)
 
