@@ -1039,7 +1039,8 @@ async def SenDSaVOicE(event: events.newmessage.NewMessage.Event):
         else:
             voice_name = cmd[1]
             if voice_name in clir.hgetall(pl.DataBase.voices).keys():
-                await event.delete()
+                try: await event.delete()
+                except: pass
                 if event.is_reply:
                     msg = await event.get_reply_message()
                     await client.send_file(event.chat_id, clir.hget(pl.DataBase.voices, voice_name), reply_to=msg.id)
