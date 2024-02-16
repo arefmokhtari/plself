@@ -2,7 +2,7 @@
 # - - - - - - - - - - -LIBRarYS- - - - - - - - - - - - #
 from telethon import TelegramClient, events, Button, types, __version__ as tver, errors
 from telethon.tl.functions.messages import ImportChatInviteRequest, \
-    CheckChatInviteRequest  # , HideChatJoinRequestRequest
+    CheckChatInviteRequest, SendReactionRequest  # , HideChatJoinRequestRequest
 from telethon.tl.functions.channels import JoinChannelRequest, LeaveChannelRequest, EditBannedRequest, \
     InviteToChannelRequest, EditPhotoRequest
 from telethon.tl.functions.contacts import BlockRequest, UnblockRequest
@@ -142,6 +142,7 @@ async def check_massag3(event: events.newmessage.NewMessage.Event or events.mess
                     'vc': GrouPCalLMain,
                     'qrcode': QrCoD3,
                     'coin': SetCoiNManaGeR,
+                    'telescopy': telescopy,
                     'check': CheCKDIU,
                     'time': SeYTime,
                     'tr': TranslatE,
@@ -278,6 +279,21 @@ async def InsTA(event: events.newmessage.NewMessage.Event):
             pl.instaBot.remove_dir(profile.username)
             del insta
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - -  #
+#   -» send video message:
+async def telescopy(event: events.newmessage.NewMessage.Event):
+    if event.is_reply:
+        msg = await event.get_reply_message()
+        if msg.media:
+            file = await msg.download_media()
+            await client.send_file(event.chat_id, file, video_note=True)
+            try: await client(SendReactionRequest(
+                    event.chat_id,
+                    msg.id,
+                    reaction=[types.ReactionEmoji('👍')]
+                ))
+            except: pass
+            os.remove(file)
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - -  #
 #   -» Calculator:
