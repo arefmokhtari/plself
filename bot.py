@@ -423,7 +423,7 @@ async def FinDManageR(event: events.newmessage.NewMessage.Event):
                     shazam = Shazam()
                     if event.sender_id in Account: await event.delete()
                     _sending_msg = await msg.reply(f'**{pl.rand_ch()} wait !**')
-                    out = await shazam.recognize_song(filename)
+                    out = await shazam.recognize(filename)
                     if out.get('track'):
                         try:
                             album = out["track"]["sections"][0]["metadata"][0]["text"]
